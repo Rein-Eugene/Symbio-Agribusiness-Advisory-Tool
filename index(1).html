@@ -7,6 +7,12 @@
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#F4F1E7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12180F" media="(prefers-color-scheme: dark)">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Symbio Planner">
 <title>Agribusiness Enterprise Planner — Symbio Biotech</title>
 <script>
   // Apply the saved theme before paint to avoid a flash of the wrong theme.
@@ -1182,6 +1188,35 @@
   }
   @media (max-width:600px){ .theme-toggle .label{display:none;} .theme-toggle{padding:8px;} }
 
+  /* ---- Install App button ---- */
+  .install-btn{
+    position:fixed;
+    top:16px;
+    right:110px;
+    z-index:50;
+    display:none;
+    align-items:center;
+    gap:8px;
+    background:var(--maize);
+    border:1px solid var(--maize);
+    color:var(--gold-text);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    font-weight:600;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:8px 12px;
+    border-radius:20px;
+    cursor:pointer;
+    box-shadow:0 2px 10px var(--shadow);
+  }
+  .install-btn.show{display:inline-flex;}
+  .install-btn .icon{width:15px;height:15px;flex-shrink:0;}
+  @media (max-width:600px){
+    .install-btn{right:56px; padding:8px;}
+    .install-btn .label{display:none;}
+  }
+
   /* ---- shared styles for embedded enterprise tools ---- */
   .ops-guide{margin:18px 0;border:1px solid var(--line);border-radius:6px;background:var(--soil-800);}
   .ops-guide-toggle{width:100%;text-align:left;background:transparent;border:none;color:var(--maize);
@@ -1213,6 +1248,10 @@
   <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
   <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
   <span class="label">Theme</span>
+</button>
+<button type="button" class="install-btn" id="installBtn" aria-label="Install this app" title="Install App">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+  <span class="label">Install</span>
 </button>
 <div class="wrap">
   <header class="app-header">
@@ -10684,8 +10723,11 @@ function renderIntroView(){
     <div class="ops-section-title">Soil Health &amp; JADAM Biology</div>
     <ul class="intro-list">
       <li><strong>Biological Foundation:</strong> Good soil does the heavy lifting your budget can't. The more alive it is, the less you'll find yourself reaching for expensive synthetic inputs.</li>
-      <li><strong>Forest Leaf Mold &amp; JMS:</strong> Gather undisturbed leaf litter from a nearby forest floor and brew it into JADAM Microbial Solution (JMS). A drench over your nursery trays gives young roots a protective coat of biology before they even reach the field.</li>
+      <li><strong>Drench Before You Plant:</strong> Gather undisturbed leaf litter from a nearby forest floor and brew it into JADAM Microbial Solution (JMS). Drench the soil at least four times before planting \u2014 it softens the ground for healthy root growth, and the diverse microbe population in JMS helps suppress soil-borne disease and pathogens before they get a foothold. The same brew works as a nursery-tray drench, coating young roots in protective biology before they even reach the field.</li>
       <li><strong>In-Situ Microbe Trap:</strong> Cover a moist bed with dry native grass and keep it watered for three to four weeks. You're culturing wild, locally-adapted microbes right where they'll be used \u2014 no lab required. Worth logging in your Biological Bed Mapping so you can see which beds respond best.</li>
+      <li><strong>Minerals from the Sea:</strong> Sea salt or seawater can fill in minerals your soil is missing. Use it sparingly \u2014 too much, too often, and sodium builds up faster than it leaches out. Check the JADAM ratios for how much is safe before adding it to a brew or a bed.</li>
+      <li><strong>What Soil Testing Doesn't Tell You:</strong> A lab test is built to point you toward a synthetic fertilizer that fixes the number on the page \u2014 not toward the biology that would fix the soil itself. Treat a soil test as one data point, not the whole diagnosis.</li>
+      <li><strong>Plant Where You Are:</strong> Rotation is common advice, but there's a better one: help the plant adapt to your soil instead of moving it every season. Drench the same spot with JMS and plant it again \u2014 given a few cycles, the microbial community there optimizes itself around that crop.</li>
       <li><strong>Experimentation Over Conformity:</strong> Any manual, including this one, is a starting point. Your land will tell you what it actually wants \u2014 pay attention and adjust.</li>
     </ul>
 
@@ -10694,6 +10736,7 @@ function renderIntroView(){
       <li><strong>Weeding Eats More Than Anything Else:</strong> Across most crops, weeding quietly consumes more labour hours than planting, watering, and harvesting put together. If a farm's labour bill is running high, this is usually where to look first.</li>
       <li><strong>Design the Weeds Out, Don't Just Fight Them:</strong> Cone gardens and vertical growing structures shrink the exposed soil surface a weed can even germinate on. A living floor \u2014 a low, deliberate ground cover planted to occupy every bit of open soil \u2014 does the same job biologically, crowding weeds out before they get a foothold. Plastic mulch works more directly, physically blocking light from reaching the soil surface. Different tools, same target: less bare, disturbed soil for weeds to exploit.</li>
       <li><strong>No-Till as Weed Management:</strong> Every time soil is turned, buried weed seed gets a fresh shot at daylight and germinates. Leave the soil undisturbed and build fertility on top instead of digging it in, and that seed bank mostly stays asleep.</li>
+      <li><strong>Let Nature Turn the Pile:</strong> No labour to spare for turning compost? Don't force it \u2014 do what nature already does. Pile up leaves and grass and leave them be, drenching the heap with compost tea or JMS to accelerate the breakdown. Slower than active turning, but it costs you almost no hours.</li>
       <li><strong>Labour Is Not Negotiable:</strong> A plan that looks profitable on paper but quietly assumes free or unlimited family labour isn't a real plan. Budget for the hours a system actually needs, and lean toward systems designed to need fewer of them.</li>
     </ul>
 
@@ -10844,6 +10887,45 @@ window.activeOpsRepaint = null;
     }
   });
   btn.setAttribute('aria-pressed', effectiveTheme() === 'dark' ? 'true' : 'false');
+})();
+
+// ==================== PWA: SERVICE WORKER + INSTALL PROMPT ====================
+// Registering the service worker only does anything meaningful when this
+// page is served over HTTPS (or localhost) \u2014 browsers refuse to register
+// one from a downloaded file:// or content:// page. That's fine: the call
+// below simply fails quietly in that case, and starts working the moment
+// the app is hosted, with no other changes needed.
+(function(){
+  if('serviceWorker' in navigator){
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js').catch(() => {
+        // Expected when opened as a local file, or if sw.js isn't hosted
+        // alongside index.html yet \u2014 no action needed.
+      });
+    });
+  }
+
+  const installBtn = document.getElementById('installBtn');
+  let deferredPrompt = null;
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBtn.classList.add('show');
+  });
+
+  installBtn.addEventListener('click', async () => {
+    if(!deferredPrompt) return;
+    installBtn.classList.remove('show');
+    deferredPrompt.prompt();
+    try{ await deferredPrompt.userChoice; }catch(e){}
+    deferredPrompt = null;
+  });
+
+  window.addEventListener('appinstalled', () => {
+    installBtn.classList.remove('show');
+    deferredPrompt = null;
+  });
 })();
 
 </script>
