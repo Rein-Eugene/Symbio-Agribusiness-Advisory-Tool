@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="Free tools from Symbio Biotech to plan, compare, and grow a farm enterprise in Kenya — enterprise comparison, farming manuals, and a farming-for-profit planner.">
 <meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#F4F1E7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#FFFFFF" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#12180F" media="(prefers-color-scheme: dark)">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png" type="image/png">
@@ -29,7 +29,7 @@
   /* ---- Palette: Forest green + Matte sage + Gold (dominant) ---- */
   :root{
     color-scheme: light;
-    --soil-900:#F4F1E7;   /* paper background */
+    --soil-900:#FFFFFF;   /* paper background */
     --soil-800:#FFFFFF;   /* surface / cards */
     --bone:#25301D;       /* forest-tinted ink */
     --bone-dim:#5B6A50;   /* muted sage-gray text */
@@ -79,7 +79,7 @@
   /* Explicit manual overrides win over the OS preference */
   :root[data-theme="light"]{
     color-scheme: light;
-    --soil-900:#F4F1E7; --soil-800:#FFFFFF; --bone:#25301D; --bone-dim:#5B6A50;
+    --soil-900:#FFFFFF; --soil-800:#FFFFFF; --bone:#25301D; --bone-dim:#5B6A50;
     --maize:#8F6B12; --gold-bright:#C9A227; --leaf:#2F4A35; --sage:#8FA079;
     --rust:#9E5A31; --line:#E4DECD; --gold-text:#FFFFFF; --shadow:rgba(42,55,32,0.08);
     --chart-text:#25301D; --chart-grid:#D9D2BD;
@@ -734,6 +734,36 @@
   .ops-tab{display:none;}
   .ops-tab.o-active{display:block;}
 
+  /* Compact emoji-only switcher for the 8 Ops enterprises \u2014 kept separate
+     from .ops-nav (which is also used for plain text toggles elsewhere,
+     e.g. the Seedling Propagation soak-method switch) so this doesn't
+     affect those. */
+  .ops-enterprise-nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-bottom:20px;
+  }
+  .ops-enterprise-nav button{
+    width:44px;
+    height:44px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:21px;
+    line-height:1;
+    background:transparent;
+    border:1.5px solid var(--line);
+    border-radius:8px;
+    cursor:pointer;
+    padding:0;
+    transition:all .15s ease;
+  }
+  .ops-enterprise-nav button.o-active, .ops-enterprise-nav button:hover{
+    background:var(--leaf);
+    border-color:var(--leaf);
+  }
+
   .ops-intro{
     background:var(--soil-800);
     border-left:4px solid var(--leaf);
@@ -837,6 +867,21 @@
     padding:9px 10px;
   }
   .ops-field input:focus, .ops-field select:focus{border-color:var(--maize);outline:none;}
+
+  /* Two related number inputs (e.g. a count and its yield) shown side by
+     side, always \u2014 unlike .ops-field-row this never collapses to one
+     column, since the whole point is to keep short paired inputs compact
+     and horizontal even on a narrow phone. */
+  .ops-pair-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .ops-pair-row .ops-field{
+    flex:1;
+    min-width:0;
+    margin-bottom:0;
+  }
 
   .ops-summary-grid{
     display:grid;
@@ -1188,6 +1233,28 @@
   }
   @media (max-width:600px){ .theme-toggle .label{display:none;} .theme-toggle{padding:8px;} }
 
+  /* ---- Currency selector ---- */
+  .currency-select{
+    position:fixed;
+    top:58px;
+    right:16px;
+    z-index:50;
+    background:var(--soil-800);
+    border:1px solid var(--line);
+    color:var(--bone);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    padding:8px 10px;
+    border-radius:20px;
+    cursor:pointer;
+    box-shadow:0 2px 10px var(--shadow);
+    max-width:110px;
+  }
+  .currency-select:hover{border-color:var(--maize);color:var(--maize);}
+  @media (max-width:600px){ .currency-select{padding:8px; font-size:10px; max-width:78px; top:54px;} }
+
   /* ---- Install App button ---- */
   .install-btn{
     position:fixed;
@@ -1238,12 +1305,79 @@
     border-radius:5px;padding:8px 13px;cursor:pointer;transition:all .15s ease;}
   .ops-pill.o-active{background:var(--maize);border-color:var(--maize);color:var(--gold-text);font-weight:600;}
   .ops-note{font-size:11.5px;color:var(--bone-dim);font-style:italic;line-height:1.5;margin:6px 0 12px;}
+
+  /* ---- Responsive planner tables: stacked ledger cards on narrow screens ----
+     Applies to every .planner-table in the app (Marketing Chart, Production
+     Plan, Seedling Calendar, and all Ops ledgers). Each <tr> becomes a
+     bordered card; each <td> gets its column header printed above its
+     content via the data-label attribute, which is kept in sync
+     automatically by relabelPlannerTables() below \u2014 no per-table code
+     needed when rows or columns are added dynamically. */
+  @media (max-width:680px){
+    .planner-table-wrap{overflow-x:visible;}
+    .planner-table{min-width:0;width:100%;border:none;border-collapse:separate;border-spacing:0;}
+    .planner-table thead{
+      position:absolute;width:1px;height:1px;overflow:hidden;
+      clip:rect(0 0 0 0);white-space:nowrap;
+    }
+    .planner-table tbody{display:block;}
+    .planner-table tr{
+      display:block;
+      border:1px solid var(--line);
+      border-radius:6px;
+      padding:12px 14px;
+      margin-bottom:12px;
+      background:var(--soil-800);
+    }
+    .planner-table td{
+      display:block;
+      border:none;
+      border-bottom:1px dashed var(--line);
+      padding:9px 0;
+    }
+    .planner-table tr:nth-child(even) td{background:transparent;}
+    .planner-table td:first-child{padding-top:0;}
+    .planner-table td:last-child{border-bottom:none;padding-bottom:0;}
+    .planner-table td[data-label]:not([data-label=""])::before{
+      content:attr(data-label);
+      display:block;
+      font-family:'IBM Plex Mono',monospace;
+      font-size:10.5px;
+      letter-spacing:0.05em;
+      text-transform:uppercase;
+      color:var(--bone-dim);
+      margin-bottom:5px;
+    }
+    .planner-table td.remove-cell{
+      border-bottom:none;
+      padding-top:6px;
+      text-align:right;
+    }
+    .planner-table input, .planner-table select{
+      width:100%;
+      font-size:15px;
+      padding:10px 11px;
+    }
+    .planner-table .cell-inputs{font-size:12.5px;}
+    .planner-table .cell-inputs input{width:68px;font-size:14px;padding:7px 8px;}
+    .planner-table .total-cell{border-radius:4px;padding:9px 10px !important;margin-top:2px;}
+  }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
+<select id="currencySelect" class="currency-select" title="Currency" aria-label="Currency">
+  <option value="KES">KES</option>
+  <option value="USD">USD</option>
+  <option value="UGX">UGX</option>
+  <option value="TZS">TZS</option>
+  <option value="GHS">GHS</option>
+  <option value="NGN">NGN</option>
+  <option value="ZAR">ZAR</option>
+  <option value="__custom">Other…</option>
+</select>
 <button type="button" class="theme-toggle" id="themeToggle" aria-label="Toggle dark and light theme" title="Toggle theme">
   <svg class="icon icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
   <svg class="icon icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
@@ -1257,10 +1391,11 @@
   <header class="app-header">
     <div class="eyebrow">Symbio Biotech</div>
     <h1>Agribusiness Enterprise Planner</h1>
-    <p class="sub">Four free tools to plan, compare, and grow a farm enterprise in Kenya. Pick where to start.</p>
+    <p class="sub">A comprehensive digital suite built to help farmers and agripreneurs plan, manage, and grow their enterprises — from soil to sale. Four free tools. Pick where to start.</p>
   </header>
 
   <div class="home-grid" id="homeScreen">
+    <div id="homeDashboard" class="ops-summary-grid" style="grid-column:1/-1;display:none;"></div>
     <div class="home-card" id="homeCardIntro" style="border-color:var(--maize);">
       <div class="home-card-icon">🌿</div>
       <div class="home-card-title">Start Here</div>
@@ -1300,7 +1435,7 @@
   <form id="compareForm">
     <div class="field-row">
       <div class="field">
-        <label for="capital">Capital available (KES)</label>
+        <label for="capital">Capital available (<span class="cur-unit">KES</span>)</label>
         <input type="number" id="capital" placeholder="e.g. 80000" min="0" required>
       </div>
       <div class="field">
@@ -1387,6 +1522,21 @@
 </div>
 
 <script>
+// ---- Currency (dynamic label, no exchange-rate conversion) ----
+const CURRENCY_OPTIONS = ['KES','USD','UGX','TZS','GHS','NGN','ZAR'];
+let currentCurrency = 'KES';
+try {
+  const savedCur = localStorage.getItem('symbio_currency');
+  if (savedCur) currentCurrency = savedCur;
+} catch(e){}
+function CUR(){ return currentCurrency; }
+function setCurrency(code){
+  currentCurrency = code;
+  try{ localStorage.setItem('symbio_currency', code); }catch(e){}
+  document.querySelectorAll('.cur-unit').forEach(el => el.textContent = currentCurrency);
+  if (typeof renderHomeDashboard === 'function') renderHomeDashboard();
+}
+
 // ---- Enterprise knowledge base ----
 // category: 'crops' | 'livestock' | 'trees' | 'compost'
 // landMin/waterMin/labourMin ordinals: land(0 sack,1 small,2 medium,3 large), water(0 none,1 seasonal,2 reliable), labour(0 self-part,1 self-full,2 family,3 hired)
@@ -1911,13 +2061,13 @@ function renderResults(){
     cardsHtml = shown.map((s, idx) => {
       const ent = s.ent;
       const recommended = ent.id === recommendedId;
-      const costLabel = `KES ${ent.minCapital.toLocaleString()}–${ent.costHigh.toLocaleString()}`;
+      const costLabel = `${CUR()} ${ent.minCapital.toLocaleString()}–${ent.costHigh.toLocaleString()}`;
       const paybackLabel = ent.paybackMin === ent.paybackMax
         ? `~${ent.paybackMin} mo`
         : `${ent.paybackMin}–${ent.paybackMax} mo`;
       const whyText = s.feasible
         ? ent.fit(s.ctx)
-        : `This needs about KES ${s.capitalGap.toLocaleString()} more capital than stated, or more land/water than currently available. Worth keeping in mind as a next step once conditions change.`;
+        : `This needs about ${CUR()} ${s.capitalGap.toLocaleString()} more capital than stated, or more land/water than currently available. Worth keeping in mind as a next step once conditions change.`;
       const cycleMonths = (ent.paybackMin + ent.paybackMax) / 2;
       return `
         <div class="card ${recommended ? 'recommended' : ''}" style="--accent:${ent.accent}">
@@ -1952,7 +2102,7 @@ function renderResults(){
                 <input type="number" id="qty-${ent.id}" min="0" placeholder="0">
               </div>
               <div class="calc-field">
-                <label>Price/unit (KES)</label>
+                <label>Price/unit (${CUR()})</label>
                 <input type="number" id="price-${ent.id}" min="0" placeholder="0">
               </div>
               <div class="calc-field">
@@ -2033,7 +2183,7 @@ function renderBundles(results, tabsHtml){
         <div class="metrics">
           <div>
             <div class="metric-label">Combined startup cost</div>
-            <div class="metric-value">KES ${minCap.toLocaleString()}–${costHigh.toLocaleString()}</div>
+            <div class="metric-value">${CUR()} ${minCap.toLocaleString()}–${costHigh.toLocaleString()}</div>
           </div>
           <div>
             <div class="metric-label">First income</div>
@@ -2086,8 +2236,8 @@ function calcRevenue(entId){
 
   const out = document.getElementById('calcOut-' + entId);
   out.innerHTML = `
-    <div class="calc-out-item"><span>Per month</span><strong>KES ${Math.round(monthly).toLocaleString()}</strong></div>
-    <div class="calc-out-item"><span>Per year</span><strong>KES ${Math.round(annual).toLocaleString()}</strong></div>
+    <div class="calc-out-item"><span>Per month</span><strong>${CUR()} ${Math.round(monthly).toLocaleString()}</strong></div>
+    <div class="calc-out-item"><span>Per year</span><strong>${CUR()} ${Math.round(annual).toLocaleString()}</strong></div>
   `;
 }
 
@@ -2421,7 +2571,7 @@ const MANUALS = [
         'Q4 \u2014 Full Capacity: reach full hive count; begin selling rabbit offspring; review which floral species the bees preferred and expand that planting.'
       ]},
       { heading: 'Financial Planning Notes', body: [
-        'Actual figures depend heavily on local input prices and market rates \u2014 use your own numbers when planning a specific site. As a rough planning shape from a working 300m\u00b2/10-hive example: initial investment in the range of KES 200,000\u2013250,000, modest monthly operating costs, and a typical break-even point of 8\u201310 months once hives and rabbit sales are both active.'
+        `Actual figures depend heavily on local input prices and market rates \u2014 use your own numbers when planning a specific site. As a rough planning shape from a working 300m\u00b2/10-hive example: initial investment in the range of ${CUR()} 200,000\u2013250,000, modest monthly operating costs, and a typical break-even point of 8\u201310 months once hives and rabbit sales are both active.`
       ]}
     ]
   },
@@ -3908,17 +4058,26 @@ function renderOpsView(){
   const results = document.getElementById('results');
   const M = window.OPS_MODULES || {};
   const TABS = [
-    ['o-cereals','Cereals','Cereals &amp; legumes projection + actuals ledger'],
-    ['o-horticulture','Horticulture','Horticulture / vegetable projection + actuals ledger'],
-    ['o-hatchery','Hatchery','Hatchery &amp; day-old chicks projection + actuals ledger'],
-    ['o-kienyeji','Kienyeji Poultry','Improved Kienyeji poultry (plus bio-manure byproduct income)'],
-    ['o-pigs','Pigs','Pig enterprise (Refinery vs Regular Commercial)'],
-    ['o-compost','Compost','Compost production &amp; sales enterprise'],
-    ['o-seedlings','Seedling Propagation','Vegetable &amp; herb seedling nursery projection + actuals ledger'],
-    ['o-dailylog','Homestead Animals','Livestock &amp; other homestead animals \u2014 acquisitions, sales, births, losses, and care costs']
+    ['o-cereals','Cereals','Cereals &amp; legumes projection + actuals ledger','\ud83c\udf3e'],
+    ['o-dailylog','Homestead Animals','Livestock &amp; other homestead animals \u2014 acquisitions, sales, births, losses, and care costs','\ud83d\udc10'],
+    ['o-kienyeji','Kienyeji Poultry','Improved Kienyeji poultry (plus bio-manure byproduct income)','\ud83d\udc14'],
+    ['o-horticulture','Horticulture','Horticulture / vegetable projection + actuals ledger','\ud83e\udd6c'],
+    ['o-hatchery','Hatchery','Hatchery &amp; day-old chicks projection + actuals ledger','\ud83d\udc23'],
+    ['o-compost','Compost','Compost production &amp; sales enterprise','\u267b\ufe0f'],
+    ['o-pigs','Pigs','Pig enterprise (Refinery vs Regular Commercial)','\ud83d\udc16'],
+    ['o-seedlings','Seedling Propagation','Vegetable &amp; herb seedling nursery projection + actuals ledger','\ud83c\udf31']
   ];
-  const nav = TABS.map((t,i)=>`<button type="button" class="${i===0?'o-active':''}" data-otab="${t[0]}">${t[1]}</button>`).join('');
-  const panes = TABS.map((t,i)=>`<div id="${t[0]}" class="ops-tab${i===0?' o-active':''}">`+
+  // Accent colors cycle through the app's existing chart-series palette so the
+  // 8 picker cards read distinctly without introducing any new colors.
+  const ACCENTS = ['--chart-series-1','--chart-series-2','--chart-series-3','--chart-series-4','--chart-series-5','--chart-series-6','--leaf','--maize'];
+  const pickerCards = TABS.map((t,i) => `
+    <div class="home-card ops-pick-card" data-otab="${t[0]}" style="border-left-color:var(${ACCENTS[i % ACCENTS.length]});">
+      <div class="home-card-icon">${t[3]}</div>
+      <div class="home-card-title">${t[1]}</div>
+      <div class="home-card-desc">${t[2]}</div>
+    </div>`).join('');
+  const nav = TABS.map((t)=>`<button type="button" data-otab="${t[0]}" title="${t[1]}" aria-label="${t[1]}">${t[3]}</button>`).join('');
+  const panes = TABS.map((t)=>`<div id="${t[0]}" class="ops-tab">`+
       (M[t[0]] ? '' : `<p style="color:var(--bone-dim);font-size:13px;">${t[2]} \u2014 coming in shortly.</p>`)+
     `</div>`).join('');
 
@@ -3928,25 +4087,43 @@ function renderOpsView(){
       <h2>Farm Operations and Analytics</h2>
       <span>by Symbio Biotech Solutions</span>
     </div>
-    <div class="ops-intro">
-      <strong>How to use this tool:</strong> each tab below is its own independent enterprise calculator \u2014 enter your figures to see projected revenue and costs, then log what actually happened in the Actuals Ledger to track real performance against your projection over time. The tabs don't feed into each other; pick whichever enterprise you're running.
+
+    <div id="opsPicker">
+      <div class="ops-intro">
+        <strong>How to use this tool:</strong> each enterprise is its own calculator. Pick one to project figures and log actuals.
+      </div>
+      <div class="home-grid">${pickerCards}</div>
     </div>
-    <div class="ops-nav" id="opsNav">${nav}</div>
-    ${panes}
+
+    <div id="opsDetail" style="display:none;">
+      <span class="back-link" id="backToOpsPicker">\u2190 Change enterprise</span>
+      <div class="ops-enterprise-nav" id="opsNav">${nav}</div>
+      ${panes}
+    </div>
   `;
 
+  function openOpsEnterprise(id){
+    window.scrollTo(0,0);
+    document.getElementById('opsPicker').style.display = 'none';
+    document.getElementById('opsDetail').style.display = 'block';
+    document.querySelectorAll('#opsNav button').forEach(b => b.classList.toggle('o-active', b.dataset.otab === id));
+    document.querySelectorAll('.ops-tab').forEach(t => t.classList.toggle('o-active', t.id === id));
+    opsMount(id);
+  }
+
+  document.querySelectorAll('.ops-pick-card').forEach(card => {
+    card.addEventListener('click', () => openOpsEnterprise(card.dataset.otab));
+  });
   document.getElementById('opsNav').querySelectorAll('button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.ops-nav button').forEach(b => b.classList.remove('o-active'));
-      document.querySelectorAll('.ops-tab').forEach(t => t.classList.remove('o-active'));
-      btn.classList.add('o-active');
-      document.getElementById(btn.dataset.otab).classList.add('o-active');
-      opsMount(btn.dataset.otab);
-    });
+    btn.addEventListener('click', () => openOpsEnterprise(btn.dataset.otab));
   });
 
   document.getElementById('backFromOps').addEventListener('click', () => { opsTeardown(); showHome(); });
-  opsMount(TABS[0][0]);
+  document.getElementById('backToOpsPicker').addEventListener('click', () => {
+    window.scrollTo(0,0);
+    document.getElementById('opsDetail').style.display = 'none';
+    document.getElementById('opsPicker').style.display = 'block';
+  });
 }
 
 const OPS_MOUNTED = {};
@@ -4076,27 +4253,27 @@ window.OPS_MODULES['o-cereals'] = (function(){
           <input type="number" id="${TAB}-param-intercrop-yield">
         </div>
         <div class="ops-field">
-          <label>Primary Price / Bag (KES)</label>
+          <label>Primary Price / Bag (${CUR()})</label>
           <span class="ops-hint">How much did you sell each bag of your primary crop?</span>
           <input type="number" id="${TAB}-param-price">
         </div>
         <div class="ops-field">
-          <label>Intercrop Price / Bag (KES)</label>
+          <label>Intercrop Price / Bag (${CUR()})</label>
           <span class="ops-hint">How much did you sell each bag of your intercrop?</span>
           <input type="number" id="${TAB}-param-intercrop-price">
         </div>
         <div class="ops-field">
-          <label>Input Cost / Acre (KES)</label>
+          <label>Input Cost / Acre (${CUR()})</label>
           <span class="ops-hint">How much did you spend on inputs? (Seeds, fertilizers, foliars, and pesticides)</span>
           <input type="number" id="${TAB}-param-inputs">
         </div>
         <div class="ops-field">
-          <label>Labor & Tillage / Acre (KES)</label>
+          <label>Labor & Tillage / Acre (${CUR()})</label>
           <span class="ops-hint">How much did you spend on labor and tillage up to selling point?</span>
           <input type="number" id="${TAB}-param-labor">
         </div>
         <div class="ops-field">
-          <label>Storage Cost Total (KES)</label>
+          <label>Storage Cost Total (${CUR()})</label>
           <span class="ops-hint">How much does storage cost you?</span>
           <input type="number" id="${TAB}-param-storage">
         </div>
@@ -4118,15 +4295,15 @@ window.OPS_MODULES['o-cereals'] = (function(){
       <div class="ops-summary-grid">
         <div class="ops-summary-card">
           <div class="ops-sum-label">Total Production Cost</div>
-          <div class="ops-sum-value" id="${TAB}-out-total-cost">KES 0</div>
+          <div class="ops-sum-value" id="${TAB}-out-total-cost">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Total Projected Revenue</div>
-          <div class="ops-sum-value ops-sum-profit" id="${TAB}-out-total-rev">KES 0</div>
+          <div class="ops-sum-value ops-sum-profit" id="${TAB}-out-total-rev">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Net Profit / Season</div>
-          <div class="ops-sum-value ops-sum-profit" id="${TAB}-out-net">KES 0</div>
+          <div class="ops-sum-value ops-sum-profit" id="${TAB}-out-net">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Return on Investment (ROI)</div>
@@ -4154,7 +4331,7 @@ window.OPS_MODULES['o-cereals'] = (function(){
           <option value="Other">Other</option>
         </select>
         <input type="number" id="${TAB}-entry-hours" step="0.25" min="0" placeholder="Hours" style="display:none; width:80px;" title="Time spent on this task">
-        <input type="number" id="${TAB}-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (KES)" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
+        <input type="number" id="${TAB}-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (${CUR()})" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
         <select id="${TAB}-entry-stream">
           <option value="Primary Main Crop">Primary Main Crop</option>
           <option value="Companion Intercrop">Companion Intercrop</option>
@@ -4163,7 +4340,7 @@ window.OPS_MODULES['o-cereals'] = (function(){
         </select>
         <input type="text" id="${TAB}-entry-desc" placeholder="Details (e.g., Sold yellow beans)" required>
         <input type="number" id="${TAB}-entry-qty" step="0.5" placeholder="Quantity (Bags/Units)">
-        <input type="number" id="${TAB}-entry-rate" step="1" placeholder="Rate or Total (KES)">
+        <input type="number" id="${TAB}-entry-rate" step="1" placeholder="Rate or Total (${CUR()})">
         <button type="submit" class="planner-btn">Save Entry</button>
       </form>
 
@@ -4189,15 +4366,15 @@ window.OPS_MODULES['o-cereals'] = (function(){
       <div class="ops-summary-grid">
         <div class="ops-summary-card">
           <div class="ops-sum-label">Actual Revenue</div>
-          <div class="ops-sum-value ops-sum-profit" id="${TAB}-actual-income">KES 0</div>
+          <div class="ops-sum-value ops-sum-profit" id="${TAB}-actual-income">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Actual Expenses</div>
-          <div class="ops-sum-value ops-sum-loss" id="${TAB}-actual-exp">KES 0</div>
+          <div class="ops-sum-value ops-sum-loss" id="${TAB}-actual-exp">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Net Cashflow</div>
-          <div class="ops-sum-value" id="${TAB}-actual-net">KES 0</div>
+          <div class="ops-sum-value" id="${TAB}-actual-net">${CUR()} 0</div>
         </div>
       </div>
 
@@ -4486,9 +4663,9 @@ window.OPS_MODULES['o-cereals'] = (function(){
       const netProfit = totalRev - totalCost;
       const roi = totalCost > 0 ? ((netProfit / totalCost) * 100).toFixed(1) : 0;
 
-      $('#'+TAB+'-out-total-cost').textContent = 'KES ' + Math.round(totalCost).toLocaleString();
-      $('#'+TAB+'-out-total-rev').textContent = 'KES ' + Math.round(totalRev).toLocaleString();
-      $('#'+TAB+'-out-net').textContent = 'KES ' + Math.round(netProfit).toLocaleString();
+      $('#'+TAB+'-out-total-cost').textContent = `${CUR()} ` + Math.round(totalCost).toLocaleString();
+      $('#'+TAB+'-out-total-rev').textContent = `${CUR()} ` + Math.round(totalRev).toLocaleString();
+      $('#'+TAB+'-out-net').textContent = `${CUR()} ` + Math.round(netProfit).toLocaleString();
       $('#'+TAB+'-out-roi').textContent = roi + '%';
 
       localStorage.setItem('symbio_border_acreage', acreage);
@@ -4535,7 +4712,7 @@ window.OPS_MODULES['o-cereals'] = (function(){
 
     function exportToCSV(){
       if (entries.length === 0) { alert('No ledger entries to export.'); return; }
-      let csv = 'Date,Category,Expense_Category,Hours,Stream,Details,Quantity,Rate_or_Amount_KES,Total_Value_KES\n';
+      let csv = `Date,Category,Expense_Category,Hours,Stream,Details,Quantity,Rate_or_Amount_${CUR()},Total_Value_${CUR()}\n`;
       entries.forEach(e => {
         let multiplier = e.qty ? e.qty : 1;
         let total = (e.category !== 'Farm Expense') ? multiplier * e.rate : -e.rate;
@@ -4599,7 +4776,7 @@ window.OPS_MODULES['o-cereals'] = (function(){
             e.stream || '-',
             e.desc || '-',
             e.qty || '-',
-            e.rate ? 'KES ' + e.rate : '-'
+            e.rate ? `${CUR()} ` + e.rate : '-'
           ]),
           styles: { fontSize: 8 },
           headStyles: { fillColor: [46, 74, 42] },
@@ -4736,8 +4913,8 @@ window.OPS_MODULES['o-cereals'] = (function(){
         data: {
           labels: labels,
           datasets: [
-            { label: 'Projected Revenue (KES)', data: revenues, backgroundColor: backgroundColors, borderRadius: 6 },
-            { label: 'Estimated Net Profit (KES)', data: netProfits, backgroundColor: leaf, borderRadius: 6 }
+            { label: `Projected Revenue (${CUR()})`, data: revenues, backgroundColor: backgroundColors, borderRadius: 6 },
+            { label: `Estimated Net Profit (${CUR()})`, data: netProfits, backgroundColor: leaf, borderRadius: 6 }
           ]
         },
         options: {
@@ -4783,8 +4960,8 @@ window.OPS_MODULES['o-cereals'] = (function(){
             <td>${item.stream}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty : '-'}</td>
-            <td>${item.rate ? 'KES ' + item.rate.toLocaleString() : '-'}</td>
-            <td class="${cls}">${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + 'KES ' + Math.abs(totalVal).toLocaleString() : 'KES 0'}</td>
+            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
+            <td class="${cls}">${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + '${CUR()} ' + Math.abs(totalVal).toLocaleString() : '${CUR()} 0'}</td>
             <td><button type="button" class="row-remove-btn" data-del-entry="${item.id}">\u2715</button></td>
           </tr>
         `;
@@ -4806,7 +4983,7 @@ window.OPS_MODULES['o-cereals'] = (function(){
             expenseHtml += `
               <tr>
                 <td>${e.eName}${e.hours > 0 ? ' (' + e.hours.toFixed(2).replace(/\.00$/, '') + ' hrs)' : ''}</td>
-                <td>KES ${Math.round(e.amount).toLocaleString()}</td>
+                <td>${CUR()} ${Math.round(e.amount).toLocaleString()}</td>
                 <td>${share}%</td>
               </tr>
             `;
@@ -4814,9 +4991,9 @@ window.OPS_MODULES['o-cereals'] = (function(){
         expenseBody.innerHTML = expenseHtml || '<tr><td colspan="3">No expenses logged yet.</td></tr>';
       }
 
-      $('#'+TAB+'-actual-income').textContent = 'KES ' + Math.round(totalIncome).toLocaleString();
-      $('#'+TAB+'-actual-exp').textContent = 'KES ' + Math.round(totalExp).toLocaleString();
-      $('#'+TAB+'-actual-net').textContent = 'KES ' + Math.round(totalIncome - totalExp).toLocaleString();
+      $('#'+TAB+'-actual-income').textContent = `${CUR()} ` + Math.round(totalIncome).toLocaleString();
+      $('#'+TAB+'-actual-exp').textContent = `${CUR()} ` + Math.round(totalExp).toLocaleString();
+      $('#'+TAB+'-actual-net').textContent = `${CUR()} ` + Math.round(totalIncome - totalExp).toLocaleString();
 
       updateCharts(totalIncome, totalExp);
     }
@@ -4851,7 +5028,7 @@ window.OPS_MODULES['o-cereals'] = (function(){
       const cat = $('#'+TAB+'-entry-category').value;
       const rate = $('#'+TAB+'-entry-rate');
       const isExpense = (cat === 'Farm Expense');
-      rate.placeholder = isExpense ? 'Total Expense (KES)' : 'Unit Rate or Total (KES)';
+      rate.placeholder = isExpense ? `Total Expense (${CUR()})` : `Unit Rate or Total (${CUR()})`;
       $('#'+TAB+'-entry-expense-cat').style.display = isExpense ? '' : 'none';
 
       const isLabour = (isExpense && $('#'+TAB+'-entry-expense-cat').value === 'Labour');
@@ -5033,7 +5210,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
       <div id="o-hort-single-system-controls" class="ops-field-row">
         <div class="ops-field">
           <label><span id="o-hort-label-unit-count">Units Count</span>: <span id="o-hort-val-beds">20</span></label>
-          <input type="range" id="o-hort-beds" min="0" max="200" value="20">
+          <input type="number" id="o-hort-beds" min="0" max="200" value="20">
         </div>
         <div class="ops-field">
           <label>Unit Size / Dimensions</label>
@@ -5042,60 +5219,72 @@ window.OPS_MODULES['o-horticulture'] = (function(){
         </div>
         <div class="ops-field">
           <label>Yield per Unit (<span class="o-hort-unit-label">Kg</span>/Month): <span id="o-hort-val-yield">12.5</span></label>
-          <input type="range" id="o-hort-yield" min="0" max="250" step="0.5" value="12.5">
+          <input type="number" id="o-hort-yield" min="0" max="250" step="0.5" value="12.5">
           <span class="ops-hint">What one unit actually produces for you \u2014 adjust to match your own harvests instead of the system default.</span>
         </div>
         <div class="ops-field">
-          <label>Blended Price / <span class="o-hort-unit-label">Kg</span> (KES): <span id="o-hort-val-price">55</span></label>
-          <input type="range" id="o-hort-price" min="0" max="200" value="55">
+          <label>Blended Price / <span class="o-hort-unit-label">Kg</span> (${CUR()}): <span id="o-hort-val-price">55</span></label>
+          <input type="number" id="o-hort-price" min="0" max="200" value="55">
         </div>
         <div class="ops-field">
-          <label>Base CapEx (KES)</label>
+          <label>Base CapEx (${CUR()})</label>
           <input type="number" id="o-hort-base-capex" value="97000">
         </div>
         <div class="ops-field">
-          <label>Base OpEx/Mo (KES)</label>
+          <label>Base OpEx/Mo (${CUR()})</label>
           <input type="number" id="o-hort-base-opex" value="9200">
         </div>
       </div>
 
-      <div id="o-hort-hybrid-controls" class="ops-field-row">
-        <div class="ops-field">
-          <label>Ground Beds: <span id="o-hort-val-hy-beds">10</span></label>
-          <input type="range" id="o-hort-hy-beds" min="0" max="200" value="10">
-          <span class="ops-hint">Yield/unit (<span class="o-hort-unit-label">Kg</span>/mo): <span id="o-hort-val-hy-yield-beds">12.5</span></span>
-          <input type="range" id="o-hort-hy-yield-beds" min="0" max="250" step="0.5" value="12.5">
+      <div id="o-hort-hybrid-controls">
+        <div class="ops-pair-row">
+          <div class="ops-field">
+            <label>Ground Beds: <span id="o-hort-val-hy-beds">10</span></label>
+            <input type="number" id="o-hort-hy-beds" min="0" max="200" value="10">
+          </div>
+          <div class="ops-field">
+            <label>Yield/unit (<span class="o-hort-unit-label">Kg</span>/mo): <span id="o-hort-val-hy-yield-beds">12.5</span></label>
+            <input type="number" id="o-hort-hy-yield-beds" min="0" max="250" step="0.5" value="12.5">
+          </div>
         </div>
-        <div class="ops-field">
-          <label>Vertical Grow Bags: <span id="o-hort-val-hy-bags">5</span></label>
-          <input type="range" id="o-hort-hy-bags" min="0" max="200" value="5">
-          <span class="ops-hint">Yield/unit (<span class="o-hort-unit-label">Kg</span>/mo): <span id="o-hort-val-hy-yield-bags">11.5</span></span>
-          <input type="range" id="o-hort-hy-yield-bags" min="0" max="250" step="0.5" value="11.5">
+        <div class="ops-pair-row">
+          <div class="ops-field">
+            <label>Vertical Grow Bags: <span id="o-hort-val-hy-bags">5</span></label>
+            <input type="number" id="o-hort-hy-bags" min="0" max="200" value="5">
+          </div>
+          <div class="ops-field">
+            <label>Yield/unit (<span class="o-hort-unit-label">Kg</span>/mo): <span id="o-hort-val-hy-yield-bags">11.5</span></label>
+            <input type="number" id="o-hort-hy-yield-bags" min="0" max="250" step="0.5" value="11.5">
+          </div>
         </div>
-        <div class="ops-field">
-          <label>Cone Gardens: <span id="o-hort-val-hy-cones">5</span></label>
-          <input type="range" id="o-hort-hy-cones" min="0" max="200" value="5">
-          <span class="ops-hint">Yield/unit (<span class="o-hort-unit-label">Kg</span>/mo): <span id="o-hort-val-hy-yield-cones">12.5</span></span>
-          <input type="range" id="o-hort-hy-yield-cones" min="0" max="250" step="0.5" value="12.5">
+        <div class="ops-pair-row">
+          <div class="ops-field">
+            <label>Cone Gardens: <span id="o-hort-val-hy-cones">5</span></label>
+            <input type="number" id="o-hort-hy-cones" min="0" max="200" value="5">
+          </div>
+          <div class="ops-field">
+            <label>Yield/unit (<span class="o-hort-unit-label">Kg</span>/mo): <span id="o-hort-val-hy-yield-cones">12.5</span></label>
+            <input type="number" id="o-hort-hy-yield-cones" min="0" max="250" step="0.5" value="12.5">
+          </div>
         </div>
       </div>
 
       <div class="ops-field-row">
         <div class="ops-field" style="grid-column:1 / -1;">
           <label>Market Sentiment: <span id="o-hort-sentiment-label">Standard Market (0%)</span></label>
-          <input type="range" id="o-hort-sentiment" min="-50" max="50" step="5" value="0">
-          <span class="ops-hint">Slide left for oversupply / market glut / inflation squeeze, right for off-season timing, direct clients, or rising prices. Scales every revenue projection below \u2014 your entered price stays your own reference point.</span>
+          <input type="number" id="o-hort-sentiment" min="-50" max="50" step="5" value="0">
+          <span class="ops-hint">Negative for oversupply / market glut / inflation squeeze, positive for off-season timing, direct clients, or rising prices. Scales every revenue projection below \u2014 your entered price stays your own reference point.</span>
         </div>
       </div>
 
       <div class="ops-summary-grid">
         <div class="ops-summary-card">
           <span class="ops-sum-label">Startup Capital (CapEx)</span>
-          <span class="ops-sum-value" id="o-hort-out-capex">KES 0</span>
+          <span class="ops-sum-value" id="o-hort-out-capex">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Monthly Budget (OpEx)</span>
-          <span class="ops-sum-value" id="o-hort-out-opex">KES 0</span>
+          <span class="ops-sum-value" id="o-hort-out-opex">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Peak Monthly Harvest</span>
@@ -5103,11 +5292,11 @@ window.OPS_MODULES['o-horticulture'] = (function(){
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Effective Price/<span class="o-hort-unit-label">Kg</span> (Market-Adjusted)</span>
-          <span class="ops-sum-value" id="o-hort-out-effective-price">KES 0</span>
+          <span class="ops-sum-value" id="o-hort-out-effective-price">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Peak Monthly Revenue</span>
-          <span class="ops-sum-value ops-sum-profit" id="o-hort-calc-income-peak">KES 0</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-hort-calc-income-peak">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Break-Even Threshold</span>
@@ -5119,11 +5308,11 @@ window.OPS_MODULES['o-horticulture'] = (function(){
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Year 1 Net Profit</span>
-          <span class="ops-sum-value" id="o-hort-out-net">KES 0</span>
+          <span class="ops-sum-value" id="o-hort-out-net">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Year 3 Cumulative Net Profit</span>
-          <span class="ops-sum-value" id="o-hort-out-net-3yr">KES 0</span>
+          <span class="ops-sum-value" id="o-hort-out-net-3yr">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Est. Payback Period</span>
@@ -5153,7 +5342,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
             <option value="Other">Other</option>
           </select>
           <input type="number" id="o-hort-entry-hours" step="0.25" min="0" placeholder="Hours" style="display:none; width:80px;" title="Time spent on this task">
-          <input type="number" id="o-hort-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (KES)" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
+          <input type="number" id="o-hort-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (${CUR()})" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
           <select id="o-hort-entry-system">
             <option value="Ground Bed">Ground Bed</option>
             <option value="Vertical Bag">Vertical Bag</option>
@@ -5209,15 +5398,15 @@ window.OPS_MODULES['o-horticulture'] = (function(){
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Revenue</span>
-          <span class="ops-sum-value ops-sum-profit" id="o-hort-actual-income">KES 0</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-hort-actual-income">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Expenses</span>
-          <span class="ops-sum-value ops-sum-loss" id="o-hort-actual-exp">KES 0</span>
+          <span class="ops-sum-value ops-sum-loss" id="o-hort-actual-exp">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Net Cashflow</span>
-          <span class="ops-sum-value" id="o-hort-actual-net">KES 0</span>
+          <span class="ops-sum-value" id="o-hort-actual-net">${CUR()} 0</span>
         </div>
       </div>
 
@@ -5441,7 +5630,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
       const cat = entryCategory.value;
       entryQty.disabled = (cat === 'Expense' || cat === 'General Activity');
       const unit = produceUnit.value || 'Kg';
-      entryRate.placeholder = cat === 'Expense' ? 'Amount (KES)' : 'Rate (KES/' + unit.toLowerCase() + ')';
+      entryRate.placeholder = cat === 'Expense' ? `Amount (${CUR()})` : `Rate (${CUR()}/` + unit.toLowerCase() + ')';
       entryExpenseCat.style.display = (cat === 'Expense') ? '' : 'none';
 
       const isLabour = (cat === 'Expense' && entryExpenseCat.value === 'Labour');
@@ -5492,7 +5681,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
       valPrice.innerText = priceVal;
       valYield.innerText = yieldSlider.value;
       sentimentLabel.innerText = getSentimentLabel(sentimentPct);
-      outEffectivePrice.innerText = 'KES ' + Math.round(effectivePrice).toLocaleString();
+      outEffectivePrice.innerText = `${CUR()} ` + Math.round(effectivePrice).toLocaleString();
 
       let peakKg = 0;
       let estSeedlings = 0;
@@ -5529,13 +5718,13 @@ window.OPS_MODULES['o-horticulture'] = (function(){
 
       const unit = produceUnit.value || 'Kg';
       calcKgPeak.innerText = Math.round(peakKg).toLocaleString() + ' ' + unit;
-      calcIncomePeak.innerText = 'KES ' + Math.round(peakMonthlyRev).toLocaleString();
-      outCapex.innerText = 'KES ' + scaledCapex.toLocaleString();
-      outOpex.innerText = 'KES ' + scaledOpex.toLocaleString();
+      calcIncomePeak.innerText = `${CUR()} ` + Math.round(peakMonthlyRev).toLocaleString();
+      outCapex.innerText = `${CUR()} ` + scaledCapex.toLocaleString();
+      outOpex.innerText = `${CUR()} ` + scaledOpex.toLocaleString();
       outBreakevenKg.innerText = breakEvenKg.toLocaleString() + ' ' + unit + ' / Mo';
       outSeedlings.innerText = estSeedlings.toLocaleString() + ' Seedlings';
-      outNet.innerText = 'KES ' + Math.round(estAnnualNet).toLocaleString();
-      outNet3yr.innerText = 'KES ' + Math.round(est3YrNet).toLocaleString();
+      outNet.innerText = `${CUR()} ` + Math.round(estAnnualNet).toLocaleString();
+      outNet3yr.innerText = `${CUR()} ` + Math.round(est3YrNet).toLocaleString();
       outBreakeven.innerText = paybackMonths !== 'N/A' ? paybackMonths + ' Months' : 'N/A';
 
       renderLedger();
@@ -5581,7 +5770,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
     function exportToCSV(){
       if (entries.length === 0) { alert('No ledger entries to export.'); return; }
       const unit = produceUnit.value || 'Kg';
-      let csv = `Date,Category,Expense_Category,Hours,System,Crop,Details,Quantity_${unit},Rate_or_Amount_KES,Total_Value_KES\n`;
+      let csv = `Date,Category,Expense_Category,Hours,System,Crop,Details,Quantity_${unit},Rate_or_Amount_${CUR()},Total_Value_${CUR()}\n`;
       entries.forEach(e => {
         let total = e.category === 'Harvest & Sale' ? e.qty * e.rate : (e.category === 'Expense' ? -e.rate : 0);
         csv += `"${e.date}","${e.category}","${e.expenseCat || ''}",${e.hours || 0},"${e.system || 'Ground Bed'}","${e.crop}","${e.desc.replace(/"/g, '""')}",${e.qty || 0},${e.rate || 0},${total}\n`;
@@ -5654,7 +5843,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
             e.crop || '-',
             e.desc || '-',
             e.qty ? e.qty + ' ' + unit : '-',
-            e.rate ? 'KES ' + e.rate : '-'
+            e.rate ? `${CUR()} ` + e.rate : '-'
           ]),
           styles: { fontSize: 8 },
           headStyles: { fillColor: [46, 74, 42] },
@@ -5860,9 +6049,9 @@ window.OPS_MODULES['o-horticulture'] = (function(){
         data: {
           labels: ['Actual Financials'],
           datasets: [
-            { label: 'Revenue (KES)', data: [income], backgroundColor: gold, borderRadius: 6 },
-            { label: 'Expenses (KES)', data: [expense], backgroundColor: rust, borderRadius: 6 },
-            { label: 'Net Cashflow (KES)', data: [income - expense], backgroundColor: leaf, borderRadius: 6 }
+            { label: `Revenue (${CUR()})`, data: [income], backgroundColor: gold, borderRadius: 6 },
+            { label: `Expenses (${CUR()})`, data: [expense], backgroundColor: rust, borderRadius: 6 },
+            { label: `Net Cashflow (${CUR()})`, data: [income - expense], backgroundColor: leaf, borderRadius: 6 }
           ]
         },
         options: {
@@ -5968,7 +6157,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
           }
 
           const valClass = totalVal > 0 ? 'ops-sum-profit' : (totalVal < 0 ? 'ops-sum-loss' : '');
-          const valText = totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + 'KES ' + Math.abs(totalVal).toLocaleString() : '-';
+          const valText = totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + `${CUR()} ` + Math.abs(totalVal).toLocaleString() : '-';
 
           const tr = document.createElement('tr');
           tr.innerHTML = `
@@ -5978,7 +6167,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
             <td>${crop}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty + ' ' + unit : '-'}</td>
-            <td>${item.rate ? (item.category === 'Expense' ? 'KES ' : 'KES/' + unitLower + ' ') + item.rate : '-'}</td>
+            <td>${item.rate ? (item.category === 'Expense' ? '${CUR()} ' : '${CUR()}/' + unitLower + ' ') + item.rate : '-'}</td>
             <td class="${valClass}">${valText}</td>
             <td class="row-remove-cell"></td>
           `;
@@ -6003,7 +6192,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
             <tr>
               <td>${s.sName}</td>
               <td>${s.kg.toFixed(1)} ${unit}</td>
-              <td>KES ${Math.round(s.revenue).toLocaleString()}</td>
+              <td>${CUR()} ${Math.round(s.revenue).toLocaleString()}</td>
               <td>${share}%</td>
             </tr>
           `;
@@ -6019,7 +6208,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
             <tr>
               <td>${c.cName}</td>
               <td>${c.kg.toFixed(1)} ${unit}</td>
-              <td>KES ${Math.round(c.revenue).toLocaleString()}</td>
+              <td>${CUR()} ${Math.round(c.revenue).toLocaleString()}</td>
               <td>${share}%</td>
             </tr>
           `;
@@ -6034,7 +6223,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
           expenseHtml += `
             <tr>
               <td>${e.eName}${e.hours > 0 ? ' (' + e.hours.toFixed(2).replace(/\.00$/, '') + ' hrs)' : ''}</td>
-              <td>KES ${Math.round(e.amount).toLocaleString()}</td>
+              <td>${CUR()} ${Math.round(e.amount).toLocaleString()}</td>
               <td>${share}%</td>
             </tr>
           `;
@@ -6045,9 +6234,9 @@ window.OPS_MODULES['o-horticulture'] = (function(){
       expenseSummaryBody.innerHTML = expenseHtml || '<tr><td colspan="3">No expenses logged yet.</td></tr>';
 
       actualKg.innerText = totalKg.toFixed(1) + ' ' + unit;
-      actualIncome.innerText = 'KES ' + Math.round(totalIncome).toLocaleString();
-      actualExp.innerText = 'KES ' + Math.round(totalExp).toLocaleString();
-      actualNet.innerText = 'KES ' + Math.round(totalIncome - totalExp).toLocaleString();
+      actualIncome.innerText = `${CUR()} ` + Math.round(totalIncome).toLocaleString();
+      actualExp.innerText = `${CUR()} ` + Math.round(totalExp).toLocaleString();
+      actualNet.innerText = `${CUR()} ` + Math.round(totalIncome - totalExp).toLocaleString();
 
       updateCharts(totalIncome, totalExp, systemStats, cropStats);
     }
@@ -6239,25 +6428,25 @@ window.OPS_MODULES['o-hatchery'] = (function(){
       <h3 class="ops-section-title">Pricing & Operational Cost Structure</h3>
       <div class="ops-field-row">
         <div class="ops-field">
-          <label for="o-hatchery-price-chick">Day-Old Chick (DOC) Price (KES)</label>
+          <label for="o-hatchery-price-chick">Day-Old Chick (DOC) Price (${CUR()})</label>
           <input type="number" id="o-hatchery-price-chick" value="130">
         </div>
         <div class="ops-field">
-          <label for="o-hatchery-price-purchased-egg">Purchased Hatching Egg Cost (KES)</label>
+          <label for="o-hatchery-price-purchased-egg">Purchased Hatching Egg Cost (${CUR()})</label>
           <input type="number" id="o-hatchery-price-purchased-egg" value="35">
         </div>
         <div class="ops-field">
-          <label for="o-hatchery-price-spent-bird">Spent Breeder Carcass Price (KES)</label>
+          <label for="o-hatchery-price-spent-bird">Spent Breeder Carcass Price (${CUR()})</label>
           <input type="number" id="o-hatchery-price-spent-bird" value="650">
         </div>
         <div class="ops-field">
-          <label for="o-hatchery-base-capex">Base Hatchery CapEx (KES)</label>
+          <label for="o-hatchery-base-capex">Base Hatchery CapEx (${CUR()})</label>
           <input type="number" id="o-hatchery-base-capex" value="200000">
         </div>
       </div>
       <div class="ops-field-row">
         <div class="ops-field">
-          <label for="o-hatchery-base-opex">Annual Fixed OpEx / Utilities / Power (KES)</label>
+          <label for="o-hatchery-base-opex">Annual Fixed OpEx / Utilities / Power (${CUR()})</label>
           <input type="number" id="o-hatchery-base-opex" value="90000">
         </div>
         <div class="ops-field">
@@ -6270,23 +6459,23 @@ window.OPS_MODULES['o-hatchery'] = (function(){
       <div class="ops-summary-grid">
         <div class="ops-summary-card">
           <span class="ops-sum-label">Startup Investment (CapEx)</span>
-          <span class="ops-sum-value" id="o-hatchery-out-capex">KES 0</span>
+          <span class="ops-sum-value" id="o-hatchery-out-capex">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Annual Running Cost (OpEx + Eggs)</span>
-          <span class="ops-sum-value" id="o-hatchery-out-opex">KES 0</span>
+          <span class="ops-sum-value" id="o-hatchery-out-opex">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Annual Gross Revenue</span>
-          <span class="ops-sum-value ops-sum-profit" id="o-hatchery-out-annual-rev">KES 0</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-hatchery-out-annual-rev">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Year 1 Net Profit</span>
-          <span class="ops-sum-value ops-sum-profit" id="o-hatchery-out-net">KES 0</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-hatchery-out-net">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Year 3 Cumulative Net Profit</span>
-          <span class="ops-sum-value ops-sum-profit" id="o-hatchery-out-net-3yr">KES 0</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-hatchery-out-net-3yr">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Est. Payback Period</span>
@@ -6314,7 +6503,7 @@ window.OPS_MODULES['o-hatchery'] = (function(){
             <option value="Other">Other</option>
           </select>
           <input type="number" id="o-hatchery-entry-hours" step="0.25" min="0" placeholder="Hours" style="display:none; width:80px;" title="Time spent on this task">
-          <input type="number" id="o-hatchery-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (KES)" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
+          <input type="number" id="o-hatchery-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (${CUR()})" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
           <select id="o-hatchery-entry-stream">
             <option value="Stream 1: DOC Sales">Stream 1: DOC Sales</option>
             <option value="Stream 2: Egg Purchases & Power">Stream 2: Egg Purchases & Power</option>
@@ -6322,7 +6511,7 @@ window.OPS_MODULES['o-hatchery'] = (function(){
           </select>
           <input type="text" id="o-hatchery-entry-desc" placeholder="Details (e.g., Batch #4 Hatch - 380 chicks)" required>
           <input type="number" id="o-hatchery-entry-qty" step="1" placeholder="Quantity / Head">
-          <input type="number" id="o-hatchery-entry-rate" step="1" placeholder="Unit Rate or Total (KES)">
+          <input type="number" id="o-hatchery-entry-rate" step="1" placeholder="Unit Rate or Total (${CUR()})">
           <button type="submit" class="planner-btn">Save Entry</button>
         </div>
       </form>
@@ -6354,15 +6543,15 @@ window.OPS_MODULES['o-hatchery'] = (function(){
       <div class="ops-summary-grid">
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Revenue</span>
-          <span class="ops-sum-value ops-sum-profit" id="o-hatchery-actual-income">KES 0</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-hatchery-actual-income">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Expenses</span>
-          <span class="ops-sum-value ops-sum-loss" id="o-hatchery-actual-exp">KES 0</span>
+          <span class="ops-sum-value ops-sum-loss" id="o-hatchery-actual-exp">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Net Cashflow</span>
-          <span class="ops-sum-value" id="o-hatchery-actual-net">KES 0</span>
+          <span class="ops-sum-value" id="o-hatchery-actual-net">${CUR()} 0</span>
         </div>
       </div>
 
@@ -6455,7 +6644,7 @@ window.OPS_MODULES['o-hatchery'] = (function(){
     function adjustFields(){
       const cat = entryCategory.value;
       entryQty.disabled = (cat === 'Hatchery Expense');
-      entryRate.placeholder = cat === 'Hatchery Expense' ? 'Total Expense / Egg Purchase (KES)' : 'Unit Rate or Total (KES)';
+      entryRate.placeholder = cat === 'Hatchery Expense' ? `Total Expense / Egg Purchase (${CUR()})` : `Unit Rate or Total (${CUR()})`;
       entryExpenseCat.style.display = (cat === 'Hatchery Expense') ? '' : 'none';
 
       const isLabour = (cat === 'Hatchery Expense' && entryExpenseCat.value === 'Labour');
@@ -6519,11 +6708,11 @@ window.OPS_MODULES['o-hatchery'] = (function(){
       const netMonthly = (totalRev - opex) / 12;
       const payback = netMonthly > 0 ? (capex / netMonthly).toFixed(1) : 'N/A';
 
-      outCapex.innerText = 'KES ' + capex.toLocaleString();
-      outOpex.innerText = 'KES ' + opex.toLocaleString();
-      outAnnualRev.innerText = 'KES ' + Math.round(totalRev).toLocaleString();
-      outNet.innerText = 'KES ' + Math.round(netYear1).toLocaleString();
-      outNet3yr.innerText = 'KES ' + Math.round(net3Yr).toLocaleString();
+      outCapex.innerText = `${CUR()} ` + capex.toLocaleString();
+      outOpex.innerText = `${CUR()} ` + opex.toLocaleString();
+      outAnnualRev.innerText = `${CUR()} ` + Math.round(totalRev).toLocaleString();
+      outNet.innerText = `${CUR()} ` + Math.round(netYear1).toLocaleString();
+      outNet3yr.innerText = `${CUR()} ` + Math.round(net3Yr).toLocaleString();
       outPayback.innerText = payback !== 'N/A' ? payback + ' Months' : 'N/A';
 
       localStorage.setItem(LS_HENS, hens);
@@ -6661,7 +6850,7 @@ window.OPS_MODULES['o-hatchery'] = (function(){
 
     function exportToCSV(){
       if (entries.length === 0) { alert('No ledger entries to export.'); return; }
-      let csv = 'Date,Category,Expense_Category,Hours,Stream,Details,Quantity,Rate_or_Amount_KES,Total_Value_KES\n';
+      let csv = `Date,Category,Expense_Category,Hours,Stream,Details,Quantity,Rate_or_Amount_${CUR()},Total_Value_${CUR()}\n`;
       entries.forEach(e => {
         let total = e.category !== 'Hatchery Expense' ? e.qty * e.rate : -e.rate;
         csv += `"${e.date}","${e.category}","${e.expenseCat || ''}",${e.hours || 0},"${e.stream}","${e.desc.replace(/"/g, '""')}",${e.qty || 0},${e.rate || 0},${total}\n`;
@@ -6728,7 +6917,7 @@ window.OPS_MODULES['o-hatchery'] = (function(){
             e.stream || '-',
             e.desc || '-',
             e.qty || '-',
-            e.rate ? 'KES ' + e.rate : '-'
+            e.rate ? `${CUR()} ` + e.rate : '-'
           ]),
           styles: { fontSize: 8 },
           headStyles: { fillColor: [46, 74, 42] },
@@ -6864,14 +7053,14 @@ window.OPS_MODULES['o-hatchery'] = (function(){
 
           const tr = document.createElement('tr');
           const valClass = totalVal > 0 ? 'ops-sum-profit' : (totalVal < 0 ? 'ops-sum-loss' : '');
-          const valText = totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + 'KES ' + Math.abs(totalVal).toLocaleString() : '-';
+          const valText = totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + `${CUR()} ` + Math.abs(totalVal).toLocaleString() : '-';
           tr.innerHTML = `
             <td>${item.date}</td>
             <td>${item.category}${item.category === 'Hatchery Expense' && item.expenseCat ? ' \u2014 ' + item.expenseCat : ''}${item.hours ? ' (' + item.hours + ' hrs)' : ''}</td>
             <td>${item.stream}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty : '-'}</td>
-            <td>${item.rate ? 'KES ' + item.rate.toLocaleString() : '-'}</td>
+            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
             <td class="${valClass}">${valText}</td>
             <td class="row-remove-cell"></td>
           `;
@@ -6896,7 +7085,7 @@ window.OPS_MODULES['o-hatchery'] = (function(){
             expenseHtml += `
               <tr>
                 <td>${e.eName}${e.hours > 0 ? ' (' + e.hours.toFixed(2).replace(/\.00$/, '') + ' hrs)' : ''}</td>
-                <td>KES ${Math.round(e.amount).toLocaleString()}</td>
+                <td>${CUR()} ${Math.round(e.amount).toLocaleString()}</td>
                 <td>${share}%</td>
               </tr>
             `;
@@ -6904,9 +7093,9 @@ window.OPS_MODULES['o-hatchery'] = (function(){
         expenseBody.innerHTML = expenseHtml || '<tr><td colspan="3">No expenses logged yet.</td></tr>';
       }
 
-      actualIncome.innerText = 'KES ' + Math.round(totalIncome).toLocaleString();
-      actualExp.innerText = 'KES ' + Math.round(totalExp).toLocaleString();
-      actualNet.innerText = 'KES ' + Math.round(totalIncome - totalExp).toLocaleString();
+      actualIncome.innerText = `${CUR()} ` + Math.round(totalIncome).toLocaleString();
+      actualExp.innerText = `${CUR()} ` + Math.round(totalExp).toLocaleString();
+      actualNet.innerText = `${CUR()} ` + Math.round(totalIncome - totalExp).toLocaleString();
 
       updateCharts(streamStats);
     }
@@ -7053,11 +7242,11 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
           <input type="number" id="o-kienyeji-price-fertile-egg" value="40">
         </div>
         <div class="ops-field">
-          <label for="o-kienyeji-price-meat-bird">Mature Bird / Carcass (KES)</label>
+          <label for="o-kienyeji-price-meat-bird">Mature Bird / Carcass (${CUR()})</label>
           <input type="number" id="o-kienyeji-price-meat-bird" value="800">
         </div>
         <div class="ops-field">
-          <label for="o-kienyeji-price-manure">Treated Manure Bag (KES)</label>
+          <label for="o-kienyeji-price-manure">Treated Manure Bag (${CUR()})</label>
           <input type="number" id="o-kienyeji-price-manure" value="250">
         </div>
         <div class="ops-field">
@@ -7067,11 +7256,11 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
       </div>
       <div class="ops-field-row">
         <div class="ops-field">
-          <label for="o-kienyeji-base-capex">Base CapEx / Startup Assets (KES)</label>
+          <label for="o-kienyeji-base-capex">Base CapEx / Startup Assets (${CUR()})</label>
           <input type="number" id="o-kienyeji-base-capex" value="85000">
         </div>
         <div class="ops-field">
-          <label for="o-kienyeji-base-opex">Annual Running Costs / OpEx (KES)</label>
+          <label for="o-kienyeji-base-opex">Annual Running Costs / OpEx (${CUR()})</label>
           <input type="number" id="o-kienyeji-base-opex" value="60000">
         </div>
       </div>
@@ -7080,23 +7269,23 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
     <div class="ops-summary-grid">
       <div class="ops-summary-card">
         <span class="ops-sum-label">Startup Capital (CapEx)</span>
-        <span class="ops-sum-value" id="o-kienyeji-out-capex">KES 0</span>
+        <span class="ops-sum-value" id="o-kienyeji-out-capex">${CUR()} 0</span>
       </div>
       <div class="ops-summary-card">
         <span class="ops-sum-label">Annual Running Cost (OpEx)</span>
-        <span class="ops-sum-value" id="o-kienyeji-out-opex">KES 0</span>
+        <span class="ops-sum-value" id="o-kienyeji-out-opex">${CUR()} 0</span>
       </div>
       <div class="ops-summary-card">
         <span class="ops-sum-label">Annual Gross Revenue</span>
-        <span class="ops-sum-value ops-sum-profit" id="o-kienyeji-out-annual-rev">KES 0</span>
+        <span class="ops-sum-value ops-sum-profit" id="o-kienyeji-out-annual-rev">${CUR()} 0</span>
       </div>
       <div class="ops-summary-card">
         <span class="ops-sum-label">Year 1 Net Profit</span>
-        <span class="ops-sum-value ops-sum-profit" id="o-kienyeji-out-net">KES 0</span>
+        <span class="ops-sum-value ops-sum-profit" id="o-kienyeji-out-net">${CUR()} 0</span>
       </div>
       <div class="ops-summary-card">
         <span class="ops-sum-label">Year 3 Cumulative Net Profit</span>
-        <span class="ops-sum-value ops-sum-profit" id="o-kienyeji-out-net-3yr">KES 0</span>
+        <span class="ops-sum-value ops-sum-profit" id="o-kienyeji-out-net-3yr">${CUR()} 0</span>
       </div>
       <div class="ops-summary-card">
         <span class="ops-sum-label">Est. Payback Period</span>
@@ -7125,7 +7314,7 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
           <option value="Other">Other</option>
         </select>
         <input type="number" id="o-kienyeji-entry-hours" step="0.25" min="0" placeholder="Hours" style="display:none; width:80px;" title="Time spent on this task">
-        <input type="number" id="o-kienyeji-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (KES)" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
+        <input type="number" id="o-kienyeji-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (${CUR()})" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
         <select id="o-kienyeji-entry-stream">
           <option value="Stream 1: Table Eggs">Stream 1: Table Eggs</option>
           <option value="Stream 2: Hatching Eggs">Stream 2: Hatching Eggs</option>
@@ -7135,7 +7324,7 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
         </select>
         <input type="text" id="o-kienyeji-entry-desc" placeholder="Details (e.g., Sold 5 trays)" required>
         <input type="number" id="o-kienyeji-entry-qty" step="1" placeholder="Quantity / Units">
-        <input type="number" id="o-kienyeji-entry-rate" step="1" placeholder="Rate or Total (KES)">
+        <input type="number" id="o-kienyeji-entry-rate" step="1" placeholder="Rate or Total (${CUR()})">
         <button type="submit" class="planner-btn">Save Entry</button>
       </form>
     </div>
@@ -7172,15 +7361,15 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
         <div class="ops-summary-grid">
           <div class="ops-summary-card">
             <span class="ops-sum-label">Actual Revenue</span>
-            <span class="ops-sum-value ops-sum-profit" id="o-kienyeji-actual-income">KES 0</span>
+            <span class="ops-sum-value ops-sum-profit" id="o-kienyeji-actual-income">${CUR()} 0</span>
           </div>
           <div class="ops-summary-card">
             <span class="ops-sum-label">Actual Expenses</span>
-            <span class="ops-sum-value ops-sum-loss" id="o-kienyeji-actual-exp">KES 0</span>
+            <span class="ops-sum-value ops-sum-loss" id="o-kienyeji-actual-exp">${CUR()} 0</span>
           </div>
           <div class="ops-summary-card">
             <span class="ops-sum-label">Net Cashflow</span>
-            <span class="ops-sum-value" id="o-kienyeji-actual-net">KES 0</span>
+            <span class="ops-sum-value" id="o-kienyeji-actual-net">${CUR()} 0</span>
           </div>
         </div>
         <h3 class="ops-section-title">Expense Breakdown \u2014 Where Your Money Goes</h3>
@@ -7265,11 +7454,11 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
       const netMonthly = (totalRev - opex) / 12;
       const payback = netMonthly > 0 ? (capex / netMonthly).toFixed(1) : 'N/A';
 
-      $('#o-kienyeji-out-capex').innerText = 'KES ' + capex.toLocaleString();
-      $('#o-kienyeji-out-opex').innerText = 'KES ' + opex.toLocaleString();
-      $('#o-kienyeji-out-annual-rev').innerText = 'KES ' + Math.round(totalRev).toLocaleString();
-      $('#o-kienyeji-out-net').innerText = 'KES ' + Math.round(netYear1).toLocaleString();
-      $('#o-kienyeji-out-net-3yr').innerText = 'KES ' + Math.round(net3Yr).toLocaleString();
+      $('#o-kienyeji-out-capex').innerText = `${CUR()} ` + capex.toLocaleString();
+      $('#o-kienyeji-out-opex').innerText = `${CUR()} ` + opex.toLocaleString();
+      $('#o-kienyeji-out-annual-rev').innerText = `${CUR()} ` + Math.round(totalRev).toLocaleString();
+      $('#o-kienyeji-out-net').innerText = `${CUR()} ` + Math.round(netYear1).toLocaleString();
+      $('#o-kienyeji-out-net-3yr').innerText = `${CUR()} ` + Math.round(net3Yr).toLocaleString();
       $('#o-kienyeji-out-payback').innerText = payback !== 'N/A' ? payback + ' Months' : 'N/A';
 
       localStorage.setItem('symbio_poultry_layers', layers);
@@ -7288,7 +7477,7 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
       const qty = $('#o-kienyeji-entry-qty');
       const rate = $('#o-kienyeji-entry-rate');
       qty.disabled = (cat === 'Poultry Expense');
-      rate.placeholder = cat === 'Poultry Expense' ? 'Total Expense (KES)' : 'Unit Rate or Total (KES)';
+      rate.placeholder = cat === 'Poultry Expense' ? `Total Expense (${CUR()})` : `Unit Rate or Total (${CUR()})`;
       $('#o-kienyeji-entry-expense-cat').style.display = (cat === 'Poultry Expense') ? '' : 'none';
 
       const isLabour = (cat === 'Poultry Expense' && $('#o-kienyeji-entry-expense-cat').value === 'Labour');
@@ -7424,7 +7613,7 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
 
     function exportToCSV(){
       if (entries.length === 0) { alert("No ledger entries to export."); return; }
-      let csv = "Date,Category,Expense_Category,Hours,Stream,Details,Quantity,Rate_or_Amount_KES,Total_Value_KES\n";
+      let csv = `Date,Category,Expense_Category,Hours,Stream,Details,Quantity,Rate_or_Amount_${CUR()},Total_Value_${CUR()}\n`;
       entries.forEach(e => {
         let total = e.category !== 'Poultry Expense' ? e.qty * e.rate : -e.rate;
         csv += `"${e.date}","${e.category}","${e.expenseCat || ''}",${e.hours || 0},"${e.stream}","${e.desc.replace(/"/g, '""')}",${e.qty || 0},${e.rate || 0},${total}\n`;
@@ -7490,7 +7679,7 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
             e.stream || '-',
             e.desc || '-',
             e.qty || '-',
-            e.rate ? 'KES ' + e.rate : '-'
+            e.rate ? `${CUR()} ` + e.rate : '-'
           ]),
           styles: { fontSize: 8 },
           headStyles: { fillColor: [46, 74, 42] },
@@ -7623,9 +7812,9 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
             <td>${item.stream}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty : '-'}</td>
-            <td>${item.rate ? 'KES ' + item.rate.toLocaleString() : '-'}</td>
+            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
             <td class="${totalVal > 0 ? 'ops-sum-profit' : totalVal < 0 ? 'ops-sum-loss' : ''}">
-              ${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + 'KES ' + Math.abs(totalVal).toLocaleString() : '-'}
+              ${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + '${CUR()} ' + Math.abs(totalVal).toLocaleString() : '-'}
             </td>
             <td><button type="button" class="row-remove-btn" data-id="${item.id}">\u2715</button></td>
           </tr>
@@ -7649,7 +7838,7 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
             expenseHtml += `
               <tr>
                 <td>${e.eName}${e.hours > 0 ? ' (' + e.hours.toFixed(2).replace(/\.00$/, '') + ' hrs)' : ''}</td>
-                <td>KES ${Math.round(e.amount).toLocaleString()}</td>
+                <td>${CUR()} ${Math.round(e.amount).toLocaleString()}</td>
                 <td>${share}%</td>
               </tr>
             `;
@@ -7657,9 +7846,9 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
         expenseBody.innerHTML = expenseHtml || '<tr><td colspan="3">No expenses logged yet.</td></tr>';
       }
 
-      $('#o-kienyeji-actual-income').innerText = 'KES ' + Math.round(totalIncome).toLocaleString();
-      $('#o-kienyeji-actual-exp').innerText = 'KES ' + Math.round(totalExp).toLocaleString();
-      $('#o-kienyeji-actual-net').innerText = 'KES ' + Math.round(totalIncome - totalExp).toLocaleString();
+      $('#o-kienyeji-actual-income').innerText = `${CUR()} ` + Math.round(totalIncome).toLocaleString();
+      $('#o-kienyeji-actual-exp').innerText = `${CUR()} ` + Math.round(totalExp).toLocaleString();
+      $('#o-kienyeji-actual-net').innerText = `${CUR()} ` + Math.round(totalIncome - totalExp).toLocaleString();
 
       updateCharts(streamStats, totalExp);
     }
@@ -7818,33 +8007,33 @@ window.OPS_MODULES['o-pigs'] = (function(){
       <div class="ops-section-title">Dynamic Pricing &amp; Operating Costs</div>
       <div class="ops-field-row">
         <div class="ops-field">
-          <label>Piglet Price (KES)</label>
+          <label>Piglet Price (${CUR()})</label>
           <input type="number" id="o-pigs-price-piglet" value="5000">
         </div>
         <div class="ops-field">
-          <label>Pregnant Sow Price (KES)</label>
+          <label>Pregnant Sow Price (${CUR()})</label>
           <input type="number" id="o-pigs-price-sow" value="45000">
         </div>
         <div class="ops-field">
-          <label>Carcass Rate / KG (KES)</label>
+          <label>Carcass Rate / KG (${CUR()})</label>
           <input type="number" id="o-pigs-price-meat" value="250">
         </div>
         <div class="ops-field">
-          <label>Stud Service Fee (KES)</label>
+          <label>Stud Service Fee (${CUR()})</label>
           <input type="number" id="o-pigs-price-stud" value="1500">
         </div>
         <div class="ops-field">
-          <label>Compost Bag Price (KES)</label>
+          <label>Compost Bag Price (${CUR()})</label>
           <input type="number" id="o-pigs-price-compost" value="500">
         </div>
       </div>
       <div class="ops-field-row">
         <div class="ops-field">
-          <label>Base CapEx / Startup Assets (KES)</label>
+          <label>Base CapEx / Startup Assets (${CUR()})</label>
           <input type="number" id="o-pigs-base-capex" value="240000">
         </div>
         <div class="ops-field">
-          <label>Annual Running Costs / OpEx (KES)</label>
+          <label>Annual Running Costs / OpEx (${CUR()})</label>
           <input type="number" id="o-pigs-base-opex" value="130000">
         </div>
       </div>
@@ -7853,23 +8042,23 @@ window.OPS_MODULES['o-pigs'] = (function(){
       <div class="ops-summary-grid">
         <div class="ops-summary-card">
           <div class="ops-sum-label">Startup Capital (CapEx)</div>
-          <div class="ops-sum-value" id="o-pigs-out-capex">KES 0</div>
+          <div class="ops-sum-value" id="o-pigs-out-capex">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Annual Running Cost (OpEx)</div>
-          <div class="ops-sum-value" id="o-pigs-out-opex">KES 0</div>
+          <div class="ops-sum-value" id="o-pigs-out-opex">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Annual Gross Revenue</div>
-          <div class="ops-sum-value ops-sum-profit" id="o-pigs-out-annual-rev">KES 0</div>
+          <div class="ops-sum-value ops-sum-profit" id="o-pigs-out-annual-rev">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Year 1 Net Profit</div>
-          <div class="ops-sum-value ops-sum-profit" id="o-pigs-out-net">KES 0</div>
+          <div class="ops-sum-value ops-sum-profit" id="o-pigs-out-net">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Year 3 Cumulative Net Profit</div>
-          <div class="ops-sum-value ops-sum-profit" id="o-pigs-out-net-3yr">KES 0</div>
+          <div class="ops-sum-value ops-sum-profit" id="o-pigs-out-net-3yr">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Est. Payback Period</div>
@@ -7899,7 +8088,7 @@ window.OPS_MODULES['o-pigs'] = (function(){
           <option value="Other">Other</option>
         </select>
         <input type="number" id="o-pigs-entry-hours" step="0.25" min="0" placeholder="Hours" style="display:none; width:80px;" title="Time spent on this task">
-        <input type="number" id="o-pigs-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (KES)" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
+        <input type="number" id="o-pigs-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (${CUR()})" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
         <select id="o-pigs-entry-stream">
           <option value="Line 1: Piglet Factory">Line 1: Piglet Factory</option>
           <option value="Line 2: Premium Sows">Line 2: Premium Sows</option>
@@ -7910,7 +8099,7 @@ window.OPS_MODULES['o-pigs'] = (function(){
         </select>
         <input type="text" id="o-pigs-entry-desc" placeholder="Details (e.g., Service for outside farmer)" required>
         <input type="number" id="o-pigs-entry-qty" step="1" placeholder="Quantity / Head (Opt)">
-        <input type="number" id="o-pigs-entry-rate" step="1" placeholder="Rate or Total (KES)">
+        <input type="number" id="o-pigs-entry-rate" step="1" placeholder="Rate or Total (${CUR()})">
         <button type="submit" class="planner-btn">Save Entry</button>
       </form>
 
@@ -7942,15 +8131,15 @@ window.OPS_MODULES['o-pigs'] = (function(){
       <div class="ops-summary-grid">
         <div class="ops-summary-card">
           <div class="ops-sum-label">Actual Revenue</div>
-          <div class="ops-sum-value ops-sum-profit" id="o-pigs-actual-income">KES 0</div>
+          <div class="ops-sum-value ops-sum-profit" id="o-pigs-actual-income">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Actual Expenses</div>
-          <div class="ops-sum-value ops-sum-loss" id="o-pigs-actual-exp">KES 0</div>
+          <div class="ops-sum-value ops-sum-loss" id="o-pigs-actual-exp">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Net Cashflow</div>
-          <div class="ops-sum-value" id="o-pigs-actual-net">KES 0</div>
+          <div class="ops-sum-value" id="o-pigs-actual-net">${CUR()} 0</div>
         </div>
       </div>
 
@@ -8017,7 +8206,7 @@ window.OPS_MODULES['o-pigs'] = (function(){
       const qty = $('#o-pigs-entry-qty');
       const rate = $('#o-pigs-entry-rate');
       qty.disabled = (cat === 'Refinery Expense');
-      rate.placeholder = cat === 'Refinery Expense' ? 'Total Expense (KES)' : 'Unit Rate or Total (KES)';
+      rate.placeholder = cat === 'Refinery Expense' ? `Total Expense (${CUR()})` : `Unit Rate or Total (${CUR()})`;
       $('#o-pigs-entry-expense-cat').style.display = (cat === 'Refinery Expense') ? '' : 'none';
 
       const isLabour = (cat === 'Refinery Expense' && $('#o-pigs-entry-expense-cat').value === 'Labour');
@@ -8089,11 +8278,11 @@ window.OPS_MODULES['o-pigs'] = (function(){
       const netMonthly = (totalRev - opex) / 12;
       const payback = netMonthly > 0 ? (capex / netMonthly).toFixed(1) : 'N/A';
 
-      $('#o-pigs-out-capex').textContent = 'KES ' + capex.toLocaleString();
-      $('#o-pigs-out-opex').textContent = 'KES ' + opex.toLocaleString();
-      $('#o-pigs-out-annual-rev').textContent = 'KES ' + Math.round(totalRev).toLocaleString();
-      $('#o-pigs-out-net').textContent = 'KES ' + Math.round(netYear1).toLocaleString();
-      $('#o-pigs-out-net-3yr').textContent = 'KES ' + Math.round(net3Yr).toLocaleString();
+      $('#o-pigs-out-capex').textContent = `${CUR()} ` + capex.toLocaleString();
+      $('#o-pigs-out-opex').textContent = `${CUR()} ` + opex.toLocaleString();
+      $('#o-pigs-out-annual-rev').textContent = `${CUR()} ` + Math.round(totalRev).toLocaleString();
+      $('#o-pigs-out-net').textContent = `${CUR()} ` + Math.round(netYear1).toLocaleString();
+      $('#o-pigs-out-net-3yr').textContent = `${CUR()} ` + Math.round(net3Yr).toLocaleString();
       $('#o-pigs-out-payback').textContent = payback !== 'N/A' ? payback + ' Months' : 'N/A';
 
       localStorage.setItem('symbio_pig_sows', sows);
@@ -8242,7 +8431,7 @@ window.OPS_MODULES['o-pigs'] = (function(){
 
     function exportToCSV(){
       if (entries.length === 0) { alert('No ledger entries to export.'); return; }
-      let csv = 'Date,Category,Expense_Category,Hours,Stream,Details,Quantity,Rate_or_Amount_KES,Total_Value_KES\n';
+      let csv = `Date,Category,Expense_Category,Hours,Stream,Details,Quantity,Rate_or_Amount_${CUR()},Total_Value_${CUR()}\n`;
       entries.forEach(e => {
         let total = e.category !== 'Refinery Expense' ? e.qty * e.rate : -e.rate;
         csv += `"${e.date}","${e.category}","${e.expenseCat || ''}",${e.hours || 0},"${e.stream}","${e.desc.replace(/"/g, '""')}",${e.qty || 0},${e.rate || 0},${total}\n`;
@@ -8307,7 +8496,7 @@ window.OPS_MODULES['o-pigs'] = (function(){
             e.stream || '-',
             e.desc || '-',
             e.qty || '-',
-            e.rate ? 'KES ' + e.rate : '-'
+            e.rate ? `${CUR()} ` + e.rate : '-'
           ]),
           styles: { fontSize: 8 },
           headStyles: { fillColor: [46, 74, 42] },
@@ -8456,9 +8645,9 @@ window.OPS_MODULES['o-pigs'] = (function(){
             <td>${item.stream}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty : '-'}</td>
-            <td>${item.rate ? 'KES ' + item.rate.toLocaleString() : '-'}</td>
+            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
             <td class="${valClass}">
-              ${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + 'KES ' + Math.abs(totalVal).toLocaleString() : '-'}
+              ${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + '${CUR()} ' + Math.abs(totalVal).toLocaleString() : '-'}
             </td>
             <td><button type="button" class="row-remove-btn" data-id="${item.id}">\u2715</button></td>
           </tr>
@@ -8482,7 +8671,7 @@ window.OPS_MODULES['o-pigs'] = (function(){
             expenseHtml += `
               <tr>
                 <td>${e.eName}${e.hours > 0 ? ' (' + e.hours.toFixed(2).replace(/\.00$/, '') + ' hrs)' : ''}</td>
-                <td>KES ${Math.round(e.amount).toLocaleString()}</td>
+                <td>${CUR()} ${Math.round(e.amount).toLocaleString()}</td>
                 <td>${share}%</td>
               </tr>
             `;
@@ -8490,9 +8679,9 @@ window.OPS_MODULES['o-pigs'] = (function(){
         expenseBody.innerHTML = expenseHtml || '<tr><td colspan="3">No expenses logged yet.</td></tr>';
       }
 
-      $('#o-pigs-actual-income').textContent = 'KES ' + Math.round(totalIncome).toLocaleString();
-      $('#o-pigs-actual-exp').textContent = 'KES ' + Math.round(totalExp).toLocaleString();
-      $('#o-pigs-actual-net').textContent = 'KES ' + Math.round(totalIncome - totalExp).toLocaleString();
+      $('#o-pigs-actual-income').textContent = `${CUR()} ` + Math.round(totalIncome).toLocaleString();
+      $('#o-pigs-actual-exp').textContent = `${CUR()} ` + Math.round(totalExp).toLocaleString();
+      $('#o-pigs-actual-net').textContent = `${CUR()} ` + Math.round(totalIncome - totalExp).toLocaleString();
 
       updateCharts(streamStats);
     }
@@ -8556,7 +8745,7 @@ window.OPS_MODULES['o-compost'] = (function(){
               <label>Production & Revenue Logic</label>
               <ul>
                 <li><b>Batch Output:</b> 40 bags (50kg each) produced every 60 days.</li>
-                <li><b>Pricing:</b> KES 2,000 per 50kg premium nutrient-dense bag.</li>
+                <li><b>Pricing:</b> ${CUR()} 2,000 per 50kg premium nutrient-dense bag.</li>
                 <li><b>Charged Biochar:</b> Prevents nutrient leaching and boosts cation exchange capacity in local conditions.</li>
               </ul>
             </div>
@@ -8584,11 +8773,11 @@ window.OPS_MODULES['o-compost'] = (function(){
           <input type="range" id="o-compost-cycle-days" min="0" max="90" step="5" value="60">
         </div>
         <div class="ops-field">
-          <label>Price per Bag (KES): <span id="o-compost-val-price">2000</span></label>
+          <label>Price per Bag (${CUR()}): <span id="o-compost-val-price">2000</span></label>
           <input type="range" id="o-compost-price-bag" min="0" max="5000" step="100" value="2000">
         </div>
         <div class="ops-field">
-          <label>Batch OpEx / Inputs (KES)</label>
+          <label>Batch OpEx / Inputs (${CUR()})</label>
           <input type="number" id="o-compost-batch-opex" value="15000">
         </div>
       </div>
@@ -8604,11 +8793,11 @@ window.OPS_MODULES['o-compost'] = (function(){
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Annual Gross Revenue</span>
-          <span class="ops-sum-value" id="o-compost-out-annual-rev">KES 480,000</span>
+          <span class="ops-sum-value" id="o-compost-out-annual-rev">${CUR()} 480,000</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Annual Net Profit</span>
-          <span class="ops-sum-value" id="o-compost-out-annual-net">KES 390,000</span>
+          <span class="ops-sum-value" id="o-compost-out-annual-net">${CUR()} 390,000</span>
         </div>
       </div>
 
@@ -8632,7 +8821,7 @@ window.OPS_MODULES['o-compost'] = (function(){
             <option value="Other">Other</option>
           </select>
           <input type="number" id="o-compost-entry-hours" step="0.25" min="0" placeholder="Hours" style="display:none; width:80px;" title="Time spent on this task">
-          <input type="number" id="o-compost-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (KES)" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
+          <input type="number" id="o-compost-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (${CUR()})" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
           <select id="o-compost-entry-phase">
             <option value="Day 0 Build">Day 0 Build & JMS</option>
             <option value="Hot Phase (Days 1-14)">Hot Phase (Days 1-14)</option>
@@ -8641,7 +8830,7 @@ window.OPS_MODULES['o-compost'] = (function(){
           </select>
           <input type="text" id="o-compost-entry-desc" placeholder="Details (e.g., Batch #3 finished)" required>
           <input type="number" id="o-compost-entry-qty" step="1" placeholder="Bags Sold/Produced">
-          <input type="number" id="o-compost-entry-rate" step="1" placeholder="Rate / Cost (KES)">
+          <input type="number" id="o-compost-entry-rate" step="1" placeholder="Rate / Cost (${CUR()})">
           <button type="submit" class="planner-btn">Save Entry</button>
         </div>
       </form>
@@ -8677,15 +8866,15 @@ window.OPS_MODULES['o-compost'] = (function(){
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Revenue</span>
-          <span class="ops-sum-value ops-sum-profit" id="o-compost-actual-income">KES 0</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-compost-actual-income">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Expenses</span>
-          <span class="ops-sum-value ops-sum-loss" id="o-compost-actual-exp">KES 0</span>
+          <span class="ops-sum-value ops-sum-loss" id="o-compost-actual-exp">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Net Cashflow</span>
-          <span class="ops-sum-value" id="o-compost-actual-net">KES 0</span>
+          <span class="ops-sum-value" id="o-compost-actual-net">${CUR()} 0</span>
         </div>
       </div>
 
@@ -8766,7 +8955,7 @@ window.OPS_MODULES['o-compost'] = (function(){
     function adjustFields(){
       const cat = entryCategory.value;
       entryQty.disabled = (cat === 'Compost Expense' || cat === 'General Maintenance');
-      entryRate.placeholder = cat === 'Compost Expense' ? 'Total Expense (KES)' : 'Rate / Cost (KES)';
+      entryRate.placeholder = cat === 'Compost Expense' ? `Total Expense (${CUR()})` : `Rate / Cost (${CUR()})`;
       entryExpenseCat.style.display = (cat === 'Compost Expense') ? '' : 'none';
 
       const isLabour = (cat === 'Compost Expense' && entryExpenseCat.value === 'Labour');
@@ -8808,8 +8997,8 @@ window.OPS_MODULES['o-compost'] = (function(){
 
       outBatches.innerText = batchesPerYear.toFixed(1) + ' Batches';
       outAnnualBags.innerText = annualBags.toLocaleString() + ' Bags';
-      outAnnualRev.innerText = 'KES ' + Math.round(annualRev).toLocaleString();
-      outAnnualNet.innerText = 'KES ' + Math.round(annualNet).toLocaleString();
+      outAnnualRev.innerText = `${CUR()} ` + Math.round(annualRev).toLocaleString();
+      outAnnualNet.innerText = `${CUR()} ` + Math.round(annualNet).toLocaleString();
 
       renderLedger();
     }
@@ -8937,7 +9126,7 @@ window.OPS_MODULES['o-compost'] = (function(){
 
     function exportToCSV(){
       if (entries.length === 0) { alert('No ledger entries to export.'); return; }
-      let csv = 'Date,Category,Expense_Category,Hours,Phase,Details,Bags,Rate_or_Amount_KES,Total_Value_KES\n';
+      let csv = `Date,Category,Expense_Category,Hours,Phase,Details,Bags,Rate_or_Amount_${CUR()},Total_Value_${CUR()}\n`;
       entries.forEach(e => {
         let total = e.category === 'Batch Harvest & Sale' ? e.qty * e.rate : (e.category === 'Compost Expense' ? -e.rate : 0);
         csv += `"${e.date}","${e.category}","${e.expenseCat || ''}",${e.hours || 0},"${e.phase}","${e.desc.replace(/"/g, '""')}",${e.qty || 0},${e.rate || 0},${total}\n`;
@@ -9000,7 +9189,7 @@ window.OPS_MODULES['o-compost'] = (function(){
             e.phase || '-',
             e.desc || '-',
             e.qty || '-',
-            e.rate ? 'KES ' + e.rate : '-'
+            e.rate ? `${CUR()} ` + e.rate : '-'
           ]),
           styles: { fontSize: 8 },
           headStyles: { fillColor: [46, 74, 42] },
@@ -9083,9 +9272,9 @@ window.OPS_MODULES['o-compost'] = (function(){
         data: {
           labels: ['Actual Compost Financials'],
           datasets: [
-            { label: 'Revenue (KES)', data: [income], backgroundColor: gold, borderRadius: 6 },
-            { label: 'Expenses (KES)', data: [expense], backgroundColor: rust, borderRadius: 6 },
-            { label: 'Net Cashflow (KES)', data: [income - expense], backgroundColor: leaf, borderRadius: 6 }
+            { label: `Revenue (${CUR()})`, data: [income], backgroundColor: gold, borderRadius: 6 },
+            { label: `Expenses (${CUR()})`, data: [expense], backgroundColor: rust, borderRadius: 6 },
+            { label: `Net Cashflow (${CUR()})`, data: [income - expense], backgroundColor: leaf, borderRadius: 6 }
           ]
         },
         options: {
@@ -9127,14 +9316,14 @@ window.OPS_MODULES['o-compost'] = (function(){
 
           const tr = document.createElement('tr');
           const valClass = totalVal > 0 ? 'ops-sum-profit' : (totalVal < 0 ? 'ops-sum-loss' : '');
-          const valText = totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + 'KES ' + Math.abs(totalVal).toLocaleString() : '-';
+          const valText = totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + `${CUR()} ` + Math.abs(totalVal).toLocaleString() : '-';
           tr.innerHTML = `
             <td>${item.date}</td>
             <td>${item.category}${item.category === 'Compost Expense' && item.expenseCat ? ' \u2014 ' + item.expenseCat : ''}${item.hours ? ' (' + item.hours + ' hrs)' : ''}</td>
             <td>${item.phase}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty + ' Bags' : '-'}</td>
-            <td>${item.rate ? 'KES ' + item.rate.toLocaleString() : '-'}</td>
+            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
             <td class="${valClass}">${valText}</td>
             <td class="row-remove-cell"></td>
           `;
@@ -9158,7 +9347,7 @@ window.OPS_MODULES['o-compost'] = (function(){
             expenseHtml += `
               <tr>
                 <td>${e.eName}${e.hours > 0 ? ' (' + e.hours.toFixed(2).replace(/\.00$/, '') + ' hrs)' : ''}</td>
-                <td>KES ${Math.round(e.amount).toLocaleString()}</td>
+                <td>${CUR()} ${Math.round(e.amount).toLocaleString()}</td>
                 <td>${share}%</td>
               </tr>
             `;
@@ -9167,9 +9356,9 @@ window.OPS_MODULES['o-compost'] = (function(){
       }
 
       actualBags.innerText = totalBags.toLocaleString() + ' Bags';
-      actualIncome.innerText = 'KES ' + Math.round(totalIncome).toLocaleString();
-      actualExp.innerText = 'KES ' + Math.round(totalExp).toLocaleString();
-      actualNet.innerText = 'KES ' + Math.round(totalIncome - totalExp).toLocaleString();
+      actualIncome.innerText = `${CUR()} ` + Math.round(totalIncome).toLocaleString();
+      actualExp.innerText = `${CUR()} ` + Math.round(totalExp).toLocaleString();
+      actualNet.innerText = `${CUR()} ` + Math.round(totalIncome - totalExp).toLocaleString();
 
       updateCharts(totalIncome, totalExp);
     }
@@ -9291,15 +9480,15 @@ window.OPS_MODULES['o-seedlings'] = (function(){
           <span class="ops-hint">Adjusts expected sales demand \u2014 below 100% for a glut, above for a rush.</span>
         </div>
         <div class="ops-field">
-          <label>Base Monthly OpEx (KES)</label>
+          <label>Base Monthly OpEx (${CUR()})</label>
           <input type="number" id="o-seedlings-opex" value="12000">
         </div>
         <div class="ops-field">
-          <label>Total Seed Cost (KES)</label>
+          <label>Total Seed Cost (${CUR()})</label>
           <input type="number" id="o-seedlings-seedcost" value="5000">
         </div>
         <div class="ops-field">
-          <label>Target Selling Price (KES/Seedling)</label>
+          <label>Target Selling Price (${CUR()}/Seedling)</label>
           <input type="number" id="o-seedlings-price" value="5" step="0.5">
         </div>
         <div class="ops-field">
@@ -9311,11 +9500,11 @@ window.OPS_MODULES['o-seedlings'] = (function(){
       <h3 class="ops-section-title">Cost Assumptions</h3>
       <div class="ops-field-row">
         <div class="ops-field">
-          <label>Tray Cost (KES/Tray)</label>
+          <label>Tray Cost (${CUR()}/Tray)</label>
           <input type="number" id="o-seedlings-traycost" value="120">
         </div>
         <div class="ops-field">
-          <label>Polythene Cost (KES/m\u00b2)</label>
+          <label>Polythene Cost (${CUR()}/m\u00b2)</label>
           <input type="number" id="o-seedlings-polycost" value="120">
         </div>
         <div class="ops-field">
@@ -9323,15 +9512,15 @@ window.OPS_MODULES['o-seedlings'] = (function(){
           <input type="number" id="o-seedlings-blockcells" value="1500">
         </div>
         <div class="ops-field">
-          <label>Coco Peat Block Cost (KES)</label>
+          <label>Coco Peat Block Cost (${CUR()})</label>
           <input type="number" id="o-seedlings-blockcost" value="850">
         </div>
         <div class="ops-field">
-          <label>Organic Soaking Cost (KES)</label>
+          <label>Organic Soaking Cost (${CUR()})</label>
           <input type="number" id="o-seedlings-soakcost-org" value="1750">
         </div>
         <div class="ops-field">
-          <label>Conventional Soaking Cost (KES)</label>
+          <label>Conventional Soaking Cost (${CUR()})</label>
           <input type="number" id="o-seedlings-soakcost-conv" value="2500">
         </div>
       </div>
@@ -9365,11 +9554,11 @@ window.OPS_MODULES['o-seedlings'] = (function(){
       <div class="ops-summary-grid">
         <div class="ops-summary-card">
           <span class="ops-sum-label">Est. CapEx (Trays + Poly)</span>
-          <span class="ops-sum-value" id="o-seedlings-proj-capex">KES 0</span>
+          <span class="ops-sum-value" id="o-seedlings-proj-capex">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Est. OpEx (Total)</span>
-          <span class="ops-sum-value ops-sum-loss" id="o-seedlings-proj-opex">KES 0</span>
+          <span class="ops-sum-value ops-sum-loss" id="o-seedlings-proj-opex">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Break-Even Sales</span>
@@ -9377,11 +9566,11 @@ window.OPS_MODULES['o-seedlings'] = (function(){
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Est. Revenue</span>
-          <span class="ops-sum-value ops-sum-profit" id="o-seedlings-proj-rev">KES 0</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-seedlings-proj-rev">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Est. Net Profit</span>
-          <span class="ops-sum-value" id="o-seedlings-proj-net">KES 0</span>
+          <span class="ops-sum-value" id="o-seedlings-proj-net">${CUR()} 0</span>
         </div>
       </div>
 
@@ -9404,13 +9593,13 @@ window.OPS_MODULES['o-seedlings'] = (function(){
             <option value="Other">Other</option>
           </select>
           <input type="number" id="o-seedlings-entry-hours" step="0.25" min="0" placeholder="Hours" style="display:none; width:80px;" title="Time spent on this task">
-          <input type="number" id="o-seedlings-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (KES)" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
+          <input type="number" id="o-seedlings-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (${CUR()})" style="display:none; width:110px;" title="Your labour rate \u2014 shared across all enterprises">
           <select id="o-seedlings-entry-tray-type">
             <option value="General/Farm-Wide">General / Farm-Wide</option>
           </select>
           <input type="text" id="o-seedlings-entry-desc" placeholder="Details (e.g. Sold Tomato seedlings)" required>
           <input type="number" id="o-seedlings-entry-qty" step="1" placeholder="Qty (Seedlings)">
-          <input type="number" id="o-seedlings-entry-rate" step="0.5" placeholder="Rate/Total (KES)">
+          <input type="number" id="o-seedlings-entry-rate" step="0.5" placeholder="Rate/Total (${CUR()})">
           <button type="submit" class="planner-btn">Save Entry</button>
         </div>
       </form>
@@ -9471,19 +9660,19 @@ window.OPS_MODULES['o-seedlings'] = (function(){
       <div class="ops-summary-grid">
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Expenses</span>
-          <span class="ops-sum-value ops-sum-loss" id="o-seedlings-actual-exp">KES 0</span>
+          <span class="ops-sum-value ops-sum-loss" id="o-seedlings-actual-exp">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Revenue</span>
-          <span class="ops-sum-value ops-sum-profit" id="o-seedlings-actual-rev">KES 0</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-seedlings-actual-rev">${CUR()} 0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Avg Price</span>
-          <span class="ops-sum-value" id="o-seedlings-actual-avg-price">KES 0.0</span>
+          <span class="ops-sum-value" id="o-seedlings-actual-avg-price">${CUR()} 0.0</span>
         </div>
         <div class="ops-summary-card">
           <span class="ops-sum-label">Actual Net Cashflow</span>
-          <span class="ops-sum-value" id="o-seedlings-actual-net">KES 0</span>
+          <span class="ops-sum-value" id="o-seedlings-actual-net">${CUR()} 0</span>
         </div>
       </div>
 
@@ -9579,7 +9768,7 @@ window.OPS_MODULES['o-seedlings'] = (function(){
       const cat = entryCategory.value;
       const isExpense = (cat !== 'Seedling Sale');
       entryQty.disabled = isExpense;
-      entryRate.placeholder = isExpense ? 'Total Amount (KES)' : 'Rate / Seedling (KES)';
+      entryRate.placeholder = isExpense ? `Total Amount (${CUR()})` : `Rate / Seedling (${CUR()})`;
       entryExpenseCat.style.display = isExpense ? '' : 'none';
 
       const isLabour = (isExpense && entryExpenseCat.value === 'Labour');
@@ -9703,11 +9892,11 @@ window.OPS_MODULES['o-seedlings'] = (function(){
       const projectedNet = projectedRev - opexTotal;
       const breakEvenQty = priceVal > 0 ? Math.ceil(opexTotal / priceVal) : 0;
 
-      projCapex.innerText = 'KES ' + Math.round(capex).toLocaleString();
-      projOpex.innerText = 'KES ' + Math.round(opexTotal).toLocaleString();
+      projCapex.innerText = `${CUR()} ` + Math.round(capex).toLocaleString();
+      projOpex.innerText = `${CUR()} ` + Math.round(opexTotal).toLocaleString();
       projBreakeven.innerText = breakEvenQty.toLocaleString() + ' Seedlings';
-      projRev.innerText = 'KES ' + Math.round(projectedRev).toLocaleString();
-      projNet.innerText = 'KES ' + Math.round(projectedNet).toLocaleString();
+      projRev.innerText = `${CUR()} ` + Math.round(projectedRev).toLocaleString();
+      projNet.innerText = `${CUR()} ` + Math.round(projectedNet).toLocaleString();
 
       renderLedger();
     }
@@ -9855,7 +10044,7 @@ window.OPS_MODULES['o-seedlings'] = (function(){
 
     function exportToCSV(){
       if(entries.length === 0){ alert('No ledger entries to export.'); return; }
-      let csv = 'Date,Category,Expense_Category,Hours,Tray Type,Details,Quantity,Rate_or_Amount_KES,Total_Value_KES\n';
+      let csv = `Date,Category,Expense_Category,Hours,Tray Type,Details,Quantity,Rate_or_Amount_${CUR()},Total_Value_${CUR()}\n`;
       entries.forEach(e => {
         let total = e.category === 'Seedling Sale' ? e.qty * e.rate : -e.rate;
         csv += `"${e.date}","${e.category}","${e.expenseCat || ''}",${e.hours || 0},"${e.trayType}","${e.desc.replace(/"/g, '""')}",${e.qty || 0},${e.rate || 0},${total}\n`;
@@ -9916,7 +10105,7 @@ window.OPS_MODULES['o-seedlings'] = (function(){
           startY: cursorY,
           head: [['Date', 'Category', 'Tray Type', 'Details', 'Qty', 'Rate/Amt']],
           body: sorted.map(e => [
-            e.date, e.category + (e.category !== 'Seedling Sale' && e.expenseCat ? ' \u2014 ' + e.expenseCat : '') + (e.hours ? ' (' + e.hours + ' hrs)' : ''), e.trayType || '-', e.desc || '-', e.qty || '-', e.rate ? 'KES ' + e.rate : '-'
+            e.date, e.category + (e.category !== 'Seedling Sale' && e.expenseCat ? ' \u2014 ' + e.expenseCat : '') + (e.hours ? ' (' + e.hours + ' hrs)' : ''), e.trayType || '-', e.desc || '-', e.qty || '-', e.rate ? `${CUR()} ` + e.rate : '-'
           ]),
           styles: { fontSize: 8 },
           headStyles: { fillColor: [46, 74, 42] },
@@ -10001,9 +10190,9 @@ window.OPS_MODULES['o-seedlings'] = (function(){
         data: {
           labels: ['Actual Seedling Financials'],
           datasets: [
-            { label: 'Revenue (KES)', data: [income], backgroundColor: gold, borderRadius: 6 },
-            { label: 'Expenses (KES)', data: [expense], backgroundColor: rust, borderRadius: 6 },
-            { label: 'Net Cashflow (KES)', data: [income - expense], backgroundColor: leaf, borderRadius: 6 }
+            { label: `Revenue (${CUR()})`, data: [income], backgroundColor: gold, borderRadius: 6 },
+            { label: `Expenses (${CUR()})`, data: [expense], backgroundColor: rust, borderRadius: 6 },
+            { label: `Net Cashflow (${CUR()})`, data: [income - expense], backgroundColor: leaf, borderRadius: 6 }
           ]
         },
         options: {
@@ -10049,14 +10238,14 @@ window.OPS_MODULES['o-seedlings'] = (function(){
 
           const tr = document.createElement('tr');
           const valClass = totalVal > 0 ? 'ops-sum-profit' : (totalVal < 0 ? 'ops-sum-loss' : '');
-          const valText = totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + 'KES ' + Math.abs(totalVal).toLocaleString() : '-';
+          const valText = totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + `${CUR()} ` + Math.abs(totalVal).toLocaleString() : '-';
           tr.innerHTML = `
             <td>${item.date}</td>
             <td>${item.category}${item.category !== 'Seedling Sale' && item.expenseCat ? ' \u2014 ' + item.expenseCat : ''}${item.hours ? ' (' + item.hours + ' hrs)' : ''}</td>
             <td>${item.trayType || '-'}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty.toLocaleString() : '-'}</td>
-            <td>${item.rate ? 'KES ' + item.rate.toLocaleString() : '-'}</td>
+            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
             <td class="${valClass}">${valText}</td>
             <td class="row-remove-cell"></td>
           `;
@@ -10081,7 +10270,7 @@ window.OPS_MODULES['o-seedlings'] = (function(){
             expenseHtml += `
               <tr>
                 <td>${e.eName}${e.hours > 0 ? ' (' + e.hours.toFixed(2).replace(/\.00$/, '') + ' hrs)' : ''}</td>
-                <td>KES ${Math.round(e.amount).toLocaleString()}</td>
+                <td>${CUR()} ${Math.round(e.amount).toLocaleString()}</td>
                 <td>${share}%</td>
               </tr>
             `;
@@ -10095,18 +10284,18 @@ window.OPS_MODULES['o-seedlings'] = (function(){
           <tr>
             <td>${k}</td>
             <td>${perfData[k].sold.toLocaleString()}</td>
-            <td>KES ${perfData[k].rev.toLocaleString()}</td>
+            <td>${CUR()} ${perfData[k].rev.toLocaleString()}</td>
           </tr>
         `;
       });
       perfBody.innerHTML = perfHtml || '<tr><td colspan="3">No sales data yet.</td></tr>';
 
-      actualExp.innerText = 'KES ' + Math.round(actExp).toLocaleString();
-      actualRev.innerText = 'KES ' + Math.round(actRev).toLocaleString();
+      actualExp.innerText = `${CUR()} ` + Math.round(actExp).toLocaleString();
+      actualRev.innerText = `${CUR()} ` + Math.round(actRev).toLocaleString();
       const avgPrice = actSoldSeedlings > 0 ? (actRev / actSoldSeedlings).toFixed(1) : '0.0';
-      actualAvgPrice.innerText = 'KES ' + avgPrice;
+      actualAvgPrice.innerText = `${CUR()} ` + avgPrice;
       const net = actRev - actExp;
-      actualNet.innerText = 'KES ' + Math.round(net).toLocaleString();
+      actualNet.innerText = `${CUR()} ` + Math.round(net).toLocaleString();
       actualNet.className = 'ops-sum-value ' + (net >= 0 ? 'ops-sum-profit' : 'ops-sum-loss');
 
       updateCharts(actRev, actExp);
@@ -10251,7 +10440,7 @@ window.OPS_MODULES['o-dailylog'] = (function(){
             <input type="number" step="1" min="0" id="o-dailylog-entryQty" placeholder="1" value="1">
           </div>
           <div class="ops-field">
-            <label for="o-dailylog-entryRev">Value / Income (KES)</label>
+            <label for="o-dailylog-entryRev">Value / Income (${CUR()})</label>
             <input type="number" id="o-dailylog-entryRev" placeholder="0" value="0">
             <span class="ops-hint">Sale proceeds, or the animal's assessed value if acquiring/revaluing.</span>
           </div>
@@ -10259,7 +10448,7 @@ window.OPS_MODULES['o-dailylog'] = (function(){
 
         <div class="ops-field-row">
           <div class="ops-field">
-            <label for="o-dailylog-entryExp">Expense (KES)</label>
+            <label for="o-dailylog-entryExp">Expense (${CUR()})</label>
             <input type="number" id="o-dailylog-entryExp" placeholder="0" value="0">
             <span class="ops-hint">Purchase cost, feed, vet bills, etc.</span>
           </div>
@@ -10279,15 +10468,15 @@ window.OPS_MODULES['o-dailylog'] = (function(){
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Total Income (Sales &amp; Valuation)</div>
-          <div class="ops-sum-value" id="o-dailylog-totalRev">KES 0</div>
+          <div class="ops-sum-value" id="o-dailylog-totalRev">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Total Care &amp; Acquisition Costs</div>
-          <div class="ops-sum-value" id="o-dailylog-totalExp">KES 0</div>
+          <div class="ops-sum-value" id="o-dailylog-totalExp">${CUR()} 0</div>
         </div>
         <div class="ops-summary-card">
           <div class="ops-sum-label">Net Cashflow</div>
-          <div class="ops-sum-value" id="o-dailylog-netCash">KES 0</div>
+          <div class="ops-sum-value" id="o-dailylog-netCash">${CUR()} 0</div>
         </div>
       </div>
 
@@ -10418,9 +10607,9 @@ window.OPS_MODULES['o-dailylog'] = (function(){
             typeHtml += `
               <tr>
                 <td>${s.t}</td>
-                <td>KES ${Math.round(s.rev).toLocaleString()}</td>
-                <td>KES ${Math.round(s.exp).toLocaleString()}</td>
-                <td class="${netClass}">KES ${Math.round(s.net).toLocaleString()}</td>
+                <td>${CUR()} ${Math.round(s.rev).toLocaleString()}</td>
+                <td>${CUR()} ${Math.round(s.exp).toLocaleString()}</td>
+                <td class="${netClass}">${CUR()} ${Math.round(s.net).toLocaleString()}</td>
               </tr>
             `;
           });
@@ -10438,7 +10627,7 @@ window.OPS_MODULES['o-dailylog'] = (function(){
             activityHtml += `
               <tr>
                 <td>${s.a}</td>
-                <td>KES ${Math.round(s.amount).toLocaleString()}</td>
+                <td>${CUR()} ${Math.round(s.amount).toLocaleString()}</td>
                 <td>${share}%</td>
               </tr>
             `;
@@ -10447,12 +10636,12 @@ window.OPS_MODULES['o-dailylog'] = (function(){
       }
 
       root.querySelector('#o-dailylog-totalQty').innerText = Math.max(0, netHead).toLocaleString();
-      root.querySelector('#o-dailylog-totalRev').innerText = 'KES ' + totalR.toLocaleString();
-      root.querySelector('#o-dailylog-totalExp').innerText = 'KES ' + totalE.toLocaleString();
+      root.querySelector('#o-dailylog-totalRev').innerText = `${CUR()} ` + totalR.toLocaleString();
+      root.querySelector('#o-dailylog-totalExp').innerText = `${CUR()} ` + totalE.toLocaleString();
 
       const net = totalR - totalE;
       const netEl = root.querySelector('#o-dailylog-netCash');
-      netEl.innerText = 'KES ' + net.toLocaleString();
+      netEl.innerText = `${CUR()} ` + net.toLocaleString();
       netEl.className = 'ops-sum-value ' + (net >= 0 ? 'ops-sum-profit' : 'ops-sum-loss');
 
       localStorage.setItem(LS_ENTRIES, JSON.stringify(entries));
@@ -10566,7 +10755,7 @@ window.OPS_MODULES['o-dailylog'] = (function(){
         alert('No entries to export.');
         return;
       }
-      let csv = 'Date,Activity,Animal Type,Name/ID,Head Count,Value/Income(KES),Expense(KES),Details\n';
+      let csv = `Date,Activity,Animal Type,Name/ID,Head Count,Value/Income(${CUR()}),Expense(${CUR()}),Details\n`;
       entries.forEach(item => {
         csv += `"${item.date}","${item.activity}","${item.type}","${item.name || ''}",${item.qty},${item.rev},${item.exp},"${item.details}"\n`;
       });
@@ -10814,32 +11003,148 @@ function renderIntroView(){
 }
 
 // ==================== HOME SCREEN NAVIGATION ====================
+// ==================== HOME DASHBOARD ====================
+// Reads each enterprise's own Actuals Ledger straight out of localStorage
+// (the same data each Ops module already stores) and rolls it into a
+// quick-glance strip on Home. Each module classifies revenue vs. expense
+// slightly differently, so this mirrors each module's own renderLedger()
+// logic exactly rather than guessing from category names.
+function computeOpsFinance(){
+  const modules = [
+    { key:'symbio_border_ledger', isExpense:(it)=> it.category==='Farm Expense',
+      isRevenue:(it)=> it.category==='Harvest Sale' || it.category==='Companion Harvest',
+      qty:(it)=> it.qty ? it.qty : 1 },
+    { key:'symbio_ledger_data', isExpense:(it)=> it.category==='Expense',
+      isRevenue:(it)=> it.category==='Harvest & Sale', qty:(it)=> it.qty || 0 },
+    { key:'symbio_standalone_hatchery_ledger', isExpense:(it)=> it.category==='Hatchery Expense',
+      isRevenue:(it)=> it.category!=='Hatchery Expense', qty:(it)=> it.qty || 0 },
+    { key:'symbio_poultry_ledger', isExpense:(it)=> it.category==='Poultry Expense',
+      isRevenue:(it)=> it.category!=='Poultry Expense', qty:(it)=> it.qty || 0 },
+    { key:'symbio_pig_ledger', isExpense:(it)=> it.category==='Refinery Expense',
+      isRevenue:(it)=> it.category!=='Refinery Expense' && it.category!=='Internal Sow Service',
+      qty:(it)=> it.qty || 0 },
+    { key:'symbio_compost_ledger', isExpense:(it)=> it.category==='Compost Expense',
+      isRevenue:(it)=> it.category==='Batch Harvest & Sale', qty:(it)=> it.qty || 0 },
+    { key:'symbio_seedling_ledger', isExpense:(it)=> it.category!=='Seedling Sale',
+      isRevenue:(it)=> it.category==='Seedling Sale', qty:(it)=> it.qty || 0 }
+  ];
+  let totalRevenue = 0, totalExpense = 0, activeCount = 0;
+  modules.forEach(m => {
+    let entries = [];
+    try { entries = JSON.parse(localStorage.getItem(m.key)) || []; } catch(e){ entries = []; }
+    if (entries.length) activeCount++;
+    entries.forEach(it => {
+      const rate = parseFloat(it.rate) || 0;
+      if (m.isExpense(it)) totalExpense += rate;
+      else if (m.isRevenue(it)) totalRevenue += m.qty(it) * rate;
+    });
+  });
+  try {
+    const animalEntries = JSON.parse(localStorage.getItem('symbio_animal_entries')) || [];
+    if (animalEntries.length) activeCount++;
+  } catch(e){}
+  return { totalRevenue, totalExpense, activeCount, totalTracked: 8 };
+}
+function renderHomeDashboard(){
+  const el = document.getElementById('homeDashboard');
+  if(!el) return;
+  const { totalRevenue, totalExpense, activeCount, totalTracked } = computeOpsFinance();
+  if (activeCount === 0){
+    el.style.display = 'none';
+    el.innerHTML = '';
+    return;
+  }
+  const net = totalRevenue - totalExpense;
+  const netClass = net > 0 ? 'ops-sum-profit' : (net < 0 ? 'ops-sum-loss' : '');
+  el.style.display = 'grid';
+  el.innerHTML = `
+    <div class="ops-summary-card">
+      <div class="ops-sum-label">\ud83d\udcb0 Revenue Logged</div>
+      <div class="ops-sum-value">${CUR()} ${Math.round(totalRevenue).toLocaleString()}</div>
+    </div>
+    <div class="ops-summary-card">
+      <div class="ops-sum-label">\ud83d\udcc9 Expenses Logged</div>
+      <div class="ops-sum-value">${CUR()} ${Math.round(totalExpense).toLocaleString()}</div>
+    </div>
+    <div class="ops-summary-card ${netClass}">
+      <div class="ops-sum-label">\ud83d\udcc8 Net So Far</div>
+      <div class="ops-sum-value">${CUR()} ${Math.round(net).toLocaleString()}</div>
+    </div>
+    <div class="ops-summary-card">
+      <div class="ops-sum-label">\ud83d\udcd2 Enterprises Active</div>
+      <div class="ops-sum-value">${activeCount} of ${totalTracked}</div>
+    </div>
+  `;
+}
+renderHomeDashboard();
+
+(function initCurrencySelect(){
+  const sel = document.getElementById('currencySelect');
+  if(!sel) return;
+  if(!CURRENCY_OPTIONS.includes(currentCurrency)){
+    const opt = document.createElement('option');
+    opt.value = currentCurrency;
+    opt.textContent = currentCurrency + ' (custom)';
+    sel.insertBefore(opt, sel.lastElementChild);
+  }
+  sel.value = currentCurrency;
+  sel.addEventListener('change', () => {
+    if(sel.value === '__custom'){
+      const code = window.prompt('Enter your currency code or symbol (e.g. RWF, ZMW, \u20ac):', '');
+      if(code && code.trim()){
+        const clean = code.trim().slice(0,6);
+        const existing = Array.from(sel.options).find(o => o.value === clean);
+        if(!existing){
+          const opt = document.createElement('option');
+          opt.value = clean;
+          opt.textContent = clean + ' (custom)';
+          sel.insertBefore(opt, sel.lastElementChild);
+        }
+        sel.value = clean;
+        setCurrency(clean);
+      } else {
+        sel.value = currentCurrency;
+      }
+    } else {
+      setCurrency(sel.value);
+    }
+  });
+  document.querySelectorAll('.cur-unit').forEach(el => el.textContent = currentCurrency);
+})();
+
 function showHome(){
+  window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'grid';
   document.getElementById('compareSection').style.display = 'none';
   document.getElementById('results').innerHTML = '';
+  renderHomeDashboard();
 }
 function showCompareSection(){
+  window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
   document.getElementById('compareSection').style.display = 'block';
   document.getElementById('results').innerHTML = '';
 }
 function goToManuals(){
+  window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
   renderManualsView();
 }
 function goToPlanner(){
+  window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
   renderPlannerView();
 }
 function goToOps(){
+  window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
   renderOpsView();
 }
 function goToIntro(){
+  window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
   renderIntroView();
@@ -10887,6 +11192,37 @@ window.activeOpsRepaint = null;
     }
   });
   btn.setAttribute('aria-pressed', effectiveTheme() === 'dark' ? 'true' : 'false');
+})();
+
+// ==================== RESPONSIVE TABLE LABELS ====================
+// On narrow screens every .planner-table (Marketing Chart, Production Plan,
+// Seedling Calendar, and all Ops ledgers) turns into a stack of cards via
+// CSS. Each <td> needs its column header available as a data-label
+// attribute so CSS can print it above the cell's content. Rather than
+// editing every table-building function across the Planner and Ops
+// sections, one observer watches the whole app and (re)applies labels
+// whenever rows or columns are added, removed, or a whole view is
+// re-rendered \u2014 so this keeps working for tables added later too.
+function relabelPlannerTable(table){
+  const labels = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+  if(!labels.length) return;
+  table.querySelectorAll('tbody > tr').forEach(tr => {
+    Array.from(tr.children).forEach((td, i) => {
+      if(i < labels.length) td.setAttribute('data-label', labels[i]);
+    });
+  });
+}
+function relabelAllPlannerTables(){
+  document.querySelectorAll('table.planner-table').forEach(relabelPlannerTable);
+}
+(function(){
+  let pending = null;
+  const observer = new MutationObserver(() => {
+    clearTimeout(pending);
+    pending = setTimeout(relabelAllPlannerTables, 50);
+  });
+  observer.observe(document.body, {childList:true, subtree:true});
+  relabelAllPlannerTables();
 })();
 
 // ==================== PWA: SERVICE WORKER + INSTALL PROMPT ====================
