@@ -889,7 +889,7 @@
     gap:10px;
     margin:16px 0;
   }
-  @media (min-width:520px){ .ops-summary-grid{grid-template-columns:repeat(4,1fr);} }
+  @media (min-width:520px){ .ops-summary-grid{grid-template-columns:repeat(3,1fr);} }
   .ops-summary-card{
     background:var(--soil-800);
     border:1px solid var(--line);
@@ -914,6 +914,8 @@
   }
   .ops-summary-card.ops-sum-profit .ops-sum-value{color:var(--leaf);}
   .ops-summary-card.ops-sum-loss .ops-sum-value{color:var(--rust);}
+  .ops-summary-card.clickable{cursor:pointer;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;}
+  .ops-summary-card.clickable:hover{transform:translateY(-2px);box-shadow:0 4px 14px var(--shadow);border-color:var(--maize);}
 
   .ops-ledger-bar{
     display:flex;
@@ -4085,7 +4087,7 @@ function wireUpPlannerSaveBar(){
 }
 
 // ==================== FARM OPERATIONS AND ANALYTICS ====================
-function renderOpsView(){
+function renderOpsView(initialTab){
   opsTeardown();
   const results = document.getElementById('results');
   const M = window.OPS_MODULES || {};
@@ -4149,6 +4151,8 @@ function renderOpsView(){
   document.getElementById('opsNav').querySelectorAll('button').forEach(btn => {
     btn.addEventListener('click', () => openOpsEnterprise(btn.dataset.otab));
   });
+
+  if (initialTab && M[initialTab]) openOpsEnterprise(initialTab);
 
   document.getElementById('backFromOps').addEventListener('click', () => { opsTeardown(); showHome(); });
   document.getElementById('backToOpsPicker').addEventListener('click', () => {
@@ -11076,27 +11080,439 @@ function computeOpsFinance(){
   try {
     const animalEntries = JSON.parse(localStorage.getItem('symbio_animal_entries')) || [];
     if (animalEntries.length) activeCount++;
+    animalEntries.forEach(it => {
+      totalRevenue += parseFloat(it.rev) || 0;
+      totalExpense += parseFloat(it.exp) || 0;
+    });
   } catch(e){}
   return { totalRevenue, totalExpense, activeCount, totalTracked: 8 };
 }
+
+// ==================== CROSS-ENTERPRISE ENTRY LIST (tap Revenue/Expenses) ====================
+const OPS_ENTRY_SOURCES = [
+  { tab:'o-cereals', label:'Cereals', icon:'\ud83c\udf3e', key:'symbio_border_ledger',
+    isExpense:(it)=> it.category==='Farm Expense',
+    isRevenue:(it)=> it.category==='Harvest Sale' || it.category==='Companion Harvest',
+    qty:(it)=> it.qty ? it.qty : 1 },
+  { tab:'o-horticulture', label:'Horticulture', icon:'\ud83e\udd6c', key:'symbio_ledger_data',
+    isExpense:(it)=> it.category==='Expense',
+    isRevenue:(it)=> it.category==='Harvest & Sale', qty:(it)=> it.qty || 0 },
+  { tab:'o-hatchery', label:'Hatchery', icon:'\ud83d\udc23', key:'symbio_standalone_hatchery_ledger',
+    isExpense:(it)=> it.category==='Hatchery Expense',
+    isRevenue:(it)=> it.category!=='Hatchery Expense', qty:(it)=> it.qty || 0 },
+  { tab:'o-kienyeji', label:'Kienyeji Poultry', icon:'\ud83d\udc14', key:'symbio_poultry_ledger',
+    isExpense:(it)=> it.category==='Poultry Expense',
+    isRevenue:(it)=> it.category!=='Poultry Expense', qty:(it)=> it.qty || 0 },
+  { tab:'o-pigs', label:'Pigs', icon:'\ud83d\udc16', key:'symbio_pig_ledger',
+    isExpense:(it)=> it.category==='Refinery Expense',
+    isRevenue:(it)=> it.category!=='Refinery Expense' && it.category!=='Internal Sow Service',
+    qty:(it)=> it.qty || 0 },
+  { tab:'o-compost', label:'Compost', icon:'\u267b\ufe0f', key:'symbio_compost_ledger',
+    isExpense:(it)=> it.category==='Compost Expense',
+    isRevenue:(it)=> it.category==='Batch Harvest & Sale', qty:(it)=> it.qty || 0 },
+  { tab:'o-seedlings', label:'Seedling Propagation', icon:'\ud83c\udf31', key:'symbio_seedling_ledger',
+    isExpense:(it)=> it.category!=='Seedling Sale',
+    isRevenue:(it)=> it.category==='Seedling Sale', qty:(it)=> it.qty || 0 }
+];
+
+function getAllOpsEntries(){
+  const rows = [];
+  OPS_ENTRY_SOURCES.forEach(src => {
+    let entries = [];
+    try { entries = JSON.parse(localStorage.getItem(src.key)) || []; } catch(e){ entries = []; }
+    entries.forEach(it => {
+      const rate = parseFloat(it.rate) || 0;
+      const desc = it.desc || it.category || '';
+      if (src.isExpense(it)){
+        rows.push({ date: it.date || '', tab: src.tab, enterprise: src.label, icon: src.icon, type: 'expense', amount: rate, desc: desc });
+      } else if (src.isRevenue(it)){
+        rows.push({ date: it.date || '', tab: src.tab, enterprise: src.label, icon: src.icon, type: 'revenue', amount: src.qty(it) * rate, desc: desc });
+      }
+    });
+  });
+  try {
+    const animalEntries = JSON.parse(localStorage.getItem('symbio_animal_entries')) || [];
+    animalEntries.forEach(it => {
+      const desc = [it.activity, it.type, it.name].filter(Boolean).join(' \u2014 ');
+      if (it.rev) rows.push({ date: it.date || '', tab: 'o-dailylog', enterprise: 'Homestead Animals', icon: '\ud83d\udc10', type: 'revenue', amount: parseFloat(it.rev) || 0, desc: desc });
+      if (it.exp) rows.push({ date: it.date || '', tab: 'o-dailylog', enterprise: 'Homestead Animals', icon: '\ud83d\udc10', type: 'expense', amount: parseFloat(it.exp) || 0, desc: desc });
+    });
+  } catch(e){}
+  rows.sort((a, b) => new Date(b.date) - new Date(a.date));
+  return rows;
+}
+
+function renderEntryListView(type){
+  const rows = getAllOpsEntries().filter(r => r.type === type);
+  const results = document.getElementById('results');
+  const title = type === 'revenue' ? 'Revenue Logged' : 'Expenses Logged';
+  const total = rows.reduce((s, r) => s + r.amount, 0);
+  const body = rows.map(r => `
+    <tr>
+      <td>${escapeHtml(r.date)}</td>
+      <td>${r.icon} ${escapeHtml(r.enterprise)}</td>
+      <td>${escapeHtml(r.desc)}</td>
+      <td class="${type === 'revenue' ? 'ops-sum-profit' : 'ops-sum-loss'}">${CUR()} ${Math.round(r.amount).toLocaleString()}</td>
+    </tr>`).join('');
+  results.innerHTML = `
+    <span class="back-link" id="backFromEntryList">\u2190 Back</span>
+    <div class="results-head">
+      <h2>${title}</h2>
+      <span>${CUR()} ${Math.round(total).toLocaleString()} total</span>
+    </div>
+    <div class="planner-table-wrap ops-ledger-wrap">
+      <table class="planner-table ops-ledger-table">
+        <thead><tr><th>Date</th><th>Enterprise</th><th>Details</th><th>Amount</th></tr></thead>
+        <tbody>${body || `<tr><td colspan="4">No ${type} logged yet.</td></tr>`}</tbody>
+      </table>
+    </div>
+  `;
+  document.getElementById('backFromEntryList').addEventListener('click', showHome);
+}
+function goToRevenueList(){
+  window.scrollTo(0,0);
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('compareSection').style.display = 'none';
+  renderEntryListView('revenue');
+}
+function goToExpenseList(){
+  window.scrollTo(0,0);
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('compareSection').style.display = 'none';
+  renderEntryListView('expense');
+}
+
+// ==================== ENTERPRISES LIST (tap Enterprises Active) ====================
+const OPS_TAB_META = [
+  ['o-cereals','Cereals','\ud83c\udf3e','symbio_border_ledger'],
+  ['o-dailylog','Homestead Animals','\ud83d\udc10','symbio_animal_entries'],
+  ['o-kienyeji','Kienyeji Poultry','\ud83d\udc14','symbio_poultry_ledger'],
+  ['o-horticulture','Horticulture','\ud83e\udd6c','symbio_ledger_data'],
+  ['o-hatchery','Hatchery','\ud83d\udc23','symbio_standalone_hatchery_ledger'],
+  ['o-compost','Compost','\u267b\ufe0f','symbio_compost_ledger'],
+  ['o-pigs','Pigs','\ud83d\udc16','symbio_pig_ledger'],
+  ['o-seedlings','Seedling Propagation','\ud83c\udf31','symbio_seedling_ledger']
+];
+
+function renderEnterprisesListView(){
+  const results = document.getElementById('results');
+  const cards = OPS_TAB_META.map(([tab,label,icon,key]) => {
+    let has = false;
+    try { has = (JSON.parse(localStorage.getItem(key))||[]).length > 0; } catch(e){}
+    return `
+      <div class="home-card ops-pick-card" data-etab="${tab}" style="border-left-color:${has ? 'var(--leaf)' : 'var(--line)'};">
+        <div class="home-card-icon">${icon}</div>
+        <div class="home-card-title">${label}</div>
+        <div class="home-card-desc">${has ? '\u2713 Active \u2014 tap to open' : 'Not started yet \u2014 tap to begin'}</div>
+      </div>`;
+  }).join('');
+  results.innerHTML = `
+    <span class="back-link" id="backFromEntList">\u2190 Back</span>
+    <div class="results-head">
+      <h2>Your Enterprises</h2>
+      <span>Tap one to jump straight in</span>
+    </div>
+    <div class="home-grid">${cards}</div>
+  `;
+  document.querySelectorAll('#results .ops-pick-card').forEach(card => {
+    card.addEventListener('click', () => goToOpsEnterprise(card.dataset.etab));
+  });
+  document.getElementById('backFromEntList').addEventListener('click', showHome);
+}
+function goToEnterprisesList(){
+  window.scrollTo(0,0);
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('compareSection').style.display = 'none';
+  renderEnterprisesListView();
+}
+function goToOpsEnterprise(tabId){
+  window.scrollTo(0,0);
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('compareSection').style.display = 'none';
+  renderOpsView(tabId);
+}
+
+// ==================== STORE: STOCK / CONSUMABLES TRACKER ====================
+const LS_STOCK = 'symbio_stock_log';
+function getStockEntries(){ try { return JSON.parse(localStorage.getItem(LS_STOCK)) || []; } catch(e){ return []; } }
+function saveStockEntries(list){ localStorage.setItem(LS_STOCK, JSON.stringify(list)); }
+
+function renderStockView(){
+  const results = document.getElementById('results');
+  results.innerHTML = `
+    <span class="back-link" id="backFromStock">\u2190 Back</span>
+    <div class="results-head">
+      <h2>Store \u2014 Stock &amp; Consumables</h2>
+      <span>Seeds, bio-inputs, fertilizer</span>
+    </div>
+    <div class="ops-note">Log what you buy and what you use \u2014 the balance below works itself out per item, kept separate from Inventory/Tools.</div>
+    <form id="stockEntryForm">
+      <div class="ops-field-row">
+        <div class="ops-field">
+          <label for="stock-item">Item</label>
+          <input type="text" id="stock-item" placeholder="e.g. Kales seed" required>
+        </div>
+        <div class="ops-field">
+          <label for="stock-category">Category</label>
+          <select id="stock-category">
+            <option>Seeds</option>
+            <option>Bio-inputs</option>
+            <option>Fertilizer</option>
+            <option>Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="ops-field-row">
+        <div class="ops-field">
+          <label for="stock-action">Action</label>
+          <select id="stock-action">
+            <option value="Bought">Bought (adds to store)</option>
+            <option value="Used">Used (removes from store)</option>
+          </select>
+        </div>
+        <div class="ops-field">
+          <label for="stock-qty">Quantity</label>
+          <input type="number" id="stock-qty" min="0" step="0.01" placeholder="e.g. 50" required>
+        </div>
+        <div class="ops-field">
+          <label for="stock-unit">Unit</label>
+          <select id="stock-unit">
+            <option>g</option><option>kg</option><option>ml</option><option>L</option>
+            <option>pcs</option><option>bags</option>
+          </select>
+        </div>
+      </div>
+      <div class="ops-field-row">
+        <div class="ops-field" style="grid-column:1 / -1;">
+          <label for="stock-notes">Notes (optional)</label>
+          <input type="text" id="stock-notes" placeholder="e.g. planted in Bed 3">
+        </div>
+      </div>
+      <div class="ops-ledger-bar">
+        <button type="submit" class="planner-btn">Save Entry</button>
+        <button type="button" class="planner-btn" id="stock-export">\ud83d\udce5 Export CSV</button>
+        <button type="button" class="planner-btn" id="stock-clear">Clear Data</button>
+      </div>
+    </form>
+
+    <h3 class="ops-section-title">What's In Store</h3>
+    <div id="stock-balance-grid" class="ops-summary-grid"></div>
+
+    <h3 class="ops-section-title">Stock Log</h3>
+    <div class="planner-table-wrap ops-ledger-wrap">
+      <table class="planner-table ops-ledger-table">
+        <thead><tr><th>Date</th><th>Item</th><th>Category</th><th>Action</th><th>Qty</th><th>Notes</th><th></th></tr></thead>
+        <tbody id="stock-log-body"></tbody>
+      </table>
+    </div>
+  `;
+
+  function renderStock(){
+    const entries = getStockEntries();
+    const balances = {};
+    entries.forEach(e => {
+      const key = e.item.trim().toLowerCase() + '|' + e.unit;
+      if(!balances[key]) balances[key] = { item:e.item, unit:e.unit, qty:0 };
+      balances[key].qty += (e.action === 'Bought' ? 1 : -1) * (parseFloat(e.qty) || 0);
+    });
+    const balanceGrid = document.getElementById('stock-balance-grid');
+    const balList = Object.values(balances).sort((a,b) => a.item.localeCompare(b.item));
+    balanceGrid.innerHTML = balList.length ? balList.map(b => `
+      <div class="ops-summary-card">
+        <div class="ops-sum-label">${escapeHtml(b.item)}</div>
+        <div class="ops-sum-value">${b.qty.toLocaleString()} ${escapeHtml(b.unit)}</div>
+      </div>`).join('') : '<div class="ops-note">Nothing logged yet.</div>';
+
+    const body = document.getElementById('stock-log-body');
+    const sorted = entries.slice().sort((a,b) => new Date(b.date) - new Date(a.date));
+    body.innerHTML = sorted.length ? sorted.map(e => `
+      <tr>
+        <td>${escapeHtml(e.date)}</td>
+        <td>${escapeHtml(e.item)}</td>
+        <td>${escapeHtml(e.category)}</td>
+        <td>${escapeHtml(e.action)}</td>
+        <td>${e.qty} ${escapeHtml(e.unit)}</td>
+        <td>${escapeHtml(e.notes || '')}</td>
+        <td class="remove-cell"><button type="button" class="row-remove-btn" data-del-stock="${e.id}" title="Remove this row">\u2715</button></td>
+      </tr>`).join('') : '<tr><td colspan="7">No stock activity logged yet.</td></tr>';
+    body.querySelectorAll('[data-del-stock]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.getAttribute('data-del-stock'));
+        saveStockEntries(getStockEntries().filter(e => e.id !== id));
+        renderStock();
+      });
+    });
+  }
+
+  document.getElementById('stockEntryForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const entries = getStockEntries();
+    entries.push({
+      id: Date.now(),
+      date: new Date().toISOString().slice(0,10),
+      item: document.getElementById('stock-item').value.trim(),
+      category: document.getElementById('stock-category').value,
+      action: document.getElementById('stock-action').value,
+      qty: parseFloat(document.getElementById('stock-qty').value) || 0,
+      unit: document.getElementById('stock-unit').value,
+      notes: document.getElementById('stock-notes').value.trim()
+    });
+    saveStockEntries(entries);
+    e.target.reset();
+    renderStock();
+  });
+
+  document.getElementById('stock-export').addEventListener('click', () => {
+    const entries = getStockEntries();
+    if(!entries.length){ alert('No stock entries to export.'); return; }
+    let csv = 'Date,Item,Category,Action,Quantity,Unit,Notes\n';
+    entries.forEach(e => {
+      csv += `"${e.date}","${e.item}","${e.category}","${e.action}",${e.qty},"${e.unit}","${(e.notes||'').replace(/"/g,'""')}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `symbio_stock_log_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+  });
+
+  document.getElementById('stock-clear').addEventListener('click', () => {
+    if(confirm('Are you sure you want to clear all stock log entries?')){
+      saveStockEntries([]);
+      renderStock();
+    }
+  });
+
+  document.getElementById('backFromStock').addEventListener('click', showHome);
+  renderStock();
+}
+function goToStock(){
+  window.scrollTo(0,0);
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('compareSection').style.display = 'none';
+  renderStockView();
+}
+
+// ==================== INVENTORY / TOOLS TRACKER ====================
+const LS_TOOLS = 'symbio_tools_log';
+function getToolEntries(){ try { return JSON.parse(localStorage.getItem(LS_TOOLS)) || []; } catch(e){ return []; } }
+function saveToolEntries(list){ localStorage.setItem(LS_TOOLS, JSON.stringify(list)); }
+
+function renderToolsView(){
+  const results = document.getElementById('results');
+  results.innerHTML = `
+    <span class="back-link" id="backFromTools">\u2190 Back</span>
+    <div class="results-head">
+      <h2>Inventory &amp; Tools</h2>
+      <span>Jembes, spades, sprayers, drinkers</span>
+    </div>
+    <div class="ops-note">Durable equipment you own \u2014 kept separate from the Store's consumable stock.</div>
+    <form id="toolEntryForm">
+      <div class="ops-field-row">
+        <div class="ops-field">
+          <label for="tool-item">Item</label>
+          <input type="text" id="tool-item" placeholder="e.g. Jembe" required>
+        </div>
+        <div class="ops-field">
+          <label for="tool-qty">Quantity</label>
+          <input type="number" id="tool-qty" min="0" step="1" value="1" required>
+        </div>
+      </div>
+      <div class="ops-field-row">
+        <div class="ops-field" style="grid-column:1 / -1;">
+          <label for="tool-notes">Notes / condition (optional)</label>
+          <input type="text" id="tool-notes" placeholder="e.g. 2 need new handles">
+        </div>
+      </div>
+      <div class="ops-ledger-bar">
+        <button type="submit" class="planner-btn">Add Item</button>
+        <button type="button" class="planner-btn" id="tool-export">\ud83d\udce5 Export CSV</button>
+        <button type="button" class="planner-btn" id="tool-clear">Clear Data</button>
+      </div>
+    </form>
+
+    <h3 class="ops-section-title">Your Tools</h3>
+    <div id="tool-list"></div>
+  `;
+
+  function renderTools(){
+    const entries = getToolEntries();
+    const list = document.getElementById('tool-list');
+    list.innerHTML = entries.length ? entries.map(e => `
+      <div class="ops-vault-item">
+        <span><strong>${escapeHtml(e.item)}</strong> \u2014 ${e.qty}${e.notes ? ' \u2014 ' + escapeHtml(e.notes) : ''}</span>
+        <button type="button" class="row-remove-btn" data-del-tool="${e.id}" title="Remove this item">\u2715</button>
+      </div>`).join('') : '<div class="ops-note">Nothing added yet.</div>';
+    list.querySelectorAll('[data-del-tool]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.getAttribute('data-del-tool'));
+        saveToolEntries(getToolEntries().filter(e => e.id !== id));
+        renderTools();
+      });
+    });
+  }
+
+  document.getElementById('toolEntryForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const entries = getToolEntries();
+    entries.push({
+      id: Date.now(),
+      item: document.getElementById('tool-item').value.trim(),
+      qty: parseFloat(document.getElementById('tool-qty').value) || 0,
+      notes: document.getElementById('tool-notes').value.trim()
+    });
+    saveToolEntries(entries);
+    e.target.reset();
+    document.getElementById('tool-qty').value = 1;
+    renderTools();
+  });
+
+  document.getElementById('tool-export').addEventListener('click', () => {
+    const entries = getToolEntries();
+    if(!entries.length){ alert('No tools to export.'); return; }
+    let csv = 'Item,Quantity,Notes\n';
+    entries.forEach(e => {
+      csv += `"${e.item}",${e.qty},"${(e.notes||'').replace(/"/g,'""')}"\n`;
+    });
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `symbio_tools_inventory_${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+  });
+
+  document.getElementById('tool-clear').addEventListener('click', () => {
+    if(confirm('Are you sure you want to clear your tools inventory?')){
+      saveToolEntries([]);
+      renderTools();
+    }
+  });
+
+  document.getElementById('backFromTools').addEventListener('click', showHome);
+  renderTools();
+}
+function goToTools(){
+  window.scrollTo(0,0);
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('compareSection').style.display = 'none';
+  renderToolsView();
+}
+
 function renderHomeDashboard(){
   const el = document.getElementById('homeDashboard');
   if(!el) return;
   const { totalRevenue, totalExpense, activeCount, totalTracked } = computeOpsFinance();
-  if (activeCount === 0){
-    el.style.display = 'none';
-    el.innerHTML = '';
-    return;
-  }
   const net = totalRevenue - totalExpense;
   const netClass = net > 0 ? 'ops-sum-profit' : (net < 0 ? 'ops-sum-loss' : '');
   el.style.display = 'grid';
   el.innerHTML = `
-    <div class="ops-summary-card">
+    <div class="ops-summary-card clickable" id="dashCardRevenue">
       <div class="ops-sum-label">\ud83d\udcb0 Revenue Logged</div>
       <div class="ops-sum-value">${CUR()} ${Math.round(totalRevenue).toLocaleString()}</div>
     </div>
-    <div class="ops-summary-card">
+    <div class="ops-summary-card clickable" id="dashCardExpense">
       <div class="ops-sum-label">\ud83d\udcc9 Expenses Logged</div>
       <div class="ops-sum-value">${CUR()} ${Math.round(totalExpense).toLocaleString()}</div>
     </div>
@@ -11104,11 +11520,24 @@ function renderHomeDashboard(){
       <div class="ops-sum-label">\ud83d\udcc8 Net So Far</div>
       <div class="ops-sum-value">${CUR()} ${Math.round(net).toLocaleString()}</div>
     </div>
-    <div class="ops-summary-card">
+    <div class="ops-summary-card clickable" id="dashCardEnterprises">
       <div class="ops-sum-label">\ud83d\udcd2 Enterprises Active</div>
       <div class="ops-sum-value">${activeCount} of ${totalTracked}</div>
     </div>
+    <div class="ops-summary-card clickable" id="dashCardStock">
+      <div class="ops-sum-label">\ud83c\udf3e Store</div>
+      <div class="ops-sum-value">Stock &amp; Inputs</div>
+    </div>
+    <div class="ops-summary-card clickable" id="dashCardTools">
+      <div class="ops-sum-label">\ud83e\uddf0 Inventory / Tools</div>
+      <div class="ops-sum-value">Equipment</div>
+    </div>
   `;
+  document.getElementById('dashCardRevenue').addEventListener('click', goToRevenueList);
+  document.getElementById('dashCardExpense').addEventListener('click', goToExpenseList);
+  document.getElementById('dashCardEnterprises').addEventListener('click', goToEnterprisesList);
+  document.getElementById('dashCardStock').addEventListener('click', goToStock);
+  document.getElementById('dashCardTools').addEventListener('click', goToTools);
 }
 renderHomeDashboard();
 
