@@ -43,12 +43,12 @@
     --shadow:rgba(42,55,32,0.08);
     --chart-text:#25301D;
     --chart-grid:#D9D2BD;
-    --chart-series-1:#2F4A35;
-    --chart-series-2:#8F6B12;
-    --chart-series-3:#9E5A31;
-    --chart-series-4:#5B6A50;
-    --chart-series-5:#3F5A6B;
-    --chart-series-6:#B08D57;
+    --chart-series-1:#2E6DE6;
+    --chart-series-2:#F2994A;
+    --chart-series-3:#34A853;
+    --chart-series-4:#16A3A3;
+    --chart-series-5:#8B5FBF;
+    --chart-series-6:#E0554F;
   }
   /* Follow the OS preference when the user hasn't chosen explicitly */
   @media (prefers-color-scheme: dark){
@@ -68,12 +68,12 @@
       --shadow:rgba(0,0,0,0.45);
       --chart-text:#EAEEE0;
       --chart-grid:#454F3D;
-      --chart-series-1:#5FA06B;
-      --chart-series-2:#E0BB4C;
-      --chart-series-3:#D98F62;
-      --chart-series-4:#9FB089;
-      --chart-series-5:#6E8FA3;
-      --chart-series-6:#C9A876;
+      --chart-series-1:#5B9BFF;
+      --chart-series-2:#FFB86B;
+      --chart-series-3:#5FD98A;
+      --chart-series-4:#4FD6D6;
+      --chart-series-5:#B08EE0;
+      --chart-series-6:#FF8A85;
     }
   }
   /* Explicit manual overrides win over the OS preference */
@@ -83,8 +83,8 @@
     --maize:#8F6B12; --gold-bright:#C9A227; --leaf:#2F4A35; --sage:#8FA079;
     --rust:#9E5A31; --line:#E4DECD; --gold-text:#FFFFFF; --shadow:rgba(42,55,32,0.08);
     --chart-text:#25301D; --chart-grid:#D9D2BD;
-    --chart-series-1:#2F4A35; --chart-series-2:#8F6B12; --chart-series-3:#9E5A31; --chart-series-4:#5B6A50;
-    --chart-series-5:#3F5A6B; --chart-series-6:#B08D57;
+    --chart-series-1:#2E6DE6; --chart-series-2:#F2994A; --chart-series-3:#34A853; --chart-series-4:#16A3A3;
+    --chart-series-5:#8B5FBF; --chart-series-6:#E0554F;
   }
   :root[data-theme="dark"]{
     color-scheme: dark;
@@ -92,8 +92,8 @@
     --maize:#E0BB4C; --gold-bright:#E9C860; --leaf:#43714D; --sage:#9FB089;
     --rust:#C77E52; --line:#31392C; --gold-text:#16200E; --shadow:rgba(0,0,0,0.45);
     --chart-text:#EAEEE0; --chart-grid:#454F3D;
-    --chart-series-1:#5FA06B; --chart-series-2:#E0BB4C; --chart-series-3:#D98F62; --chart-series-4:#9FB089;
-    --chart-series-5:#6E8FA3; --chart-series-6:#C9A876;
+    --chart-series-1:#5B9BFF; --chart-series-2:#FFB86B; --chart-series-3:#5FD98A; --chart-series-4:#4FD6D6;
+    --chart-series-5:#B08EE0; --chart-series-6:#FF8A85;
   }
   *{box-sizing:border-box;margin:0;padding:0;}
   html{background:var(--soil-900);}
@@ -894,8 +894,9 @@
     background:var(--soil-800);
     border:1px solid var(--line);
     border-left:3px solid var(--maize);
-    border-radius:5px;
+    border-radius:10px;
     padding:12px;
+    box-shadow:0 2px 10px var(--shadow);
   }
   .ops-summary-card .ops-sum-label{
     font-family:'IBM Plex Mono',monospace;
@@ -1293,7 +1294,7 @@
   .ops-guide-body ul{padding-left:18px;margin:8px 0;}
   .ops-guide.o-open .ops-guide-body{display:block;}
   .ops-chart-frame{position:relative;height:280px;background:var(--soil-800);border:1px solid var(--line);
-    border-radius:6px;padding:12px;margin:14px 0;}
+    border-radius:12px;padding:16px;margin:14px 0;box-shadow:0 2px 12px var(--shadow);}
   .ops-vault{background:var(--soil-800);border:1px solid var(--line);border-radius:6px;padding:14px;margin:16px 0;}
   .ops-vault-list{list-style:none;margin:10px 0 0;padding:0;}
   .ops-vault-item{display:flex;gap:8px;align-items:center;justify-content:space-between;
@@ -1361,6 +1362,37 @@
     .planner-table .cell-inputs{font-size:12.5px;}
     .planner-table .cell-inputs input{width:68px;font-size:14px;padding:7px 8px;}
     .planner-table .total-cell{border-radius:4px;padding:9px 10px !important;margin-top:2px;}
+  }
+
+  /* ---- Ledger/log tables opt back out of the stacked-card view above:
+     entries are read-only rows, not a data-entry grid, so a real
+     horizontal-scrolling table (like desktop) is easier to scan than
+     one-row-per-card on a phone. The .ops-ledger-table class wins over
+     the plain .planner-table rules above on specificity, regardless of
+     source order. */
+  @media (max-width:680px){
+    .ops-ledger-wrap{overflow-x:auto;}
+    .planner-table.ops-ledger-table{
+      min-width:640px;width:auto;border:0;border-collapse:collapse;border-spacing:0;
+    }
+    .planner-table.ops-ledger-table thead{
+      position:static;width:auto;height:auto;overflow:visible;clip:auto;white-space:normal;
+    }
+    .planner-table.ops-ledger-table tbody{display:table-row-group;}
+    .planner-table.ops-ledger-table tr{
+      display:table-row;border:none;border-radius:0;padding:0;margin-bottom:0;background:transparent;
+    }
+    .planner-table.ops-ledger-table tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+    .planner-table.ops-ledger-table td{
+      display:table-cell;border:1px solid var(--line);padding:8px;
+    }
+    .planner-table.ops-ledger-table td:first-child{padding-top:8px;}
+    .planner-table.ops-ledger-table td:last-child{border-bottom:1px solid var(--line);padding-bottom:8px;}
+    .planner-table.ops-ledger-table td[data-label]::before{content:none;display:none;}
+    .planner-table.ops-ledger-table td.remove-cell{text-align:left;padding-top:8px;}
+    .planner-table.ops-ledger-table input, .planner-table.ops-ledger-table select{
+      font-size:12px;padding:6px 7px;
+    }
   }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -2245,8 +2277,8 @@ function calcRevenue(entId){
 const MANUALS = [
   {
     id: 'bio-inputs',
-    price: 2500,
-    codeHash: 'b1bbd5192e5d12860d68dd268c0f5f4fb47e8aecbff79fa4cc770ff9bbdc0065',
+    price: 1000,
+    codeHash: 'fce251426a6e7808c00f65487dbda21ff24f04bbcd556be79eaf715aaec44105',
     title: 'Symbio Bio-Inputs Manual',
     subtitle: 'Making JMS, FAA & LAB \u2014 and using them to build fast, nutrient-rich compost',
     teaser: 'The core three: JMS, FAA, and LAB serum, made from scratch, then combined into a 30\u201345 day compost protocol instead of the usual 2\u20136 months.',
@@ -2389,7 +2421,7 @@ const MANUALS = [
   {
     id: 'living-floor',
     price: 1000,
-    codeHash: 'f25ad04ef93efb9d34be2a9e576fc227f1e32e53db139fe46763bf5c33b741bd',
+    codeHash: 'c10e53a106411fdae7f6114d14f548aeb591f8b1e9e0a7ef9cd3d584b4021bc1',
     title: 'Symbio Living Floor System',
     subtitle: 'A practical protocol for high-yield soil regeneration',
     teaser: 'Layer organic material on undug soil and let microbes, fungi, and earthworms do the work \u2014 a 5-step no-till protocol that cuts watering by up to 70% and eliminates weeding.',
@@ -2485,7 +2517,7 @@ const MANUALS = [
   {
     id: 'imo-trapping',
     price: 1000,
-    codeHash: '13279918e5b5cd8aba15b19fb24daf5d80f26abc6a0824448bbfb14d9d016b3c',
+    codeHash: '4d8588fda9cbc6c12f2d4c1b92f888558380965b4043b8edcfce7a49f165af67',
     title: 'Symbio IMO Trapping & Multiplication Guide',
     subtitle: 'Capturing, stabilising, multiplying and acclimating indigenous microorganisms \u2014 the four-phase method',
     teaser: 'A complete system for capturing wild local microbes and multiplying them into farm-ready volumes \u2014 from a box of rice to enough finished inoculant for your whole plot, using maize bran to bulk up the culture.',
@@ -2541,7 +2573,7 @@ const MANUALS = [
   {
     id: 'regen-microfarm',
     price: 1000,
-    codeHash: '50f8131009b23f01f2461587aef61d83ace89d3a85b8205310134d7df87b3266',
+    codeHash: 'ff30ef4a55873a47fa5aed503013c486cab417f370bf0138720693ac46a81305',
     title: 'Symbio Regenerative Micro-Farm Operations Guide',
     subtitle: 'Integrating apiary, rabbits, and rotational beds under shade netting',
     teaser: 'A working system combining bees, rabbits, and a rotating vegetable bed layout \u2014 sized around a 300m\u00b2 net with 10 hives as a working example.',
@@ -2578,7 +2610,7 @@ const MANUALS = [
   {
     id: 'piglet-breeding-guide',
     price: 1000,
-    codeHash: '0091ce2bb081c04b69e1466e7f315a76f1a80f372c35f258f35d3d234a14462b',
+    codeHash: '776979ab65e2d46aecd0b36e974fa84450c8114d05fb46df4f43f2d2e6199021',
     title: 'Symbio Piglet Breeding Setup Guide',
     subtitle: 'Starting a piglet production enterprise with in-pig sows',
     teaser: 'Starting with pregnant sows skips the longest part of the wait \u2014 housing design, feed formulation, and the one structural detail that prevents most piglet deaths.',
@@ -2630,8 +2662,8 @@ const MANUALS = [
   },
   {
     id: 'pig-refinery-system',
-    price: 2500,
-    codeHash: '90c0e39a9d8187db3bca6e495c4b4527df5d3c5ba36a0c32061d5d70b229da47',
+    price: 1000,
+    codeHash: 'ccd59f6d9095af400d87fef49694b7ee856202580837f4709e3dc68b157ba48b',
     title: 'Symbio Pig Refinery System',
     subtitle: 'Deep litter housing and submerged fermentation feed for low-odour, high-efficiency pig keeping',
     teaser: 'Housing that never needs washing, and a feed method that pre-digests forage before the pig eats it \u2014 tackling smell, feed cost, and growth rate together.',
@@ -2690,8 +2722,8 @@ const MANUALS = [
   },
   {
     id: 'onfarm-solutions',
-    price: 2500,
-    codeHash: 'f379b4459bb0051d90f88487fb9d0c3abe029517c25b8f3019f0ee18f8b620ee',
+    price: 1000,
+    codeHash: '9227e64f618232091703e4970426006f91b8f16e75f341583e732cf9fa3daab7',
     title: 'Symbio On-Farm Biological Solutions',
     subtitle: 'Fish Amino Acid, Living Weed Extract, and the Power Blend \u2014 turning farm waste into a complete fertility system',
     teaser: 'An enhanced FAA formula, a brand-new living weed extract (Bioverde), and how to combine both with LAB serum into one Power Blend with a full-season application schedule.',
@@ -4350,8 +4382,8 @@ window.OPS_MODULES['o-cereals'] = (function(){
         <button type="button" class="planner-btn" id="${TAB}-export-pdf">📄 Export PDF Report</button>
         <button type="button" class="planner-btn" id="${TAB}-clear-ledger">Clear Data</button>
       </div>
-      <div class="planner-table-wrap">
-        <table class="planner-table">
+      <div class="planner-table-wrap ops-ledger-wrap">
+        <table class="planner-table ops-ledger-table">
           <thead>
             <tr>
               <th>Date</th><th>Type</th><th>Production Section</th><th>Details</th>
@@ -5272,7 +5304,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
       <div class="ops-field-row">
         <div class="ops-field" style="grid-column:1 / -1;">
           <label>Market Sentiment: <span id="o-hort-sentiment-label">Standard Market (0%)</span></label>
-          <input type="number" id="o-hort-sentiment" min="-50" max="50" step="5" value="0">
+          <input type="range" id="o-hort-sentiment" min="-50" max="50" step="5" value="0">
           <span class="ops-hint">Negative for oversupply / market glut / inflation squeeze, positive for off-season timing, direct clients, or rising prices. Scales every revenue projection below \u2014 your entered price stays your own reference point.</span>
         </div>
       </div>
@@ -5366,14 +5398,14 @@ window.OPS_MODULES['o-horticulture'] = (function(){
         </div>
       </form>
 
-      <div class="planner-table-wrap">
+      <div class="planner-table-wrap ops-ledger-wrap">
         <div class="ops-ledger-bar">
           <h3 class="ops-section-title">Symbio Operations Log</h3>
           <button type="button" class="planner-btn" id="o-hort-export">📥 Export CSV</button>
           <button type="button" class="planner-btn" id="o-hort-export-pdf">📄 Export PDF Report</button>
           <button type="button" class="planner-btn" id="o-hort-clear">Clear Data</button>
         </div>
-        <table class="planner-table">
+        <table class="planner-table ops-ledger-table">
           <thead>
             <tr>
               <th>Date</th>
@@ -6516,14 +6548,14 @@ window.OPS_MODULES['o-hatchery'] = (function(){
         </div>
       </form>
 
-      <div class="planner-table-wrap">
+      <div class="planner-table-wrap ops-ledger-wrap">
         <div class="ops-ledger-bar">
           <h3 class="ops-section-title">Hatchery Operations Ledger</h3>
           <button type="button" class="planner-btn" id="o-hatchery-export">📥 Export CSV</button>
           <button type="button" class="planner-btn" id="o-hatchery-export-pdf">📄 Export PDF Report</button>
           <button type="button" class="planner-btn" id="o-hatchery-clear">Clear Data</button>
         </div>
-        <table class="planner-table">
+        <table class="planner-table ops-ledger-table">
           <thead>
             <tr>
               <th>Date</th>
@@ -7260,8 +7292,9 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
           <input type="number" id="o-kienyeji-base-capex" value="85000">
         </div>
         <div class="ops-field">
-          <label for="o-kienyeji-base-opex">Annual Running Costs / OpEx (${CUR()})</label>
-          <input type="number" id="o-kienyeji-base-opex" value="60000">
+          <label for="o-kienyeji-base-opex">Monthly Running Costs / OpEx (${CUR()})</label>
+          <input type="number" id="o-kienyeji-base-opex" value="5000">
+          <span class="ops-hint">Feed, labour, and other recurring costs per month — the app projects this to a full year in the summary below.</span>
         </div>
       </div>
     </div>
@@ -7329,7 +7362,7 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
       </form>
     </div>
 
-    <div class="planner-table-wrap">
+    <div class="planner-table-wrap ops-ledger-wrap">
       <div class="ops-field-row" style="justify-content:space-between;align-items:center;">
         <h3 class="ops-section-title">Poultry Operations Log</h3>
         <div class="ops-ledger-bar">
@@ -7338,7 +7371,7 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
           <button type="button" class="planner-btn" id="o-kienyeji-clear-ledger">Clear Data</button>
         </div>
       </div>
-      <table class="planner-table">
+      <table class="planner-table ops-ledger-table">
         <thead>
           <tr>
             <th>Date</th>
@@ -7433,7 +7466,8 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
       const pManure = numOrDefault($('#o-kienyeji-price-manure').value, 250);
 
       const baseCapex = numOrDefault($('#o-kienyeji-base-capex').value, 85000);
-      const baseOpex = numOrDefault($('#o-kienyeji-base-opex').value, 60000);
+      const baseOpexMonthly = numOrDefault($('#o-kienyeji-base-opex').value, 5000);
+      const baseOpex = baseOpexMonthly * 12;
 
       const capex = Math.round(baseCapex * (totalFlock / 65));
       const opex = Math.round(baseOpex * (totalFlock / 65));
@@ -8109,8 +8143,8 @@ window.OPS_MODULES['o-pigs'] = (function(){
         <button type="button" class="planner-btn" id="o-pigs-export-pdf">📄 Export PDF Report</button>
         <button type="button" class="planner-btn" id="o-pigs-clear-ledger">Clear Data</button>
       </div>
-      <div class="planner-table-wrap">
-        <table class="planner-table">
+      <div class="planner-table-wrap ops-ledger-wrap">
+        <table class="planner-table ops-ledger-table">
           <thead>
             <tr>
               <th>Date</th>
@@ -8835,14 +8869,14 @@ window.OPS_MODULES['o-compost'] = (function(){
         </div>
       </form>
 
-      <div class="planner-table-wrap">
+      <div class="planner-table-wrap ops-ledger-wrap">
         <div class="ops-ledger-bar">
           <h3 class="ops-section-title">Compost Production & Sales Log</h3>
           <button type="button" class="planner-btn" id="o-compost-export">📥 Export CSV</button>
           <button type="button" class="planner-btn" id="o-compost-export-pdf">📄 Export PDF Report</button>
           <button type="button" class="planner-btn" id="o-compost-clear">Clear Data</button>
         </div>
-        <table class="planner-table">
+        <table class="planner-table ops-ledger-table">
           <thead>
             <tr>
               <th>Date</th>
@@ -9604,14 +9638,14 @@ window.OPS_MODULES['o-seedlings'] = (function(){
         </div>
       </form>
 
-      <div class="planner-table-wrap">
+      <div class="planner-table-wrap ops-ledger-wrap">
         <div class="ops-ledger-bar">
           <h3 class="ops-section-title">Enterprise Log</h3>
           <button type="button" class="planner-btn" id="o-seedlings-export">\ud83d\udce5 Export CSV</button>
           <button type="button" class="planner-btn" id="o-seedlings-export-pdf">\ud83d\udcc4 Export PDF Report</button>
           <button type="button" class="planner-btn" id="o-seedlings-clear">Clear Data</button>
         </div>
-        <table class="planner-table">
+        <table class="planner-table ops-ledger-table">
           <thead>
             <tr>
               <th>Date</th>
@@ -10487,8 +10521,8 @@ window.OPS_MODULES['o-dailylog'] = (function(){
         <button type="button" class="planner-btn" id="o-dailylog-clearBtn">Clear</button>
       </div>
 
-      <div class="planner-table-wrap">
-        <table class="planner-table">
+      <div class="planner-table-wrap ops-ledger-wrap">
+        <table class="planner-table ops-ledger-table">
           <thead>
             <tr>
               <th>Date</th>
