@@ -889,7 +889,7 @@
     gap:10px;
     margin:16px 0;
   }
-  @media (min-width:520px){ .ops-summary-grid{grid-template-columns:repeat(3,1fr);} }
+  @media (min-width:520px){ .ops-summary-grid{grid-template-columns:repeat(4,1fr);} }
   .ops-summary-card{
     background:var(--soil-800);
     border:1px solid var(--line);
@@ -4996,8 +4996,8 @@ window.OPS_MODULES['o-cereals'] = (function(){
             <td>${item.stream}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty : '-'}</td>
-            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
-            <td class="${cls}">${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + '${CUR()} ' + Math.abs(totalVal).toLocaleString() : '${CUR()} 0'}</td>
+            <td>${item.rate ? `${CUR()} ` + item.rate.toLocaleString() : '-'}</td>
+            <td class="${cls}">${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + `${CUR()} ` + Math.abs(totalVal).toLocaleString() : `${CUR()} 0`}</td>
             <td><button type="button" class="row-remove-btn" data-del-entry="${item.id}">\u2715</button></td>
           </tr>
         `;
@@ -6203,7 +6203,7 @@ window.OPS_MODULES['o-horticulture'] = (function(){
             <td>${crop}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty + ' ' + unit : '-'}</td>
-            <td>${item.rate ? (item.category === 'Expense' ? '${CUR()} ' : '${CUR()}/' + unitLower + ' ') + item.rate : '-'}</td>
+            <td>${item.rate ? (item.category === 'Expense' ? `${CUR()} ` : `${CUR()}/` + unitLower + ' ') + item.rate : '-'}</td>
             <td class="${valClass}">${valText}</td>
             <td class="row-remove-cell"></td>
           `;
@@ -7096,7 +7096,7 @@ window.OPS_MODULES['o-hatchery'] = (function(){
             <td>${item.stream}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty : '-'}</td>
-            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
+            <td>${item.rate ? `${CUR()} ` + item.rate.toLocaleString() : '-'}</td>
             <td class="${valClass}">${valText}</td>
             <td class="row-remove-cell"></td>
           `;
@@ -7850,9 +7850,9 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
             <td>${item.stream}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty : '-'}</td>
-            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
+            <td>${item.rate ? `${CUR()} ` + item.rate.toLocaleString() : '-'}</td>
             <td class="${totalVal > 0 ? 'ops-sum-profit' : totalVal < 0 ? 'ops-sum-loss' : ''}">
-              ${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + '${CUR()} ' + Math.abs(totalVal).toLocaleString() : '-'}
+              ${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + `${CUR()} ` + Math.abs(totalVal).toLocaleString() : '-'}
             </td>
             <td><button type="button" class="row-remove-btn" data-id="${item.id}">\u2715</button></td>
           </tr>
@@ -8683,9 +8683,9 @@ window.OPS_MODULES['o-pigs'] = (function(){
             <td>${item.stream}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty : '-'}</td>
-            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
+            <td>${item.rate ? `${CUR()} ` + item.rate.toLocaleString() : '-'}</td>
             <td class="${valClass}">
-              ${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + '${CUR()} ' + Math.abs(totalVal).toLocaleString() : '-'}
+              ${totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + `${CUR()} ` + Math.abs(totalVal).toLocaleString() : '-'}
             </td>
             <td><button type="button" class="row-remove-btn" data-id="${item.id}">\u2715</button></td>
           </tr>
@@ -9361,7 +9361,7 @@ window.OPS_MODULES['o-compost'] = (function(){
             <td>${item.phase}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty + ' Bags' : '-'}</td>
-            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
+            <td>${item.rate ? `${CUR()} ` + item.rate.toLocaleString() : '-'}</td>
             <td class="${valClass}">${valText}</td>
             <td class="row-remove-cell"></td>
           `;
@@ -10283,7 +10283,7 @@ window.OPS_MODULES['o-seedlings'] = (function(){
             <td>${item.trayType || '-'}</td>
             <td>${item.desc}</td>
             <td>${item.qty ? item.qty.toLocaleString() : '-'}</td>
-            <td>${item.rate ? '${CUR()} ' + item.rate.toLocaleString() : '-'}</td>
+            <td>${item.rate ? `${CUR()} ` + item.rate.toLocaleString() : '-'}</td>
             <td class="${valClass}">${valText}</td>
             <td class="row-remove-cell"></td>
           `;
@@ -11500,6 +11500,236 @@ function goToTools(){
   renderToolsView();
 }
 
+// ==================== REPORTS & PLANS VAULT ====================
+const LS_VAULT = 'symbio_vault_log';
+const VAULT_EXPORT_MAP = {
+  'exportPdfBtn': { tab: null, enterprise: 'Farming for Profit Planner', icon: '\ud83d\udcca' },
+  'o-cereals-export-pdf': { tab: 'o-cereals', enterprise: 'Cereals', icon: '\ud83c\udf3e' },
+  'o-hort-export-pdf': { tab: 'o-horticulture', enterprise: 'Horticulture', icon: '\ud83e\udd6c' },
+  'o-hatchery-export-pdf': { tab: 'o-hatchery', enterprise: 'Hatchery', icon: '\ud83d\udc23' },
+  'o-kienyeji-export-pdf': { tab: 'o-kienyeji', enterprise: 'Kienyeji Poultry', icon: '\ud83d\udc14' },
+  'o-pigs-export-pdf': { tab: 'o-pigs', enterprise: 'Pigs', icon: '\ud83d\udc16' },
+  'o-compost-export-pdf': { tab: 'o-compost', enterprise: 'Compost', icon: '\u267b\ufe0f' },
+  'o-seedlings-export-pdf': { tab: 'o-seedlings', enterprise: 'Seedling Propagation', icon: '\ud83c\udf31' },
+  'o-dailylog-exportPdfBtn': { tab: 'o-dailylog', enterprise: 'Homestead Animals', icon: '\ud83d\udc10' }
+};
+function getVaultEntries(){ try { return JSON.parse(localStorage.getItem(LS_VAULT)) || []; } catch(e){ return []; } }
+function saveVaultEntries(list){ localStorage.setItem(LS_VAULT, JSON.stringify(list)); }
+
+// Delegated listener: these export buttons only exist in the DOM while
+// their enterprise/tool is open, so a single always-present listener on
+// document (rather than one attached per button at mount time) is what
+// reliably catches every click regardless of which screen is showing.
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('button');
+  if (!btn || !btn.id) return;
+  const meta = VAULT_EXPORT_MAP[btn.id];
+  if (!meta) return;
+  const entries = getVaultEntries();
+  entries.unshift({
+    id: Date.now(),
+    date: new Date().toISOString().slice(0,10),
+    time: new Date().toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' }),
+    tab: meta.tab,
+    enterprise: meta.enterprise,
+    icon: meta.icon
+  });
+  saveVaultEntries(entries.slice(0, 200));
+});
+
+function renderVaultView(){
+  const results = document.getElementById('results');
+  const entries = getVaultEntries();
+  const groups = {};
+  entries.forEach(e => {
+    if (!groups[e.enterprise]) groups[e.enterprise] = [];
+    groups[e.enterprise].push(e);
+  });
+  const sections = Object.keys(groups).sort().map(ent => {
+    const icon = groups[ent][0].icon;
+    const rows = groups[ent].map(e => `
+      <div class="ops-vault-item" data-vtab="${e.tab || ''}" style="cursor:pointer;">
+        <span>${escapeHtml(e.date)} at ${escapeHtml(e.time)}</span>
+        <span>\u2192</span>
+      </div>`).join('');
+    return `<h3 class="ops-section-title">${icon} ${escapeHtml(ent)}</h3><div>${rows}</div>`;
+  }).join('');
+  results.innerHTML = `
+    <span class="back-link" id="backFromVault">\u2190 Back</span>
+    <div class="results-head">
+      <h2>Reports &amp; Plans Vault</h2>
+      <span>${entries.length} saved</span>
+    </div>
+    <div class="ops-note">Every time you export a PDF report or plan, it's logged here automatically \u2014 tap an entry to jump straight back to that enterprise.</div>
+    ${entries.length ? sections : '<div class="ops-note">Nothing saved yet \u2014 export a report from any enterprise or the Planner and it will show up here.</div>'}
+    ${entries.length ? '<div class="ops-ledger-bar"><button type="button" class="planner-btn" id="vault-clear">Clear Vault Log</button></div>' : ''}
+  `;
+  document.querySelectorAll('#results [data-vtab]').forEach(row => {
+    row.addEventListener('click', () => {
+      const tab = row.getAttribute('data-vtab');
+      if (tab) goToOpsEnterprise(tab); else goToPlanner();
+    });
+  });
+  const clearBtn = document.getElementById('vault-clear');
+  if (clearBtn) clearBtn.addEventListener('click', () => {
+    if (confirm('Clear your saved reports log? This only clears the index here, not any PDFs already downloaded to your device.')){
+      saveVaultEntries([]);
+      renderVaultView();
+    }
+  });
+  document.getElementById('backFromVault').addEventListener('click', showHome);
+}
+function goToVault(){
+  window.scrollTo(0,0);
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('compareSection').style.display = 'none';
+  renderVaultView();
+}
+
+// ==================== FARM SCHEDULE / ROUTINE TRACKER ====================
+const LS_SCHEDULE = 'symbio_schedule_log';
+function getScheduleEntries(){ try { return JSON.parse(localStorage.getItem(LS_SCHEDULE)) || []; } catch(e){ return []; } }
+function saveScheduleEntries(list){ localStorage.setItem(LS_SCHEDULE, JSON.stringify(list)); }
+
+function renderScheduleView(){
+  const results = document.getElementById('results');
+  const enterpriseOptions = ['General'].concat(OPS_TAB_META.map(m => m[1]))
+    .map(n => `<option>${escapeHtml(n)}</option>`).join('');
+  results.innerHTML = `
+    <span class="back-link" id="backFromSchedule">\u2190 Back</span>
+    <div class="results-head">
+      <h2>Farm Schedule</h2>
+      <span>Routine tasks &amp; reminders</span>
+    </div>
+    <div class="ops-note">A checklist you check when you open the app \u2014 there's no push notification here, since this runs entirely in your browser with no server behind it.</div>
+    <form id="scheduleEntryForm">
+      <div class="ops-field-row">
+        <div class="ops-field">
+          <label for="sched-task">Task</label>
+          <input type="text" id="sched-task" placeholder="e.g. Turn compost pile" required>
+        </div>
+        <div class="ops-field">
+          <label for="sched-enterprise">Enterprise</label>
+          <select id="sched-enterprise">${enterpriseOptions}</select>
+        </div>
+      </div>
+      <div class="ops-field-row">
+        <div class="ops-field">
+          <label for="sched-frequency">Repeats</label>
+          <select id="sched-frequency">
+            <option value="One-time">One-time</option>
+            <option value="Daily">Daily</option>
+            <option value="Weekly">Weekly</option>
+            <option value="Monthly">Monthly</option>
+          </select>
+        </div>
+        <div class="ops-field">
+          <label for="sched-due">Next Due</label>
+          <input type="date" id="sched-due" required>
+        </div>
+      </div>
+      <div class="ops-field-row">
+        <div class="ops-field" style="grid-column:1 / -1;">
+          <label for="sched-notes">Notes (optional)</label>
+          <input type="text" id="sched-notes" placeholder="e.g. use the north pile first">
+        </div>
+      </div>
+      <div class="ops-ledger-bar">
+        <button type="submit" class="planner-btn">Add to Schedule</button>
+        <button type="button" class="planner-btn" id="sched-clear">Clear All</button>
+      </div>
+    </form>
+
+    <h3 class="ops-section-title">Due Today or Overdue</h3>
+    <div id="sched-due-list"></div>
+    <h3 class="ops-section-title">Upcoming</h3>
+    <div id="sched-upcoming-list"></div>
+  `;
+
+  function addInterval(dateStr, freq){
+    const d = new Date(dateStr + 'T00:00:00');
+    if (freq === 'Daily') d.setDate(d.getDate() + 1);
+    else if (freq === 'Weekly') d.setDate(d.getDate() + 7);
+    else if (freq === 'Monthly') d.setMonth(d.getMonth() + 1);
+    return d.toISOString().slice(0,10);
+  }
+
+  function rowHtml(e){
+    return `
+      <div class="ops-vault-item">
+        <span><strong>${escapeHtml(e.task)}</strong> \u2014 ${escapeHtml(e.enterprise)} \u2014 ${escapeHtml(e.frequency)} \u2014 due ${escapeHtml(e.nextDue)}${e.notes ? ' \u2014 ' + escapeHtml(e.notes) : ''}</span>
+        <span>
+          <button type="button" class="row-remove-btn" data-done-sched="${e.id}" title="Mark done" style="border-color:var(--leaf);color:var(--leaf);">\u2713</button>
+          <button type="button" class="row-remove-btn" data-del-sched="${e.id}" title="Remove">\u2715</button>
+        </span>
+      </div>`;
+  }
+
+  function renderSchedule(){
+    const entries = getScheduleEntries().sort((a,b) => new Date(a.nextDue) - new Date(b.nextDue));
+    const today = new Date().toISOString().slice(0,10);
+    const dueNow = entries.filter(e => e.nextDue <= today);
+    const upcoming = entries.filter(e => e.nextDue > today);
+    document.getElementById('sched-due-list').innerHTML = dueNow.length ? dueNow.map(rowHtml).join('') : '<div class="ops-note">Nothing due.</div>';
+    document.getElementById('sched-upcoming-list').innerHTML = upcoming.length ? upcoming.map(rowHtml).join('') : '<div class="ops-note">Nothing upcoming.</div>';
+
+    document.querySelectorAll('[data-done-sched]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.getAttribute('data-done-sched'));
+        let entries2 = getScheduleEntries();
+        const entry = entries2.find(x => x.id === id);
+        if (!entry) return;
+        if (entry.frequency === 'One-time'){
+          entries2 = entries2.filter(x => x.id !== id);
+        } else {
+          entry.nextDue = addInterval(entry.nextDue, entry.frequency);
+        }
+        saveScheduleEntries(entries2);
+        renderSchedule();
+      });
+    });
+    document.querySelectorAll('[data-del-sched]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = Number(btn.getAttribute('data-del-sched'));
+        saveScheduleEntries(getScheduleEntries().filter(x => x.id !== id));
+        renderSchedule();
+      });
+    });
+  }
+
+  document.getElementById('scheduleEntryForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const entries = getScheduleEntries();
+    entries.push({
+      id: Date.now(),
+      task: document.getElementById('sched-task').value.trim(),
+      enterprise: document.getElementById('sched-enterprise').value,
+      frequency: document.getElementById('sched-frequency').value,
+      nextDue: document.getElementById('sched-due').value,
+      notes: document.getElementById('sched-notes').value.trim()
+    });
+    saveScheduleEntries(entries);
+    e.target.reset();
+    renderSchedule();
+  });
+
+  document.getElementById('sched-clear').addEventListener('click', () => {
+    if (confirm('Clear your whole farm schedule?')){
+      saveScheduleEntries([]);
+      renderSchedule();
+    }
+  });
+
+  document.getElementById('backFromSchedule').addEventListener('click', showHome);
+  renderSchedule();
+}
+function goToSchedule(){
+  window.scrollTo(0,0);
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('compareSection').style.display = 'none';
+  renderScheduleView();
+}
+
 function renderHomeDashboard(){
   const el = document.getElementById('homeDashboard');
   if(!el) return;
@@ -11532,12 +11762,22 @@ function renderHomeDashboard(){
       <div class="ops-sum-label">\ud83e\uddf0 Inventory / Tools</div>
       <div class="ops-sum-value">Equipment</div>
     </div>
+    <div class="ops-summary-card clickable" id="dashCardVault">
+      <div class="ops-sum-label">\ud83d\udcc1 Reports &amp; Plans</div>
+      <div class="ops-sum-value">Vault</div>
+    </div>
+    <div class="ops-summary-card clickable" id="dashCardSchedule">
+      <div class="ops-sum-label">\ud83d\uddd3\ufe0f Schedule</div>
+      <div class="ops-sum-value">Routine Tasks</div>
+    </div>
   `;
   document.getElementById('dashCardRevenue').addEventListener('click', goToRevenueList);
   document.getElementById('dashCardExpense').addEventListener('click', goToExpenseList);
   document.getElementById('dashCardEnterprises').addEventListener('click', goToEnterprisesList);
   document.getElementById('dashCardStock').addEventListener('click', goToStock);
   document.getElementById('dashCardTools').addEventListener('click', goToTools);
+  document.getElementById('dashCardVault').addEventListener('click', goToVault);
+  document.getElementById('dashCardSchedule').addEventListener('click', goToSchedule);
 }
 renderHomeDashboard();
 
