@@ -11196,16 +11196,20 @@ const OPS_TAB_META = [
 
 function renderEnterprisesListView(){
   const results = document.getElementById('results');
-  const cards = OPS_TAB_META.map(([tab,label,icon,key]) => {
+  const withStatus = OPS_TAB_META.map(([tab,label,icon,key]) => {
     let has = false;
     try { has = (JSON.parse(localStorage.getItem(key))||[]).length > 0; } catch(e){}
-    return `
+    return { tab, label, icon, has };
+  });
+  // Active enterprises first (so you land on what you're already running,
+  // not hunting through the full list), original order kept within each group.
+  withStatus.sort((a, b) => (b.has - a.has));
+  const cards = withStatus.map(({tab,label,icon,has}) => `
       <div class="home-card ops-pick-card" data-etab="${tab}" style="border-left-color:${has ? 'var(--leaf)' : 'var(--line)'};">
         <div class="home-card-icon">${icon}</div>
         <div class="home-card-title">${label}</div>
         <div class="home-card-desc">${has ? '\u2713 Active \u2014 tap to open' : 'Not started yet \u2014 tap to begin'}</div>
-      </div>`;
-  }).join('');
+      </div>`).join('');
   results.innerHTML = `
     <span class="back-link" id="backFromEntList">\u2190 Back</span>
     <div class="results-head">
