@@ -152,6 +152,9 @@
     transform:rotate(3deg);
     border-radius:2px;
   }
+  @media (max-width:480px){
+    .stamp{position:static; display:inline-block; margin-bottom:10px; transform:rotate(0deg);}
+  }
 
   form{
     background:var(--soil-800);
@@ -889,7 +892,7 @@
     gap:10px;
     margin:16px 0;
   }
-  @media (min-width:520px){ .ops-summary-grid{grid-template-columns:repeat(4,1fr);} }
+  @media (min-width:520px){ .ops-summary-grid{grid-template-columns:repeat(3,1fr);} }
   .ops-summary-card{
     background:var(--soil-800);
     border:1px solid var(--line);
@@ -11210,6 +11213,7 @@ function renderEnterprisesListView(){
         <div class="home-card-icon">${icon}</div>
         <div class="home-card-title">${label}</div>
         <div class="home-card-desc">${has ? '\u2713 Active \u2014 tap to open' : 'Not started yet \u2014 tap to begin'}</div>
+        ${has ? `<button type="button" class="planner-btn" data-record-etab="${tab}">\ud83d\udcdd Record Entry</button>` : ''}
       </div>`).join('');
   results.innerHTML = `
     <span class="back-link" id="backFromEntList">\u2190 Back</span>
@@ -11222,6 +11226,12 @@ function renderEnterprisesListView(){
   document.querySelectorAll('#results .ops-pick-card').forEach(card => {
     card.addEventListener('click', () => goToOpsEnterprise(card.dataset.etab));
   });
+  document.querySelectorAll('#results [data-record-etab]').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      goToOpsEnterprise(btn.getAttribute('data-record-etab'), true);
+    });
+  });
   document.getElementById('backFromEntList').addEventListener('click', showHome);
 }
 function goToEnterprisesList(){
@@ -11230,11 +11240,22 @@ function goToEnterprisesList(){
   document.getElementById('compareSection').style.display = 'none';
   renderEnterprisesListView();
 }
-function goToOpsEnterprise(tabId){
+function goToOpsEnterprise(tabId, focusEntry){
   window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
   renderOpsView(tabId);
+  if (focusEntry){
+    setTimeout(() => {
+      const formId = OPS_ENTRY_FORM_ID[tabId];
+      const form = formId && document.getElementById(formId);
+      if (form){
+        form.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const firstField = form.querySelector('input, select, textarea');
+        if (firstField) firstField.focus({ preventScroll: true });
+      }
+    }, 200);
+  }
 }
 
 // ==================== STORE: STOCK / CONSUMABLES TRACKER ====================
@@ -11735,6 +11756,122 @@ function goToSchedule(){
   renderScheduleView();
 }
 
+// ==================== MONTHLY PERFORMANCE ====================
+let monthlyChartInstance = null;
+
+function getMonthlyPerformance(filterEnterprise){
+  const rows = getAllOpsEntries();
+  const filtered = (!filterEnterprise || filterEnterprise === 'All Enterprises')
+    ? rows : rows.filter(r => r.enterprise === filterEnterprise);
+  const months = {};
+  filtered.forEach(r => {
+    if (!r.date) return;
+    const month = r.date.slice(0, 7);
+    if (!months[month]) months[month] = { revenue: 0, expense: 0 };
+    if (r.type === 'revenue') months[month].revenue += r.amount;
+    else months[month].expense += r.amount;
+  });
+  return Object.keys(months).sort().map(m => ({
+    month: m,
+    revenue: months[m].revenue,
+    expense: months[m].expense,
+    net: months[m].revenue - months[m].expense
+  }));
+}
+
+function renderMonthlyPerformanceView(){
+  const results = document.getElementById('results');
+  const enterpriseOptions = ['All Enterprises'].concat(OPS_TAB_META.map(m => m[1]));
+  results.innerHTML = `
+    <span class="back-link" id="backFromMonthly">\u2190 Back</span>
+    <div class="results-head">
+      <h2>Monthly Performance</h2>
+      <span>Revenue &amp; expenses by month</span>
+    </div>
+    <div class="ops-field-row">
+      <div class="ops-field" style="grid-column:1 / -1;">
+        <label for="monthly-filter">View</label>
+        <select id="monthly-filter">${enterpriseOptions.map(n => `<option>${escapeHtml(n)}</option>`).join('')}</select>
+      </div>
+    </div>
+    <div class="ops-chart-frame"><canvas id="monthlyChart"></canvas></div>
+    <h3 class="ops-section-title">By Month</h3>
+    <div class="planner-table-wrap ops-ledger-wrap">
+      <table class="planner-table ops-ledger-table">
+        <thead><tr><th>Month</th><th>Revenue</th><th>Expenses</th><th>Net</th></tr></thead>
+        <tbody id="monthly-table-body"></tbody>
+      </table>
+    </div>
+  `;
+
+  function cssVarMonthly(name){
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || '#888';
+  }
+
+  function draw(){
+    const filterVal = document.getElementById('monthly-filter').value;
+    const data = getMonthlyPerformance(filterVal);
+
+    const tbody = document.getElementById('monthly-table-body');
+    tbody.innerHTML = data.length ? data.map(d => `
+      <tr>
+        <td>${escapeHtml(d.month)}</td>
+        <td class="ops-sum-profit">${CUR()} ${Math.round(d.revenue).toLocaleString()}</td>
+        <td class="ops-sum-loss">${CUR()} ${Math.round(d.expense).toLocaleString()}</td>
+        <td class="${d.net >= 0 ? 'ops-sum-profit' : 'ops-sum-loss'}">${CUR()} ${Math.round(d.net).toLocaleString()}</td>
+      </tr>`).join('') : '<tr><td colspan="4">No entries logged yet.</td></tr>';
+
+    const canvas = document.getElementById('monthlyChart');
+    if (monthlyChartInstance){ monthlyChartInstance.destroy(); monthlyChartInstance = null; }
+    if (typeof Chart !== 'undefined' && canvas){
+      monthlyChartInstance = new Chart(canvas.getContext('2d'), {
+        type: 'bar',
+        data: {
+          labels: data.map(d => d.month),
+          datasets: [
+            { label: 'Revenue', data: data.map(d => d.revenue), backgroundColor: cssVarMonthly('--chart-series-1'), borderRadius: 6 },
+            { label: 'Expenses', data: data.map(d => d.expense), backgroundColor: cssVarMonthly('--chart-series-2'), borderRadius: 6 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { ticks: { color: cssVarMonthly('--chart-text') }, grid: { color: cssVarMonthly('--chart-grid') } },
+            y: { ticks: { color: cssVarMonthly('--chart-text') }, grid: { color: cssVarMonthly('--chart-grid') } }
+          },
+          plugins: { legend: { labels: { color: cssVarMonthly('--chart-text') } } }
+        }
+      });
+    }
+  }
+
+  document.getElementById('monthly-filter').addEventListener('change', draw);
+  document.getElementById('backFromMonthly').addEventListener('click', () => {
+    if (monthlyChartInstance){ monthlyChartInstance.destroy(); monthlyChartInstance = null; }
+    showHome();
+  });
+  draw();
+}
+function goToMonthlyPerformance(){
+  window.scrollTo(0,0);
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('compareSection').style.display = 'none';
+  renderMonthlyPerformanceView();
+}
+
+// ==================== QUICK RECORD PORTAL (jump to entry form) ====================
+const OPS_ENTRY_FORM_ID = {
+  'o-cereals': 'o-cereals-ledger-form',
+  'o-dailylog': 'o-dailylog-entryForm',
+  'o-kienyeji': 'o-kienyeji-ledger-form',
+  'o-horticulture': 'o-hort-ledger-form',
+  'o-hatchery': 'o-hatchery-ledger-form',
+  'o-compost': 'o-compost-ledger-form',
+  'o-pigs': 'o-pigs-ledger-form',
+  'o-seedlings': 'o-seedlings-ledger-form'
+};
+
 function renderHomeDashboard(){
   const el = document.getElementById('homeDashboard');
   if(!el) return;
@@ -11775,6 +11912,10 @@ function renderHomeDashboard(){
       <div class="ops-sum-label">\ud83d\uddd3\ufe0f Schedule</div>
       <div class="ops-sum-value">Routine Tasks</div>
     </div>
+    <div class="ops-summary-card clickable" id="dashCardMonthly">
+      <div class="ops-sum-label">\ud83d\udcc5 Monthly Performance</div>
+      <div class="ops-sum-value">Trends</div>
+    </div>
   `;
   document.getElementById('dashCardRevenue').addEventListener('click', goToRevenueList);
   document.getElementById('dashCardExpense').addEventListener('click', goToExpenseList);
@@ -11783,6 +11924,7 @@ function renderHomeDashboard(){
   document.getElementById('dashCardTools').addEventListener('click', goToTools);
   document.getElementById('dashCardVault').addEventListener('click', goToVault);
   document.getElementById('dashCardSchedule').addEventListener('click', goToSchedule);
+  document.getElementById('dashCardMonthly').addEventListener('click', goToMonthlyPerformance);
 }
 renderHomeDashboard();
 
