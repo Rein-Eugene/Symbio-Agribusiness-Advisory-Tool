@@ -534,6 +534,8 @@
   .manual-badge.locked-badge{background:var(--maize);}
   .manual-badge.unlocked-badge{background:var(--leaf);}
   .manual-card.manual-locked{border-left-color:var(--maize);}
+  .manual-lock-box.pdf-lock{display:none;}
+  .manual-lock-box.pdf-lock.open{display:block;}
 
   .manual-lock-box{
     margin-top:14px;
@@ -1432,33 +1434,25 @@
   </header>
 
   <div class="home-grid" id="homeScreen">
-    <div id="homeDashboard" class="ops-summary-grid" style="grid-column:1/-1;display:none;"></div>
-    <div class="home-card" id="homeCardIntro" style="border-color:var(--maize);">
+    <div class="home-card" id="homeCardIntro" style="border-color:var(--maize);grid-column:1/-1;">
       <div class="home-card-icon">🌿</div>
-      <div class="home-card-title">Start Here</div>
-      <div class="home-card-desc">Why organic and biological methods pay off, and how to move through the four tools below.</div>
+      <div class="home-card-title">Welcome</div>
+      <div class="home-card-desc">Why organic and biological methods pay off, and how to move through the two sections below.</div>
     </div>
-    <div class="home-card" id="homeCardCompare">
-      <div class="home-card-icon">🌱</div>
-      <div class="home-card-title">Compare Enterprises</div>
-      <div class="home-card-desc">Enter what you have — capital, land, water, labour — and see every enterprise ranked by fit, with planting timing and revenue projections.</div>
+    <div id="homeDashboard" class="ops-summary-grid" style="grid-column:1/-1;display:none;"></div>
+    <div class="home-card" id="homeCardLearn">
+      <div class="home-card-icon">🧭</div>
+      <div class="home-card-title">Learn &amp; Decide</div>
+      <div class="home-card-desc">Compare enterprises to find what fits your farm, then read the free manuals on how to run it.</div>
     </div>
-    <div class="home-card" id="homeCardManuals">
-      <div class="home-card-icon">📘</div>
-      <div class="home-card-title">Farming Manuals and Systems</div>
-      <div class="home-card-desc">Free step-by-step guides — JMS, FAA &amp; LAB, compost, pest control, pig systems, and more.</div>
-    </div>
-    <div class="home-card" id="homeCardPlanner">
-      <div class="home-card-icon">📊</div>
-      <div class="home-card-title">Farming for Profit Planner</div>
-      <div class="home-card-desc">Marketing chart, production plan, biological bed mapping, and a seedling &amp; succession calendar.</div>
-    </div>
-    <div class="home-card" id="homeCardOps">
-      <div class="home-card-icon">📒</div>
-      <div class="home-card-title">Farm Operations and Analytics</div>
-      <div class="home-card-desc">Projections and an actuals ledger for seven enterprises — cereals, horticulture, hatchery, kienyeji poultry, pigs, compost, and seedling propagation.</div>
+    <div class="home-card" id="homeCardNumbers">
+      <div class="home-card-icon">📈</div>
+      <div class="home-card-title">Plan &amp; Track</div>
+      <div class="home-card-desc">Project your numbers before you start, then log real income and expenses as you go.</div>
     </div>
   </div>
+
+  <div id="folderSection" style="display:none;"></div>
 
   <div id="compareSection" style="display:none;">
     <span class="back-link" id="backFromCompare">← Back to Home</span>
@@ -2282,7 +2276,7 @@ function calcRevenue(entId){
 const MANUALS = [
   {
     id: 'bio-inputs',
-    price: 1000,
+    price: 100,
     codeHash: 'fce251426a6e7808c00f65487dbda21ff24f04bbcd556be79eaf715aaec44105',
     title: 'Symbio Bio-Inputs Manual',
     subtitle: 'Making JMS, FAA & LAB \u2014 and using them to build fast, nutrient-rich compost',
@@ -2425,7 +2419,7 @@ const MANUALS = [
   },
   {
     id: 'living-floor',
-    price: 1000,
+    price: 100,
     codeHash: 'c10e53a106411fdae7f6114d14f548aeb591f8b1e9e0a7ef9cd3d584b4021bc1',
     title: 'Symbio Living Floor System',
     subtitle: 'A practical protocol for high-yield soil regeneration',
@@ -2521,7 +2515,7 @@ const MANUALS = [
   },
   {
     id: 'imo-trapping',
-    price: 1000,
+    price: 100,
     codeHash: '4d8588fda9cbc6c12f2d4c1b92f888558380965b4043b8edcfce7a49f165af67',
     title: 'Symbio IMO Trapping & Multiplication Guide',
     subtitle: 'Capturing, stabilising, multiplying and acclimating indigenous microorganisms \u2014 the four-phase method',
@@ -2577,7 +2571,7 @@ const MANUALS = [
   },
   {
     id: 'regen-microfarm',
-    price: 1000,
+    price: 100,
     codeHash: 'ff30ef4a55873a47fa5aed503013c486cab417f370bf0138720693ac46a81305',
     title: 'Symbio Regenerative Micro-Farm Operations Guide',
     subtitle: 'Integrating apiary, rabbits, and rotational beds under shade netting',
@@ -2614,7 +2608,7 @@ const MANUALS = [
   },
   {
     id: 'piglet-breeding-guide',
-    price: 1000,
+    price: 100,
     codeHash: '776979ab65e2d46aecd0b36e974fa84450c8114d05fb46df4f43f2d2e6199021',
     title: 'Symbio Piglet Breeding Setup Guide',
     subtitle: 'Starting a piglet production enterprise with in-pig sows',
@@ -2667,7 +2661,7 @@ const MANUALS = [
   },
   {
     id: 'pig-refinery-system',
-    price: 1000,
+    price: 100,
     codeHash: 'ccd59f6d9095af400d87fef49694b7ee856202580837f4709e3dc68b157ba48b',
     title: 'Symbio Pig Refinery System',
     subtitle: 'Deep litter housing and submerged fermentation feed for low-odour, high-efficiency pig keeping',
@@ -2727,7 +2721,7 @@ const MANUALS = [
   },
   {
     id: 'onfarm-solutions',
-    price: 1000,
+    price: 100,
     codeHash: '9227e64f618232091703e4970426006f91b8f16e75f341583e732cf9fa3daab7',
     title: 'Symbio On-Farm Biological Solutions',
     subtitle: 'Fish Amino Acid, Living Weed Extract, and the Power Blend \u2014 turning farm waste into a complete fertility system',
@@ -2847,7 +2841,22 @@ function toggleManualBody(manualId){
   if(body) body.classList.toggle('open');
 }
 
+// ---- PDF access: reading is free for everyone; the PDF download is what gets unlocked ----
+const MANUAL_BUNDLE_HASH = 'ad48459102275ea849de19935b600200394761b44083a4520dcd227e32ac6447';
+const MANUAL_BUNDLE_PRICE = 500;
+
+function isAllPdfsUnlocked(){
+  try { return localStorage.getItem('symbioUnlocked_ALL') === 'true'; }
+  catch(e){ return false; }
+}
+
+function markAllPdfsUnlocked(){
+  try { localStorage.setItem('symbioUnlocked_ALL', 'true'); return true; }
+  catch(e){ return false; }
+}
+
 function isManualUnlocked(manualId){
+  if (isAllPdfsUnlocked()) return true;
   try { return localStorage.getItem('symbioUnlocked_' + manualId) === 'true'; }
   catch(e){ return false; }
 }
@@ -2865,18 +2874,26 @@ async function sha256Hex(text){
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 }
 
-async function attemptUnlock(manualId){
-  const input = document.getElementById('code-input-' + manualId);
-  const statusEl = document.getElementById('code-status-' + manualId);
+// target is either a manual id (its own PDF code) or 'bundle'. Either box
+// accepts either kind of code, so nobody gets stuck typing the right code
+// into the "wrong" place.
+async function attemptUnlock(target){
+  const input = document.getElementById('code-input-' + target);
+  const statusEl = document.getElementById('code-status-' + target);
   const code = input.value.trim().toUpperCase();
   if(!code){ statusEl.textContent = 'Enter the code you received after payment.'; return; }
 
-  const manual = MANUALS.find(m => m.id === manualId);
   statusEl.textContent = 'Checking...';
   const enteredHash = await sha256Hex(code);
 
-  if(enteredHash === manual.codeHash){
-    markManualUnlocked(manualId);
+  if(enteredHash === MANUAL_BUNDLE_HASH){
+    markAllPdfsUnlocked();
+    renderManualsView();
+    return;
+  }
+  const match = MANUALS.find(m => m.codeHash && m.codeHash === enteredHash);
+  if(match){
+    markManualUnlocked(match.id);
     renderManualsView();
   } else {
     statusEl.textContent = 'That code didn\u2019t match \u2014 check it and try again, or confirm your payment went through.';
@@ -2887,7 +2904,7 @@ function renderManualsView(){
   const results = document.getElementById('results');
   const cardsHtml = MANUALS.map(m => {
     const isFree = !m.price || m.price === 0;
-    const unlocked = isFree || isManualUnlocked(m.id);
+    const pdfUnlocked = isFree || isManualUnlocked(m.id);
 
     const bodyHtml = m.content.map(section => {
       const paras = section.body.map(p => `<p>${escapeHtml(p)}</p>`).join('');
@@ -2896,42 +2913,35 @@ function renderManualsView(){
 
     const badgeHtml = isFree
       ? `<div class="manual-badge">Free</div>`
-      : unlocked
-        ? `<div class="manual-badge unlocked-badge">Unlocked</div>`
-        : `<div class="manual-badge locked-badge">KSh ${m.price.toLocaleString()}</div>`;
+      : pdfUnlocked
+        ? `<div class="manual-badge unlocked-badge">PDF unlocked</div>`
+        : `<div class="manual-badge locked-badge">PDF KSh ${m.price.toLocaleString()}</div>`;
 
-    let actionsAndBody;
-    if(unlocked){
-      actionsAndBody = `
-        <div class="manual-actions">
-          <button type="button" class="manual-btn" data-toggle-id="${m.id}">Read Here</button>
-          <button type="button" class="manual-btn pdf-btn" data-pdf-id="${m.id}">Open as PDF</button>
+    const pdfBtnHtml = pdfUnlocked
+      ? `<button type="button" class="manual-btn pdf-btn" data-pdf-id="${m.id}">Open as PDF</button>`
+      : `<button type="button" class="manual-btn pdf-btn" data-pdf-lock-id="${m.id}">\ud83d\udd12 Get PDF \u2014 KSh ${m.price.toLocaleString()}</button>`;
+
+    const lockPanelHtml = pdfUnlocked ? '' : `
+      <div class="manual-lock-box pdf-lock" id="pdf-lock-${m.id}">
+        <div class="lock-price">PDF \u2014 KSh ${m.price.toLocaleString()}</div>
+        <div class="lock-steps">
+          <strong>How to get the PDF:</strong>
+          <ol>
+            <li>Send KSh ${m.price.toLocaleString()} via M-Pesa to <strong>0745 250 185</strong> (Symbio Biotech Solutions)</li>
+            <li>Message the same number on WhatsApp/SMS with your payment confirmation</li>
+            <li>You'll receive a code \u2014 enter it below to unlock this PDF on this device</li>
+          </ol>
+          Want every PDF? The bundle is KSh ${MANUAL_BUNDLE_PRICE.toLocaleString()} \u2014 see the box at the top of this page.
         </div>
-        <div class="manual-body" id="manual-body-${m.id}">${bodyHtml}</div>
-      `;
-    } else {
-      actionsAndBody = `
-        <div class="manual-lock-box">
-          <div class="lock-price">KSh ${m.price.toLocaleString()}</div>
-          <div class="lock-steps">
-            <strong>How to unlock:</strong>
-            <ol>
-              <li>Send KSh ${m.price.toLocaleString()} via M-Pesa to <strong>0745 250 185</strong> (Symbio Biotech Solutions)</li>
-              <li>Message the same number on WhatsApp/SMS with your payment confirmation</li>
-              <li>You'll receive an access code \u2014 enter it below to unlock this manual on this device</li>
-            </ol>
-          </div>
-          <div class="code-entry-row">
-            <input type="text" id="code-input-${m.id}" placeholder="Enter access code" autocapitalize="characters">
-            <button type="button" class="manual-btn" data-unlock-id="${m.id}">Unlock</button>
-          </div>
-          <div class="code-status" id="code-status-${m.id}"></div>
+        <div class="code-entry-row">
+          <input type="text" id="code-input-${m.id}" placeholder="Enter access code" autocapitalize="characters">
+          <button type="button" class="manual-btn" data-unlock-id="${m.id}">Unlock</button>
         </div>
-      `;
-    }
+        <div class="code-status" id="code-status-${m.id}"></div>
+      </div>`;
 
     return `
-      <div class="manual-card ${unlocked ? '' : 'manual-locked'}">
+      <div class="manual-card">
         <div class="manual-card-top">
           <div>
             <div class="manual-title">${escapeHtml(m.title)}</div>
@@ -2940,19 +2950,51 @@ function renderManualsView(){
           ${badgeHtml}
         </div>
         <div class="manual-teaser">${escapeHtml(m.teaser)}</div>
-        ${actionsAndBody}
+        <div class="manual-actions">
+          <button type="button" class="manual-btn" data-toggle-id="${m.id}">Read Here</button>
+          ${pdfBtnHtml}
+        </div>
+        ${lockPanelHtml}
+        <div class="manual-body" id="manual-body-${m.id}">${bodyHtml}</div>
       </div>
     `;
   }).join('');
 
-  const freeCount = MANUALS.filter(m => !m.price || m.price === 0).length;
+  const bundleHtml = isAllPdfsUnlocked()
+    ? `
+      <div class="manual-card" style="margin-bottom:14px;border-left-color:var(--leaf);">
+        <div class="manual-title">\u2713 All PDFs unlocked on this device</div>
+        <div class="manual-teaser">Every manual below can be opened as a PDF.</div>
+      </div>`
+    : `
+      <div class="manual-card" style="margin-bottom:14px;border-left-color:var(--maize);">
+        <div class="manual-title">\ud83d\udcda All PDFs \u2014 one code</div>
+        <div class="manual-teaser">Every manual here is free to read. Want them as PDFs to keep, print, or share offline? One code unlocks all of them.</div>
+        <div class="manual-lock-box">
+          <div class="lock-price">KSh ${MANUAL_BUNDLE_PRICE.toLocaleString()}</div>
+          <div class="lock-steps">
+            <strong>How to unlock:</strong>
+            <ol>
+              <li>Send KSh ${MANUAL_BUNDLE_PRICE.toLocaleString()} via M-Pesa to <strong>0745 250 185</strong> (Symbio Biotech Solutions)</li>
+              <li>Message the same number on WhatsApp/SMS with your payment confirmation</li>
+              <li>You'll receive one code \u2014 enter it below to unlock every PDF on this device</li>
+            </ol>
+          </div>
+          <div class="code-entry-row">
+            <input type="text" id="code-input-bundle" placeholder="Enter access code" autocapitalize="characters">
+            <button type="button" class="manual-btn" data-unlock-id="bundle">Unlock all</button>
+          </div>
+          <div class="code-status" id="code-status-bundle"></div>
+        </div>
+      </div>`;
 
   results.innerHTML = `
     <span class="back-link" id="backFromManuals">← Back</span>
     <div class="results-head">
       <h2>Farming Manuals and Systems</h2>
-      <span>${freeCount} free \u2014 ${MANUALS.length - freeCount} paid</span>
+      <span>Read free \u2014 PDFs from KSh 100</span>
     </div>
+    ${bundleHtml}
     <div class="cards">${cardsHtml}</div>
   `;
 
@@ -2963,6 +3005,12 @@ function renderManualsView(){
   });
   results.querySelectorAll('[data-pdf-id]').forEach(btn => {
     btn.addEventListener('click', () => openManualPdf(btn.dataset.pdfId));
+  });
+  results.querySelectorAll('[data-pdf-lock-id]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = document.getElementById('pdf-lock-' + btn.dataset.pdfLockId);
+      if (panel) panel.classList.toggle('open');
+    });
   });
   results.querySelectorAll('[data-unlock-id]').forEach(btn => {
     btn.addEventListener('click', () => attemptUnlock(btn.dataset.unlockId));
@@ -10938,7 +10986,7 @@ function renderIntroView(){
   results.innerHTML = `
     <span class="back-link" id="backFromIntro">\u2190 Back</span>
     <div class="results-head">
-      <h2>Start Here</h2>
+      <h2>Welcome</h2>
       <span>by Symbio Biotech Solutions</span>
     </div>
 
@@ -11965,6 +12013,7 @@ renderHomeDashboard();
 function showHome(){
   window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'grid';
+  document.getElementById('folderSection').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
   document.getElementById('results').innerHTML = '';
   renderHomeDashboard();
@@ -11972,38 +12021,92 @@ function showHome(){
 function showCompareSection(){
   window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('folderSection').style.display = 'none';
   document.getElementById('compareSection').style.display = 'block';
   document.getElementById('results').innerHTML = '';
 }
 function goToManuals(){
   window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('folderSection').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
   renderManualsView();
 }
 function goToPlanner(){
   window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('folderSection').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
   renderPlannerView();
 }
 function goToOps(){
   window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('folderSection').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
   renderOpsView();
 }
 function goToIntro(){
   window.scrollTo(0,0);
   document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('folderSection').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
   renderIntroView();
 }
+
+const FOLDERS = {
+  learn: {
+    title: 'Learn &amp; Decide',
+    desc: 'Compare enterprises, then read how to run the one you pick.',
+    cards: [
+      { icon:'🌱', title:'Compare Enterprises', desc:'Enter what you have — capital, land, water, labour — and see every enterprise ranked by fit, with planting timing and revenue projections.', action:'compare' },
+      { icon:'📘', title:'Farming Manuals and Systems', desc:'Free step-by-step guides — JMS, FAA &amp; LAB, compost, pest control, pig systems, and more.', action:'manuals' }
+    ]
+  },
+  numbers: {
+    title: 'Plan &amp; Track',
+    desc: 'Project your numbers, then log what actually happens.',
+    cards: [
+      { icon:'📊', title:'Farming for Profit Planner', desc:'Marketing chart, production plan, biological bed mapping, and a seedling &amp; succession calendar.', action:'planner' },
+      { icon:'📒', title:'Farm Operations and Analytics', desc:'Projections and an actuals ledger for seven enterprises — cereals, horticulture, hatchery, kienyeji poultry, pigs, compost, and seedling propagation.', action:'ops' }
+    ]
+  }
+};
+
+function renderFolderView(folderKey){
+  const folder = FOLDERS[folderKey];
+  const results = document.getElementById('folderSection');
+  const cardsHtml = folder.cards.map(c => `
+    <div class="home-card" data-folder-action="${c.action}">
+      <div class="home-card-icon">${c.icon}</div>
+      <div class="home-card-title">${c.title}</div>
+      <div class="home-card-desc">${c.desc}</div>
+    </div>`).join('');
+  results.innerHTML = `
+    <span class="back-link" id="backFromFolder">← Back</span>
+    <div class="results-head">
+      <h2>${folder.title}</h2>
+      <span>${folder.desc}</span>
+    </div>
+    <div class="home-grid">${cardsHtml}</div>
+  `;
+  document.getElementById('backFromFolder').addEventListener('click', showHome);
+  const actions = { compare: showCompareSection, manuals: goToManuals, planner: goToPlanner, ops: goToOps };
+  results.querySelectorAll('[data-folder-action]').forEach(card => {
+    card.addEventListener('click', () => actions[card.dataset.folderAction]());
+  });
+}
+function goToFolder(folderKey){
+  window.scrollTo(0,0);
+  document.getElementById('homeScreen').style.display = 'none';
+  document.getElementById('compareSection').style.display = 'none';
+  document.getElementById('folderSection').style.display = 'block';
+  renderFolderView(folderKey);
+}
+
 document.getElementById('homeCardIntro').addEventListener('click', goToIntro);
-document.getElementById('homeCardCompare').addEventListener('click', showCompareSection);
-document.getElementById('homeCardManuals').addEventListener('click', goToManuals);
-document.getElementById('homeCardPlanner').addEventListener('click', goToPlanner);
-document.getElementById('homeCardOps').addEventListener('click', goToOps);
+document.getElementById('homeCardLearn').addEventListener('click', () => goToFolder('learn'));
+document.getElementById('homeCardNumbers').addEventListener('click', () => goToFolder('numbers'));
 document.getElementById('backFromCompare').addEventListener('click', showHome);
 
 // ==================== THEME TOGGLE ====================
