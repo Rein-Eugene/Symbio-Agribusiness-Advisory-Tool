@@ -1495,14 +1495,10 @@
   <header class="app-header">
     <div class="eyebrow">Symbio Biotech</div>
     <h1>Agribusiness Enterprise Planner</h1>
-    <p class="sub">A comprehensive digital suite built to help farmers and agripreneurs plan, manage, and grow their enterprises — from soil to sale. Four free tools. Pick where to start.</p>
+    <p class="sub">A comprehensive digital suite built to help farmers and agripreneurs plan, manage, and grow their enterprises — from soil to sale.</p>
   </header>
 
   <div id="homeScreen">
-    <div class="home-welcome-strip" id="homeWelcomeStrip">
-      <span>🌿 New here? See why organic methods pay off.</span>
-      <span class="hw-link">Welcome →</span>
-    </div>
     <div class="stat-pill-row" id="statPillRow"></div>
     <div id="homeStockAlert"></div>
     <div class="home-finance-card" id="homeFinanceCard"></div>
@@ -12075,7 +12071,6 @@ function renderHomeDashboard(){
   document.getElementById('qaVault').addEventListener('click', goToVault);
   document.getElementById('qaSchedule').addEventListener('click', goToSchedule);
 }
-document.getElementById('homeWelcomeStrip').addEventListener('click', goToIntro);
 
 function renderMoreView(){
   const results = document.getElementById('results');
@@ -12084,8 +12079,7 @@ function renderMoreView(){
     { icon:'\ud83e\uddf0', title:'Inventory &amp; Tools', desc:'Jembes, spades, sprayers, drinkers \u2014 the durable equipment you own.', action: goToTools },
     { icon:'\ud83d\udcc1', title:'Reports &amp; Plans Vault', desc:'Every PDF report you\u2019ve exported, one tap back to its enterprise.', action: goToVault },
     { icon:'\ud83d\uddd3\ufe0f', title:'Schedule', desc:'Routine farm tasks \u2014 daily, weekly, monthly, with due dates.', action: goToSchedule },
-    { icon:'\ud83d\udcc5', title:'Monthly Performance', desc:'Revenue and expenses by month, across all enterprises.', action: goToMonthlyPerformance },
-    { icon:'\ud83c\udf3f', title:'Welcome', desc:'Why organic and biological methods pay off.', action: goToIntro }
+    { icon:'\ud83d\udcc5', title:'Monthly Performance', desc:'Revenue and expenses by month, across all enterprises.', action: goToMonthlyPerformance }
   ];
   const cardsHtml = items.map((it, i) => `
     <div class="home-card" data-more-idx="${i}">
@@ -12211,6 +12205,7 @@ const FOLDERS = {
     title: 'Learn &amp; Decide',
     desc: 'Compare enterprises, then read how to run the one you pick.',
     cards: [
+      { icon:'🌿', title:'Welcome', desc:'Why organic and biological methods pay off, before you start comparing.', action:'welcome' },
       { icon:'🌱', title:'Compare Enterprises', desc:'Enter what you have — capital, land, water, labour — and see every enterprise ranked by fit, with planting timing and revenue projections.', action:'compare' },
       { icon:'📘', title:'Farming Manuals and Systems', desc:'Free step-by-step guides — JMS, FAA &amp; LAB, compost, pest control, pig systems, and more.', action:'manuals' }
     ]
@@ -12243,7 +12238,7 @@ function renderFolderView(folderKey){
     <div class="home-grid">${cardsHtml}</div>
   `;
   document.getElementById('backFromFolder').addEventListener('click', showHome);
-  const actions = { compare: showCompareSection, manuals: goToManuals, planner: goToPlanner, ops: goToOps };
+  const actions = { welcome: goToIntro, compare: showCompareSection, manuals: goToManuals, planner: goToPlanner, ops: goToOps };
   results.querySelectorAll('[data-folder-action]').forEach(card => {
     card.addEventListener('click', () => actions[card.dataset.folderAction]());
   });
