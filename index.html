@@ -1492,10 +1492,10 @@
   <span class="label">Install</span>
 </button>
 <div class="wrap">
-  <header class="app-header">
+  <header class="app-header" id="appHeader">
     <div class="eyebrow">Symbio Biotech</div>
     <h1>Agribusiness Enterprise Planner</h1>
-    <p class="sub">A comprehensive digital suite built to help farmers and agripreneurs plan, manage, and grow their enterprises — from soil to sale.</p>
+    <p class="sub" style="font-size:13.5px;">A comprehensive digital suite built to help farmers and agripreneurs plan, manage, and grow their enterprises — from soil to sale.</p>
   </header>
 
   <div id="homeScreen">
@@ -1603,7 +1603,7 @@
 
   <div id="results"></div>
 
-  <footer>Symbio Biotech Agribusiness Advisory — enterprise comparison tool</footer>
+  <footer>Symbio Biotech Agribusiness Advisory</footer>
 </div>
 
 <nav class="bottom-nav" id="bottomNav">
@@ -3174,20 +3174,22 @@ function renderPlannerView(){
       <h2>Farming for Profit Planner</h2>
       <span>by Symbio Biotech Solutions</span>
     </div>
-    <div class="planner-intro">
-      <strong>How to use this tool:</strong>
-      <ol>
-        <li><strong>Marketing Chart</strong> — estimate what you can realistically sell through each channel (direct clients, local market, hotels, aggregators) to see your projected revenue.</li>
-        <li><strong>Production Plan</strong> — work out how many beds or units you need per crop to hit that revenue.</li>
-        <li><strong>Biological Bed Mapping</strong> — assign a crop to each bed and get companion-planting and pest-control suggestions automatically.</li>
-        <li><strong>Seedling &amp; Succession Calendar</strong> — plan sowing and repeat-planting dates so beds stay continuously productive.</li>
-      </ol>
+    <div class="ops-guide" id="planner-guide">
+      <button type="button" class="ops-guide-toggle planner-btn" id="planner-guide-toggle">📖 How to use this tool</button>
+      <div class="ops-guide-body">
+        <ol>
+          <li><strong>Marketing Chart</strong> — estimate what you can realistically sell through each channel (direct clients, local market, hotels, aggregators) to see your projected revenue.</li>
+          <li><strong>Production Plan</strong> — work out how many beds or units you need per crop to hit that revenue.</li>
+          <li><strong>Biological Bed Mapping</strong> — assign a crop to each bed and get companion-planting and pest-control suggestions automatically.</li>
+          <li><strong>Seedling &amp; Succession Calendar</strong> — plan sowing and repeat-planting dates so beds stay continuously productive.</li>
+        </ol>
+      </div>
     </div>
 
     <div class="planner-save-bar">
       <div class="save-row">
         <input type="text" id="planSaveName" placeholder="Name this plan (e.g. 1-acre tomato plan)">
-        <button type="button" class="planner-btn" id="planSaveBtn">\U0001F4BE Save</button>
+        <button type="button" class="planner-btn" id="planSaveBtn">\ud83d\udcbe Save</button>
       </div>
       <div class="save-row">
         <select id="planLoadSelect"><option value="">-- Saved plans on this device --</option></select>
@@ -3259,7 +3261,6 @@ function renderPlannerView(){
       </div>
       <button type="button" class="planner-btn" id="addProductionRowBtn">+ Add Production Target</button>
       <div class="save-row" style="margin-top:16px;">
-        <button type="button" class="planner-btn" id="sharePlanBtn">\ud83d\udcac Share via WhatsApp/SMS</button>
         <button type="button" class="planner-btn" id="copyPlanBtn">\ud83d\udccb Copy Summary</button>
         <button type="button" class="planner-btn" id="exportPdfBtn">\ud83d\udcc4 Export PDF Report</button>
       </div>
@@ -3325,7 +3326,6 @@ function renderPlannerView(){
   document.getElementById('addMarketingRowBtn').addEventListener('click', addMarketingRow);
   document.getElementById('addMarketingChannelBtn').addEventListener('click', addMarketingChannel);
   document.getElementById('addProductionRowBtn').addEventListener('click', addProductionRow);
-  document.getElementById('sharePlanBtn').addEventListener('click', shareViaWhatsApp);
   document.getElementById('copyPlanBtn').addEventListener('click', copyPlanSummary);
   document.getElementById('exportPdfBtn').addEventListener('click', exportPlanPDF);
   document.getElementById('autofillFromMarketingBtn').addEventListener('click', autofillFromMarketing);
@@ -3335,6 +3335,9 @@ function renderPlannerView(){
   document.getElementById('transferSeedlingsBtn').addEventListener('click', transferSeedlingsFromProduction);
 
   wireUpPlannerSaveBar();
+  const plannerGuide = document.getElementById('planner-guide');
+  const plannerGuideToggle = document.getElementById('planner-guide-toggle');
+  if (plannerGuideToggle) plannerGuideToggle.addEventListener('click', () => plannerGuide.classList.toggle('o-open'));
 }
 
 // ---- 1. Marketing Chart ----
@@ -3633,14 +3636,6 @@ function buildPlanSummaryText(){
 
   lines.push('Generated via Symbio Biotech Agribusiness Enterprise Planner');
   return lines.join('\n');
-}
-
-function shareViaWhatsApp(){
-  const text = buildPlanSummaryText();
-  const url = 'https://wa.me/?text=' + encodeURIComponent(text);
-  window.open(url, '_blank');
-  const statusEl = document.getElementById('shareStatus');
-  if(statusEl) statusEl.textContent = 'Opening WhatsApp \u2014 if it didn\u2019t open, use Copy Summary instead.';
 }
 
 function copyPlanSummary(){
@@ -11283,19 +11278,22 @@ function renderEntryListView(type){
   `;
   document.getElementById('backFromEntryList').addEventListener('click', showHome);
 }
-function goToRevenueList(){
-  window.scrollTo(0,0);
+function hideAllScreens(){
+  document.getElementById('appHeader').style.display = 'none';
   document.getElementById('homeScreen').style.display = 'none';
   document.getElementById('folderSection').style.display = 'none';
   document.getElementById('compareSection').style.display = 'none';
+}
+
+function goToRevenueList(){
+  window.scrollTo(0,0);
+  hideAllScreens();
   renderEntryListView('revenue');
   setActiveNav('home');
 }
 function goToExpenseList(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderEntryListView('expense');
   setActiveNav('home');
 }
@@ -11350,17 +11348,13 @@ function renderEnterprisesListView(){
 }
 function goToEnterprisesList(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderEnterprisesListView();
   setActiveNav('record');
 }
 function goToOpsEnterprise(tabId, focusEntry){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderOpsView(tabId);
   setActiveNav('track');
   if (focusEntry){
@@ -11533,9 +11527,7 @@ function renderStockView(){
 }
 function goToStock(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderStockView();
   setActiveNav('more');
 }
@@ -11641,9 +11633,7 @@ function renderToolsView(){
 }
 function goToTools(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderToolsView();
   setActiveNav('more');
 }
@@ -11729,9 +11719,7 @@ function renderVaultView(){
 }
 function goToVault(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderVaultView();
   setActiveNav('more');
 }
@@ -11875,9 +11863,7 @@ function renderScheduleView(){
 }
 function goToSchedule(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderScheduleView();
   setActiveNav('more');
 }
@@ -11981,9 +11967,7 @@ function renderMonthlyPerformanceView(){
 }
 function goToMonthlyPerformance(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderMonthlyPerformanceView();
   setActiveNav('more');
 }
@@ -12100,9 +12084,7 @@ function renderMoreView(){
 }
 function goToMoreMenu(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderMoreView();
   setActiveNav('more');
 }
@@ -12152,50 +12134,41 @@ setActiveNav('home');
 
 function showHome(){
   window.scrollTo(0,0);
+  hideAllScreens();
+  document.getElementById('appHeader').style.display = '';
   document.getElementById('homeScreen').style.display = 'block';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
   document.getElementById('results').innerHTML = '';
   renderHomeDashboard();
   setActiveNav('home');
 }
 function showCompareSection(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
+  hideAllScreens();
   document.getElementById('compareSection').style.display = 'block';
   document.getElementById('results').innerHTML = '';
   setActiveNav('learn');
 }
 function goToManuals(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderManualsView();
   setActiveNav('learn');
 }
 function goToPlanner(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderPlannerView();
   setActiveNav('track');
 }
 function goToOps(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderOpsView();
   setActiveNav('track');
 }
 function goToIntro(){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('folderSection').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   renderIntroView();
   setActiveNav('home');
 }
@@ -12245,8 +12218,7 @@ function renderFolderView(folderKey){
 }
 function goToFolder(folderKey){
   window.scrollTo(0,0);
-  document.getElementById('homeScreen').style.display = 'none';
-  document.getElementById('compareSection').style.display = 'none';
+  hideAllScreens();
   document.getElementById('folderSection').style.display = 'block';
   renderFolderView(folderKey);
   setActiveNav(folderKey === 'learn' ? 'learn' : 'track');
