@@ -5304,10 +5304,8 @@ window.OPS_MODULES['o-horticulture'] = (function(){
             <div class="ops-field">
               <label>CapEx &amp; OpEx Terminology</label>
               <ul>
-                <li><b>Base CapEx:</b> Benchmark setup cost (standard baseline for 20 units).</li>
-                <li><b>Scaled CapEx:</b> Actual capital needed to start your selected number of units.</li>
-                <li><b>Base OpEx:</b> Benchmark monthly operating cost baseline.</li>
-                <li><b>Scaled OpEx:</b> Actual monthly money needed for ongoing labor, water, and inputs.</li>
+                <li><b>CapEx:</b> One-time capital needed to start this enterprise — beds, housing, tools, initial setup.</li>
+                <li><b>OpEx:</b> Ongoing monthly running cost — labour, water, and inputs.</li>
               </ul>
             </div>
             <div class="ops-field">
@@ -5846,9 +5844,8 @@ window.OPS_MODULES['o-horticulture'] = (function(){
         estSeedlings = bedsVal * plantsUnit;
       }
 
-      const scale = bedsVal > 0 ? (bedsVal / 20) : 0;
-      const scaledCapex = Math.round(rawCapex * scale);
-      const scaledOpex = Math.round(rawOpex * scale);
+      const scaledCapex = Math.round(rawCapex);
+      const scaledOpex = Math.round(rawOpex);
 
       const breakEvenKg = effectivePrice > 0 ? Math.ceil(scaledOpex / effectivePrice) : 0;
 
@@ -6590,8 +6587,9 @@ window.OPS_MODULES['o-hatchery'] = (function(){
       </div>
       <div class="ops-field-row">
         <div class="ops-field">
-          <label for="o-hatchery-base-opex">Annual Fixed OpEx / Utilities / Power (${CUR()})</label>
-          <input type="number" id="o-hatchery-base-opex" value="90000">
+          <label for="o-hatchery-base-opex">Monthly Fixed OpEx / Utilities / Power (${CUR()})</label>
+          <input type="number" id="o-hatchery-base-opex" value="7500">
+          <span class="ops-hint">Utilities and power per month — the app projects this to a full year, plus any eggs you buy in, in the summary below.</span>
         </div>
         <div class="ops-field">
           <label for="o-hatchery-egg-fertility-pct">Internal Egg Fertility Rate (%) [If Breeders &gt; 0]</label>
@@ -6836,12 +6834,12 @@ window.OPS_MODULES['o-hatchery'] = (function(){
       const pSpentBird = parseFloat(priceSpentBird.value) || 650;
 
       const bCapex = parseFloat(baseCapex.value) || 200000;
-      const bOpex = parseFloat(baseOpex.value) || 90000;
+      const bOpex = parseFloat(baseOpex.value) || 7500;
 
       const annualEggPurchaseCost = externalEggsNeeded * pPurchasedEgg;
 
-      const capex = Math.round(bCapex + (totalBreeders > 0 ? (totalBreeders / 100) * 40000 : 0));
-      const opex = Math.round(bOpex + annualEggPurchaseCost + (totalBreeders > 0 ? (totalBreeders / 100) * 35000 : 0));
+      const capex = Math.round(bCapex);
+      const opex = Math.round((bOpex * 12) + annualEggPurchaseCost);
 
       const revChicks = annualChicks * pChick;
       const revSpentBirds = totalBreeders * pSpentBird;
@@ -7581,8 +7579,8 @@ window.OPS_MODULES['o-kienyeji'] = (function(){
       const baseOpexMonthly = numOrDefault($('#o-kienyeji-base-opex').value, 5000);
       const baseOpex = baseOpexMonthly * 12;
 
-      const capex = Math.round(baseCapex * (totalFlock / 65));
-      const opex = Math.round(baseOpex * (totalFlock / 65));
+      const capex = Math.round(baseCapex);
+      const opex = Math.round(baseOpex);
 
       const annualTableEggsTrays = (layers * 150) / 30;
       const annualFertileEggs = (layers * 60);
@@ -8179,8 +8177,9 @@ window.OPS_MODULES['o-pigs'] = (function(){
           <input type="number" id="o-pigs-base-capex" value="240000">
         </div>
         <div class="ops-field">
-          <label>Annual Running Costs / OpEx (${CUR()})</label>
-          <input type="number" id="o-pigs-base-opex" value="130000">
+          <label>Monthly Running Costs / OpEx (${CUR()})</label>
+          <input type="number" id="o-pigs-base-opex" value="10833">
+          <span class="ops-hint">Feed, labour, and other recurring costs per month — the app projects this to a full year in the summary below.</span>
         </div>
       </div>
 
@@ -8402,11 +8401,11 @@ window.OPS_MODULES['o-pigs'] = (function(){
       const pCompost = numOrDefault($('#o-pigs-price-compost').value, 500);
 
       const baseCapex = numOrDefault($('#o-pigs-base-capex').value, 240000);
-      const baseOpex = numOrDefault($('#o-pigs-base-opex').value, 130000);
+      const baseOpexMonthly = numOrDefault($('#o-pigs-base-opex').value, 10833);
 
-      const capex = Math.round(baseCapex * (totalHerd / 10));
+      const capex = Math.round(baseCapex);
       const opexMultiplier = currentModel === 'refinery' ? 1.0 : 1.25;
-      const opex = Math.round(baseOpex * (totalHerd / 10) * opexMultiplier);
+      const opex = Math.round(baseOpexMonthly * 12 * opexMultiplier);
 
       const annualPiglets = sows * 16;
       const annualCarcassSales = meat * 2 * 60;
