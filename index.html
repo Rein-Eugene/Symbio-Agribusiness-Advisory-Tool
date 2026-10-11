@@ -14225,6 +14225,7 @@ function renderFolderView(folderKey){
 function goToFolder(folderKey){
   window.scrollTo(0,0);
   hideAllScreens();
+  document.getElementById('results').innerHTML = '';
   document.getElementById('folderSection').style.display = 'block';
   renderFolderView(folderKey);
   setActiveNav(folderKey === 'learn' ? 'learn' : 'track');
