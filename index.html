@@ -1447,7 +1447,7 @@
   .hf-row span:first-child{ color:var(--bone-dim); }
   .hf-row span:last-child{ font-family:'IBM Plex Mono',monospace; font-weight:600; }
 
-  .quick-actions-row{ display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:18px; }
+  .quick-actions-row{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-bottom:18px; }
   .qa-btn{
     display:flex; flex-direction:column; align-items:center; gap:6px;
     background:var(--soil-800); border:1px solid var(--line); border-radius:14px; padding:12px 4px;
@@ -1470,6 +1470,301 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
+<style id="bioCalcStyles">
+.bc .-bottom-10{bottom:-2.5rem}
+.bc .-right-10{right:-2.5rem}
+.bc .absolute{position:absolute}
+.bc .antialiased{-webkit-font-smoothing:antialiased}
+.bc .bg-forest{background-color:#2F4A35}
+.bc .bg-forest-50{background-color:#F2F6F3}
+.bc .bg-forest-700{background-color:#1F3123}
+.bc .bg-gold{background-color:#C9A227}
+.bc .bg-gold\/10{background-color:rgba(201,162,39,0.1)}
+.bc .bg-gold\/20{background-color:rgba(201,162,39,0.2)}
+.bc .bg-gray-100{background-color:#F3F4F6}
+.bc .bg-gray-200{background-color:#E5E7EB}
+.bc .bg-gray-50{background-color:#F9FAFB}
+.bc .bg-rust-light\/50{background-color:rgba(244,229,220,0.5)}
+.bc .bg-sage-50{background-color:#F4F6F2}
+.bc .bg-sage\/10{background-color:rgba(143,160,121,0.1)}
+.bc .bg-transparent{background-color:transparent}
+.bc .bg-white{background-color:#FFFFFF}
+.bc .block{display:block}
+.bc .blur-2xl{filter:blur(40px)}
+.bc .border{border-width:1px;border-style:solid}
+.bc .border-b{border-bottom-width:1px;border-style:solid}
+.bc .border-b-2{border-bottom-width:2px;border-style:solid}
+.bc .border-collapse{border-collapse:collapse}
+.bc .border-forest{border-color:#2F4A35}
+.bc .border-forest-600{border-color:#263C2B}
+.bc .border-forest-600\/60{border-color:rgba(38,60,43,0.6)}
+.bc .border-forest-600\/80{border-color:rgba(38,60,43,0.8)}
+.bc .border-forest-700\/60{border-color:rgba(31,49,35,0.6)}
+.bc .border-forest\/20{border-color:rgba(47,74,53,0.2)}
+.bc .border-gold\/40{border-color:rgba(201,162,39,0.4)}
+.bc .border-gray-100{border-color:#F3F4F6}
+.bc .border-gray-200{border-color:#E5E7EB}
+.bc .border-gray-200\/80{border-color:rgba(229,231,235,0.8)}
+.bc .border-gray-300{border-color:#D1D5DB}
+.bc .border-gray-400{border-color:#9CA3AF}
+.bc .border-l{border-left-width:1px;border-style:solid}
+.bc .border-rust\/40{border-color:rgba(158,90,49,0.4)}
+.bc .border-sage\/20{border-color:rgba(143,160,121,0.2)}
+.bc .border-sage\/30{border-color:rgba(143,160,121,0.3)}
+.bc .border-sage\/40{border-color:rgba(143,160,121,0.4)}
+.bc .border-t{border-top-width:1px;border-style:solid}
+.bc .cursor-pointer{cursor:pointer}
+.bc .divide-gray-100 > :not([hidden]) ~ :not([hidden]){border-color:#F3F4F6}
+.bc .divide-gray-200 > :not([hidden]) ~ :not([hidden]){border-color:#E5E7EB}
+.bc .divide-y > :not([hidden]) ~ :not([hidden]){border-top-width:1px;border-style:solid}
+.bc .duration-200{transition-duration:.2s}
+.bc .flex{display:flex}
+.bc .flex-col{flex-direction:column}
+.bc .flex-grow{flex-grow:1}
+.bc .font-bold{font-weight:700}
+.bc .font-medium{font-weight:500}
+.bc .font-mono{font-family:'IBM Plex Mono',monospace}
+.bc .font-normal{font-weight:400}
+.bc .font-sans{font-family:'IBM Plex Sans',sans-serif}
+.bc .font-semibold{font-weight:600}
+.bc .font-serif{font-family:'Zilla Slab',serif}
+.bc .gap-2{gap:0.5rem}
+.bc .gap-2\.5{gap:0.625rem}
+.bc .gap-3{gap:0.75rem}
+.bc .gap-4{gap:1rem}
+.bc .gap-6{gap:1.5rem}
+.bc .grid{display:grid}
+.bc .grid-cols-1{grid-template-columns:repeat(1,minmax(0,1fr))}
+.bc .grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.bc .h-10{height:2.5rem}
+.bc .h-16{height:4rem}
+.bc .h-4{height:1rem}
+.bc .h-40{height:10rem}
+.bc .h-5{height:1.25rem}
+.bc .h-6{height:1.5rem}
+.bc .h-7{height:1.75rem}
+.bc .hidden{display:none}
+.bc .inline-flex{display:inline-flex}
+.bc .italic{font-style:italic}
+.bc .items-baseline{align-items:baseline}
+.bc .items-center{align-items:center}
+.bc .items-start{align-items:flex-start}
+.bc .justify-between{justify-content:space-between}
+.bc .justify-center{justify-content:center}
+.bc .leading-none{line-height:1}
+.bc .line-clamp-2{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.bc .list-disc{list-style-type:disc}
+.bc .list-inside{list-style-position:inside}
+.bc .max-h-36{max-height:9rem}
+.bc .max-w-4xl{max-width:56rem}
+.bc .max-w-7xl{max-width:80rem}
+.bc .mb-1{margin-bottom:0.25rem}
+.bc .mb-2{margin-bottom:0.5rem}
+.bc .mb-3{margin-bottom:0.75rem}
+.bc .mb-4{margin-bottom:1rem}
+.bc .mb-6{margin-bottom:1.5rem}
+.bc .mb-8{margin-bottom:2rem}
+.bc .min-h-screen{min-height:100vh}
+.bc .mt-0\.5{margin-top:0.125rem}
+.bc .mt-1{margin-top:0.25rem}
+.bc .mt-2{margin-top:0.5rem}
+.bc .mt-3{margin-top:0.75rem}
+.bc .mt-4{margin-top:1rem}
+.bc .mt-5{margin-top:1.25rem}
+.bc .mx-auto{margin-left:auto;margin-right:auto}
+.bc .opacity-70{opacity:0.7}
+.bc .overflow-hidden{overflow:hidden}
+.bc .overflow-x-auto{overflow-x:auto}
+.bc .overflow-y-auto{overflow-y:auto}
+.bc .p-1{padding:0.25rem}
+.bc .p-1\.5{padding:0.375rem}
+.bc .p-2{padding:0.5rem}
+.bc .p-2\.5{padding:0.625rem}
+.bc .p-3{padding:0.75rem}
+.bc .p-3\.5{padding:0.875rem}
+.bc .p-4{padding:1rem}
+.bc .p-5{padding:1.25rem}
+.bc .p-6{padding:1.5rem}
+.bc .p-8{padding:2rem}
+.bc .pb-1{padding-bottom:0.25rem}
+.bc .pb-2{padding-bottom:0.5rem}
+.bc .pb-3{padding-bottom:0.75rem}
+.bc .pb-4{padding-bottom:1rem}
+.bc .pb-5{padding-bottom:1.25rem}
+.bc .pl-4{padding-left:1rem}
+.bc .pointer-events-none{pointer-events:none}
+.bc .pr-1{padding-right:0.25rem}
+.bc .pr-2{padding-right:0.5rem}
+.bc .pt-1{padding-top:0.25rem}
+.bc .pt-2{padding-top:0.5rem}
+.bc .pt-3{padding-top:0.75rem}
+.bc .pt-4{padding-top:1rem}
+.bc .px-2{padding-left:0.5rem;padding-right:0.5rem}
+.bc .px-2\.5{padding-left:0.625rem;padding-right:0.625rem}
+.bc .px-3{padding-left:0.75rem;padding-right:0.75rem}
+.bc .px-4{padding-left:1rem;padding-right:1rem}
+.bc .py-0\.5{padding-top:0.125rem;padding-bottom:0.125rem}
+.bc .py-1{padding-top:0.25rem;padding-bottom:0.25rem}
+.bc .py-1\.5{padding-top:0.375rem;padding-bottom:0.375rem}
+.bc .py-2{padding-top:0.5rem;padding-bottom:0.5rem}
+.bc .py-2\.5{padding-top:0.625rem;padding-bottom:0.625rem}
+.bc .py-6{padding-top:1.5rem;padding-bottom:1.5rem}
+.bc .relative{position:relative}
+.bc .rounded{border-radius:.25rem}
+.bc .rounded-2xl{border-radius:1rem}
+.bc .rounded-full{border-radius:9999px}
+.bc .rounded-lg{border-radius:.5rem}
+.bc .rounded-xl{border-radius:.75rem}
+.bc .shadow{box-shadow:0 1px 3px rgba(0,0,0,.1),0 1px 2px rgba(0,0,0,.06)}
+.bc .shadow-inner{box-shadow:inset 0 2px 4px rgba(0,0,0,.06)}
+.bc .shadow-lg{box-shadow:0 10px 15px -3px rgba(0,0,0,.1),0 4px 6px -2px rgba(0,0,0,.05)}
+.bc .shadow-md{box-shadow:0 4px 6px -1px rgba(0,0,0,.1),0 2px 4px -1px rgba(0,0,0,.06)}
+.bc .shadow-sm{box-shadow:0 1px 2px rgba(0,0,0,.05)}
+.bc .shrink-0{flex-shrink:0}
+.bc .space-x-1 > :not([hidden]) ~ :not([hidden]){margin-left:0.25rem}
+.bc .space-x-2 > :not([hidden]) ~ :not([hidden]){margin-left:0.5rem}
+.bc .space-x-3 > :not([hidden]) ~ :not([hidden]){margin-left:0.75rem}
+.bc .space-y-0\.5 > :not([hidden]) ~ :not([hidden]){margin-top:0.125rem}
+.bc .space-y-1 > :not([hidden]) ~ :not([hidden]){margin-top:0.25rem}
+.bc .space-y-2 > :not([hidden]) ~ :not([hidden]){margin-top:0.5rem}
+.bc .space-y-3 > :not([hidden]) ~ :not([hidden]){margin-top:0.75rem}
+.bc .space-y-4 > :not([hidden]) ~ :not([hidden]){margin-top:1rem}
+.bc .space-y-6 > :not([hidden]) ~ :not([hidden]){margin-top:1.5rem}
+.bc .sticky{position:sticky}
+.bc .text-2xl{font-size:1.5rem;line-height:2rem}
+.bc .text-\[10px\]{font-size:10px}
+.bc .text-\[11px\]{font-size:11px}
+.bc .text-base{font-size:1rem;line-height:1.5rem}
+.bc .text-center{text-align:center}
+.bc .text-forest{color:#2F4A35}
+.bc .text-forest-900{color:#101912}
+.bc .text-gold{color:#C9A227}
+.bc .text-gray-400{color:#9CA3AF}
+.bc .text-gray-500{color:#6B7280}
+.bc .text-gray-600{color:#4B5563}
+.bc .text-gray-700{color:#374151}
+.bc .text-gray-800{color:#1F2937}
+.bc .text-gray-900{color:#111827}
+.bc .text-left{text-align:left}
+.bc .text-lg{font-size:1.125rem;line-height:1.75rem}
+.bc .text-right{text-align:right}
+.bc .text-rust{color:#9E5A31}
+.bc .text-rust-dark{color:#7A4322}
+.bc .text-sage{color:#8FA079}
+.bc .text-sage-100{color:#E6EAE1}
+.bc .text-sage-200{color:#CCD5C3}
+.bc .text-sage-600{color:#75865E}
+.bc .text-sm{font-size:.875rem;line-height:1.25rem}
+.bc .text-white{color:#FFFFFF}
+.bc .text-xl{font-size:1.25rem;line-height:1.75rem}
+.bc .text-xs{font-size:.75rem;line-height:1rem}
+.bc .top-0{top:0}
+.bc .tracking-tight{letter-spacing:-.025em}
+.bc .tracking-wider{letter-spacing:.05em}
+.bc .tracking-widest{letter-spacing:.1em}
+.bc .transition{transition-property:color,background-color,border-color,opacity,box-shadow,transform;transition-duration:.15s;transition-timing-function:cubic-bezier(.4,0,.2,1)}
+.bc .transition-all{transition-property:all;transition-duration:.15s;transition-timing-function:cubic-bezier(.4,0,.2,1)}
+.bc .truncate{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bc .uppercase{text-transform:uppercase}
+.bc .w-10{width:2.5rem}
+.bc .w-20{width:5rem}
+.bc .w-32{width:8rem}
+.bc .w-4{width:1rem}
+.bc .w-40{width:10rem}
+.bc .w-5{width:1.25rem}
+.bc .w-6{width:1.5rem}
+.bc .w-7{width:1.75rem}
+.bc .w-full{width:100%}
+.bc .whitespace-nowrap{white-space:nowrap}
+.bc .z-40{z-index:40}
+.bc .focus\:outline-none:focus{outline:2px solid transparent;outline-offset:2px}
+.bc .focus\:ring-1:focus{box-shadow:0 0 0 1px var(--tw-ring-color,rgba(59,130,246,.5))}
+.bc .focus\:ring-2:focus{box-shadow:0 0 0 2px var(--tw-ring-color,rgba(59,130,246,.5))}
+.bc .focus\:ring-forest:focus{--tw-ring-color:#2F4A35}
+.bc .hover\:bg-forest-600:hover{background-color:#263C2B}
+.bc .hover\:bg-forest-700:hover{background-color:#1F3123}
+.bc .hover\:bg-gold-dark:hover{background-color:#8F6B12}
+.bc .hover\:bg-gray-100:hover{background-color:#F3F4F6}
+.bc .hover\:bg-gray-200:hover{background-color:#E5E7EB}
+.bc .hover\:bg-gray-300:hover{background-color:#D1D5DB}
+.bc .hover\:bg-gray-50:hover{background-color:#F9FAFB}
+.bc .hover\:border-forest:hover{border-color:#2F4A35}
+.bc .hover\:text-forest:hover{color:#2F4A35}
+.bc .hover\:text-white:hover{color:#FFFFFF}
+.bc .hover\:underline:hover{text-decoration:underline}
+.bc.dark .dark\:bg-darkbg{background-color:#0F140D}
+.bc.dark .dark\:bg-darkcard{background-color:#172015}
+.bc.dark .dark\:bg-forest{background-color:#2F4A35}
+.bc.dark .dark\:bg-forest-900{background-color:#101912}
+.bc.dark .dark\:bg-forest-900\/20{background-color:rgba(16,25,18,0.2)}
+.bc.dark .dark\:bg-forest-900\/30{background-color:rgba(16,25,18,0.3)}
+.bc.dark .dark\:bg-forest-900\/40{background-color:rgba(16,25,18,0.4)}
+.bc.dark .dark\:bg-forest-900\/50{background-color:rgba(16,25,18,0.5)}
+.bc.dark .dark\:bg-forest-900\/60{background-color:rgba(16,25,18,0.6)}
+.bc.dark .dark\:bg-rust-dark\/30{background-color:rgba(122,67,34,0.3)}
+.bc.dark .dark\:border-darkborder{border-color:#273624}
+.bc.dark .dark\:border-sage{border-color:#8FA079}
+.bc.dark .dark\:divide-darkborder > :not([hidden]) ~ :not([hidden]){border-color:#273624}
+.bc.dark .dark\:hover\:bg-forest-900\/20:hover{background-color:rgba(16,25,18,0.2)}
+.bc.dark .dark\:hover\:bg-forest-900\/50:hover{background-color:rgba(16,25,18,0.5)}
+.bc.dark .dark\:hover\:text-white:hover{color:#FFFFFF}
+.bc.dark .dark\:text-gold{color:#C9A227}
+.bc.dark .dark\:text-gray-300{color:#D1D5DB}
+.bc.dark .dark\:text-gray-400{color:#9CA3AF}
+.bc.dark .dark\:text-rust-light{color:#F4E5DC}
+.bc.dark .dark\:text-sage-100{color:#E6EAE1}
+.bc.dark .dark\:text-sage-200{color:#CCD5C3}
+.bc.dark .dark\:text-white{color:#FFFFFF}
+@media (min-width:640px){.bc .sm\:flex-row{flex-direction:row}}
+@media (min-width:640px){.bc .sm\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:640px){.bc .sm\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:640px){.bc .sm\:grid-cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (min-width:640px){.bc .sm\:grid-cols-5{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (min-width:640px){.bc .sm\:h-12{height:3rem}}
+@media (min-width:640px){.bc .sm\:h-20{height:5rem}}
+@media (min-width:640px){.bc .sm\:h-7{height:1.75rem}}
+@media (min-width:640px){.bc .sm\:inline-flex{display:inline-flex}}
+@media (min-width:640px){.bc .sm\:items-center{align-items:center}}
+@media (min-width:640px){.bc .sm\:px-6{padding-left:1.5rem;padding-right:1.5rem}}
+@media (min-width:640px){.bc .sm\:space-x-2 > :not([hidden]) ~ :not([hidden]){margin-left:0.5rem}}
+@media (min-width:640px){.bc .sm\:space-x-4 > :not([hidden]) ~ :not([hidden]){margin-left:1rem}}
+@media (min-width:640px){.bc .sm\:text-2xl{font-size:1.5rem;line-height:2rem}}
+@media (min-width:640px){.bc .sm\:text-sm{font-size:.875rem;line-height:1.25rem}}
+@media (min-width:640px){.bc .sm\:w-12{width:3rem}}
+@media (min-width:640px){.bc .sm\:w-7{width:1.75rem}}
+@media (min-width:768px){.bc .md\:flex-row{flex-direction:row}}
+@media (min-width:768px){.bc .md\:grid-cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:768px){.bc .md\:items-center{align-items:center}}
+@media (min-width:1024px){.bc .lg\:col-span-2{grid-column:span 2/span 2}}
+@media (min-width:1024px){.bc .lg\:grid-cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (min-width:1024px){.bc .lg\:grid-cols-6{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (min-width:1024px){.bc .lg\:px-8{padding-left:2rem;padding-right:2rem}}
+
+.bc{line-height:1.5;}
+.bc *,.bc *::before,.bc *::after{border-width:0;border-style:solid;border-color:#E5E7EB;}
+.bc button,.bc input,.bc select,.bc textarea{font:inherit;color:inherit;background-color:transparent;border-radius:0;}
+.bc button{cursor:pointer;background-image:none;}
+.bc button:disabled,.bc input:disabled,.bc select:disabled{cursor:not-allowed;}
+.bc table{border-collapse:collapse;}
+.bc svg{display:block;vertical-align:middle;}
+.bc ul{list-style:none;}
+.bc h1,.bc h2,.bc h3,.bc h4{font-size:inherit;font-weight:inherit;}
+.bc{font-family:'IBM Plex Sans',sans-serif;}
+.bc h1,.bc h2,.bc h3,.bc h4{font-family:'Zilla Slab',serif;}
+.bc button{font-family:inherit;}
+.bc .no-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
+.bc .no-scrollbar::-webkit-scrollbar{display:none;}
+.bc .print-only{display:none;}
+.bc input,.bc select{font-family:inherit;}
+#bcPrintHost{display:none;}
+@media print{
+  html.bc-printing body > *:not(#bcPrintHost){display:none !important;}
+  html.bc-printing #bcPrintHost{display:block !important;}
+  html.bc-printing #bcPrintHost .bc-ticket{border:none !important;box-shadow:none !important;max-width:100% !important;}
+  @page{margin:1.2cm;size:portrait;}
+}
+
+</style>
 </head>
 <body>
 <select id="currencySelect" class="currency-select" title="Currency" aria-label="Currency">
@@ -1614,6 +1909,1636 @@
   <button type="button" class="bn-item" id="bnMore" data-bn="more"><span class="bn-icon">🧰</span><span class="bn-label">More</span></button>
 </nav>
 
+<template id="bioCalcTemplate">
+<div id="bioCalc" class="bc">
+<div class="bg-forest rounded-2xl px-2 pt-1 pb-1 mb-4 no-print">
+<nav class="flex space-x-1 sm:space-x-2 overflow-x-auto pb-2 pt-1 no-scrollbar text-xs sm:text-sm border-t border-forest-700/60" aria-label="Tabs">
+                <button onclick="BC.switchToTab('tab-tankmix')" id="nav-tab-tankmix" class="tab-btn px-3 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center space-x-2 bg-gold text-forest-900 font-bold shadow">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                    <span>1. Tank Mix & Spray Volume</span>
+                </button>
+
+                <button onclick="BC.switchToTab('tab-recipes')" id="nav-tab-recipes" class="tab-btn px-3 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center space-x-2 text-sage-200 hover:bg-forest-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                    <span>2. DIY Recipes Generator</span>
+                </button>
+
+                <button onclick="BC.switchToTab('tab-planner')" id="nav-tab-planner" class="tab-btn px-3 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center space-x-2 text-sage-200 hover:bg-forest-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    <span>3. Growth Stage Program</span>
+                </button>
+
+                <button onclick="BC.switchToTab('tab-economics')" id="nav-tab-economics" class="tab-btn px-3 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center space-x-2 text-sage-200 hover:bg-forest-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    <span>4. Cost & Economics</span>
+                </button>
+
+                <button onclick="BC.switchToTab('tab-print')" id="nav-tab-print" class="tab-btn px-3 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center space-x-2 text-sage-200 hover:bg-forest-700">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>5. Field Job Sheet</span>
+                </button>
+            </nav>
+</div>
+
+
+        <!-- ==================== TAB 1: TANK MIX & APPLICATION CALCULATOR ==================== -->
+        <div id="tab-tankmix" class="tab-content space-y-6">
+            
+            <!-- Top Controls Grid: Volume Mode & Water Source -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Left: Application Mode Selection -->
+                <div class="lg:col-span-2 bg-white dark:bg-darkcard border border-gray-200 dark:border-darkborder rounded-2xl p-5 shadow-sm">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-gray-100 dark:border-darkborder">
+                        <div>
+                            <h2 class="text-lg font-bold font-serif text-forest dark:text-sage-200 flex items-center space-x-2">
+                                <span>Spray Volume & Field Calculator</span>
+                            </h2>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Configure target field size or select container tank batch size.</p>
+                        </div>
+
+                        <!-- Mode Switcher Toggle -->
+                        <div class="inline-flex rounded-xl bg-gray-100 dark:bg-forest-900/60 p-1 border border-gray-200 dark:border-darkborder text-xs font-medium">
+                            <button onclick="BC.setCalcMode('container')" id="modeBtnContainer" class="px-3 py-1.5 rounded-lg transition font-semibold bg-white dark:bg-forest text-forest dark:text-white shadow-sm">
+                                Direct Container Mode
+                            </button>
+                            <button onclick="BC.setCalcMode('area')" id="modeBtnArea" class="px-3 py-1.5 rounded-lg transition text-gray-600 dark:text-gray-400 hover:text-forest dark:hover:text-white">
+                                Field Area Mode
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CONTAINER MODE INPUTS -->
+                    <div id="containerModeSection" class="mt-5 space-y-4">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400">
+                            Select Standard Container Preset:
+                        </label>
+                        <div class="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+                            <button onclick="BC.setContainerPreset('knapsack20')" id="preset-knapsack20" class="container-preset-btn p-3 rounded-xl border border-sage/40 bg-sage-50 dark:bg-forest-900/40 text-left hover:border-forest transition">
+                                <div class="text-xs font-bold text-forest dark:text-sage-200">20L Knapsack</div>
+                                <div class="text-[11px] font-mono text-gray-500 dark:text-gray-400">1 Back Sprayer</div>
+                            </button>
+
+                            <button onclick="BC.setContainerPreset('drum100')" id="preset-drum100" class="container-preset-btn p-3 rounded-xl border border-gray-200 dark:border-darkborder text-left hover:border-forest transition">
+                                <div class="text-xs font-bold text-forest dark:text-sage-200">100L Drum</div>
+                                <div class="text-[11px] font-mono text-gray-500 dark:text-gray-400">Medium Batch</div>
+                            </button>
+
+                            <button onclick="BC.setContainerPreset('drum200')" id="preset-drum200" class="container-preset-btn p-3 rounded-xl border border-gray-200 dark:border-darkborder text-left hover:border-forest transition">
+                                <div class="text-xs font-bold text-forest dark:text-sage-200">200L Drum</div>
+                                <div class="text-[11px] font-mono text-gray-500 dark:text-gray-400">Commercial Standard</div>
+                            </button>
+
+                            <button onclick="BC.setContainerPreset('ibc1000')" id="preset-ibc1000" class="container-preset-btn p-3 rounded-xl border border-gray-200 dark:border-darkborder text-left hover:border-forest transition">
+                                <div class="text-xs font-bold text-forest dark:text-sage-200">1000L IBC</div>
+                                <div class="text-[11px] font-mono text-gray-500 dark:text-gray-400">Tote / Rig</div>
+                            </button>
+
+                            <button onclick="BC.setContainerPreset('custom')" id="preset-custom" class="container-preset-btn p-3 rounded-xl border border-gray-200 dark:border-darkborder text-left hover:border-forest transition">
+                                <div class="text-xs font-bold text-forest dark:text-sage-200">Custom Vol.</div>
+                                <div class="text-[11px] font-mono text-gray-500 dark:text-gray-400">User Defined</div>
+                            </button>
+                        </div>
+
+                        <!-- Volume Control Slider & Input -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center bg-gray-50 dark:bg-forest-900/30 p-4 rounded-xl border border-gray-200/80 dark:border-darkborder">
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Target Water Batch Volume (Liters):
+                                </label>
+                                <div class="flex items-center space-x-2">
+                                    <input type="number" id="waterVolumeInput" value="20" min="1" max="10000" oninput="BC.onWaterVolumeChange(this.value)" class="w-32 px-3 py-2 bg-white dark:bg-darkbg border border-gray-300 dark:border-darkborder rounded-lg font-mono font-bold text-base text-forest dark:text-sage-100 focus:ring-2 focus:ring-forest focus:outline-none">
+                                    <span class="text-sm font-semibold text-gray-500 dark:text-gray-400">Liters Water</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                    Number of 20L Knapsack Load Equivalents:
+                                </label>
+                                <div id="knapsackCountBadge" class="text-lg font-mono font-bold text-forest dark:text-gold flex items-center space-x-2">
+                                    <span id="knapsackCountVal">1.0</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 font-sans font-normal">(Knapsacks)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- AREA MODE INPUTS (Hidden by default) -->
+                    <div id="areaModeSection" class="mt-5 space-y-4 hidden">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                            <!-- Area Value -->
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
+                                    Field / Land Size:
+                                </label>
+                                <input type="number" id="areaSizeInput" value="1" min="0.1" step="0.1" oninput="BC.onAreaParamsChange()" class="w-full px-3 py-2 bg-white dark:bg-darkbg border border-gray-300 dark:border-darkborder rounded-lg font-mono font-bold text-base text-forest dark:text-sage-100 focus:ring-2 focus:ring-forest focus:outline-none">
+                            </div>
+
+                            <!-- Area Unit -->
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
+                                    Unit:
+                                </label>
+                                <select id="areaUnitSelect" onchange="BC.onAreaParamsChange()" class="w-full px-3 py-2 bg-white dark:bg-darkbg border border-gray-300 dark:border-darkborder rounded-lg font-medium text-sm text-forest dark:text-sage-100 focus:ring-2 focus:ring-forest focus:outline-none">
+                                    <option value="acre" selected>Acres</option>
+                                    <option value="ha">Hectares (Ha)</option>
+                                    <option value="m2">Square Meters (m²)</option>
+                                    <option value="beds">Raised Beds (100m length)</option>
+                                </select>
+                            </div>
+
+                            <!-- Application Method -->
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-gray-400 mb-1">
+                                    Application Target:
+                                </label>
+                                <select id="appMethodSelect" onchange="BC.onAreaParamsChange()" class="w-full px-3 py-2 bg-white dark:bg-darkbg border border-gray-300 dark:border-darkborder rounded-lg font-medium text-sm text-forest dark:text-sage-100 focus:ring-2 focus:ring-forest focus:outline-none">
+                                    <option value="foliar" selected>Foliar Spray (200 L/Acre standard)</option>
+                                    <option value="drench">Soil Drench (800 L/Acre intense)</option>
+                                    <option value="fertigation">Fertigation Line (1000 L/Acre)</option>
+                                    <option value="mist">Light Fine Mist (100 L/Acre)</option>
+                                    <option value="nursery">Nursery Bed Drench (400 L/Acre)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Auto Calculated Area Volume Readout -->
+                        <div class="bg-forest-50 dark:bg-forest-900/40 p-4 rounded-xl border border-sage/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <div class="flex items-center space-x-3">
+                                <div class="p-2 rounded-lg bg-forest text-white">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5 0 005 5h12a5 0 005-5l-3-9M6 7l6-2 6 2M6 7l6 2 6-2m-6 2v10"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-xs font-semibold text-gray-500 dark:text-gray-400">Total Recommended Water Spray Volume</div>
+                                    <div class="text-xl font-mono font-bold text-forest dark:text-sage-100" id="areaCalculatedVolText">200.0 Liters</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-xs text-gray-500 dark:text-gray-400">Requires Approx.</div>
+                                <div class="text-sm font-mono font-bold text-gold" id="areaKnapsackCountText">10 Knapsacks (20L)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Right: Quick Summary Card -->
+                <div class="bg-forest text-white rounded-2xl p-5 shadow-lg flex flex-col justify-between border border-forest-600 relative overflow-hidden">
+                    <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-sage/10 rounded-full blur-2xl pointer-events-none"></div>
+
+                    <div>
+                        <div class="flex items-center justify-between border-b border-forest-600/80 pb-3 mb-4">
+                            <span class="text-xs font-mono uppercase tracking-widest text-gold font-semibold">Live Tank Summary</span>
+                            <span id="activeInputsCountBadge" class="bg-gold/20 text-gold text-xs px-2 py-0.5 rounded-full font-mono font-semibold">2 Active Inputs</span>
+                        </div>
+
+                        <div class="space-y-3">
+                            <div class="flex justify-between items-baseline">
+                                <span class="text-xs text-sage-200">Total Mix Water Volume:</span>
+                                <span class="text-lg font-mono font-bold text-white" id="summaryTotalWater">20.0 L</span>
+                            </div>
+                            <div class="flex justify-between items-baseline">
+                                <span class="text-xs text-sage-200">20L Knapsack Loads:</span>
+                                <span class="text-sm font-mono text-gold font-bold" id="summaryKnapsackLoads">1.0 Loads</span>
+                            </div>
+                            
+                            <div class="pt-3 border-t border-forest-600/60">
+                                <div class="text-xs uppercase tracking-wider text-sage-300 font-semibold mb-2">Key Dosages / Tank Mix:</div>
+                                <div id="summaryDosageList" class="space-y-1 text-xs font-mono max-h-36 overflow-y-auto pr-1">
+                                    <!-- Dynamic items populate here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 border-t border-forest-600/80 mt-4 flex items-center justify-between">
+                        <span class="text-xs text-sage-300">Est. Batch Cost:</span>
+                        <span class="text-lg font-mono font-bold text-gold" id="summaryEstCost">KSh 0</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bio Inputs Selection Grid Header -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2">
+                <div>
+                    <h3 class="text-xl font-serif font-bold text-forest dark:text-sage-100">Select Bio Inputs & Multi-Mix Dosages</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Toggle active inputs, choose application purpose presets, or specify custom dilution ratios.</p>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button onclick="BC.selectAllInputs(true)" class="text-xs px-2.5 py-1 rounded bg-gray-200 dark:bg-forest-900 text-gray-700 dark:text-sage-200 hover:bg-gray-300 transition">Select All</button>
+                    <button onclick="BC.selectAllInputs(false)" class="text-xs px-2.5 py-1 rounded bg-gray-200 dark:bg-forest-900 text-gray-700 dark:text-sage-200 hover:bg-gray-300 transition">Clear All</button>
+                </div>
+            </div>
+
+            <!-- Bio Inputs Cards Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="bioInputsGrid">
+                <!-- Dynamically populated by JS renderBioInputsGrid() -->
+            </div>
+
+            <!-- Step-by-step Mixing Order & Safety Instructions -->
+            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-darkborder rounded-2xl p-6 shadow-sm space-y-6">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-darkborder pb-4">
+                    <div>
+                        <h3 class="text-lg font-bold font-serif text-forest dark:text-sage-200 flex items-center space-x-2">
+                            <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/></svg>
+                            <span>Tank Mixing Sequence & Compatibility Safety Rules</span>
+                        </h3>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Strict order of addition prevents precipitation, curdling, and destruction of living microbes.</p>
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-xs font-mono text-sage-600 dark:text-sage-300 bg-sage-50 dark:bg-forest-900/50 px-3 py-1.5 rounded-lg border border-sage/20">
+                        <span>Strict Order: Water &rarr; JWA &rarr; Bio Liquids &rarr; Powders &rarr; JS</span>
+                    </div>
+                </div>
+
+                <!-- Dynamic Steps Timeline -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="mixingSequenceSteps">
+                    <!-- Populated via JS -->
+                </div>
+
+                <!-- Dynamic Warnings Box -->
+                <div id="dynamicSafetyWarnings" class="space-y-3">
+                    <!-- Dynamic Warning Alerts Populated via JS -->
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ==================== TAB 2: DIY BATCH RECIPE GENERATOR ==================== -->
+        <div id="tab-recipes" class="tab-content space-y-6 hidden">
+            
+            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-darkborder rounded-2xl p-6 shadow-sm">
+                
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-100 dark:border-darkborder pb-5 mb-6">
+                    <div>
+                        <h2 class="text-xl font-serif font-bold text-forest dark:text-sage-200">
+                            DIY Bio Input Raw Recipe Generator
+                        </h2>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Calculate exact raw material measurements (KOH, Oils, Salt, Leaf Mould, Molasses) to brew your own on-farm Bio Inputs.
+                        </p>
+                    </div>
+
+                    <!-- Recipe Target Volume Control -->
+                    <div class="flex items-center space-x-3 bg-gray-50 dark:bg-forest-900/40 p-2 rounded-xl border border-gray-200 dark:border-darkborder">
+                        <span class="text-xs font-semibold text-gray-700 dark:text-gray-300">Target Finished Volume:</span>
+                        <select id="recipeBatchVolumeSelect" onchange="BC.updateDIYRecipeView()" class="px-3 py-1.5 bg-white dark:bg-darkbg border border-gray-300 dark:border-darkborder rounded-lg font-mono font-bold text-sm text-forest dark:text-sage-100 focus:outline-none">
+                            <option value="5">5 Liters / Kg</option>
+                            <option value="10">10 Liters / Kg</option>
+                            <option value="20" selected>20 Liters / Kg</option>
+                            <option value="50">50 Liters / Kg</option>
+                            <option value="100">100 Liters / Kg</option>
+                            <option value="200">200 Liters (Drum)</option>
+                            <option value="500">500 Liters</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Recipe Tabs Selector -->
+                <div class="flex space-x-2 overflow-x-auto pb-3 mb-6 no-scrollbar border-b border-gray-100 dark:border-darkborder" id="recipeSelectorTabs">
+                    <button onclick="BC.selectRecipe('jms')" id="recipe-btn-jms" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-forest text-white shadow">JMS</button>
+                    <button onclick="BC.selectRecipe('jlf')" id="recipe-btn-jlf" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JLF Grass</button>
+                    <button onclick="BC.selectRecipe('jlfp_rock')" id="recipe-btn-jlfp_rock" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JLF Rock Phosphate</button>
+                    <button onclick="BC.selectRecipe('jlfb_fish')" id="recipe-btn-jlfb_fish" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JLF Fish</button>
+                    <button onclick="BC.selectRecipe('jlfp_bone')" id="recipe-btn-jlfp_bone" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JLF Bone Meal</button>
+                    <button onclick="BC.selectRecipe('faa')" id="recipe-btn-faa" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">FAA</button>
+                    <button onclick="BC.selectRecipe('biochar')" id="recipe-btn-biochar" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">Biochar</button>
+                    <button onclick="BC.selectRecipe('lab')" id="recipe-btn-lab" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">LAB</button>
+                    <button onclick="BC.selectRecipe('fpj')" id="recipe-btn-fpj" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">FPJ / FFJ</button>
+                    <button onclick="BC.selectRecipe('jwa')" id="recipe-btn-jwa" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JWA</button>
+                    <button onclick="BC.selectRecipe('jhs')" id="recipe-btn-jhs" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JHS</button>
+                    <button onclick="BC.selectRecipe('js')" id="recipe-btn-js" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JS</button>
+                </div>
+
+                <!-- Active Recipe Detail Display Area -->
+                <div id="recipeDetailCard" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Dynamic Recipe Content populated by JS -->
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ==================== TAB 3: CROP GROWTH STAGE PLANNER ==================== -->
+        <div id="tab-planner" class="tab-content space-y-6 hidden">
+            
+            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-darkborder rounded-2xl p-6 shadow-sm">
+                
+                <div class="border-b border-gray-100 dark:border-darkborder pb-4 mb-6">
+                    <h2 class="text-xl font-serif font-bold text-forest dark:text-sage-200">
+                        Crop Growth Stage Bio-Input Program
+                    </h2>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
+                        Select your current crop growth phase to view optimal input combinations, application schedules, and load them directly into your calculator.
+                    </p>
+                </div>
+
+                <!-- Stage Selection Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-6" id="growthStageSelectorGrid">
+                    <!-- Populated via JS -->
+                </div>
+
+                <!-- Active Stage Details Card -->
+                <div id="activeStageDetailBox" class="bg-forest-50 dark:bg-forest-900/30 border border-sage/30 rounded-2xl p-6 space-y-6">
+                    <!-- Populated via JS -->
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ==================== TAB 4: COST & FARM ECONOMICS ESTIMATOR ==================== -->
+        <div id="tab-economics" class="tab-content space-y-6 hidden">
+            
+            <div class="bg-white dark:bg-darkcard border border-gray-200 dark:border-darkborder rounded-2xl p-6 shadow-sm">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gray-100 dark:border-darkborder pb-4 mb-6">
+                    <div>
+                        <h2 class="text-xl font-serif font-bold text-forest dark:text-sage-200">
+                            Cost per Batch
+                        </h2>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">
+                            Set unit prices for your inputs and see what each batch costs.
+                        </p>
+                    </div>
+
+                    <button onclick="BC.resetUnitPrices()" class="text-xs px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-forest-900 text-gray-600 dark:text-gray-300 hover:bg-gray-200 transition border border-gray-200 dark:border-darkborder">
+                        Reset Default Prices
+                    </button>
+                </div>
+
+                <!-- Batch Cost Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-forest text-white p-4 rounded-xl border border-forest-600 shadow-md">
+                        <div class="text-xs text-sage-200 font-medium">Cost per Batch</div>
+                        <div class="text-2xl font-mono font-bold text-gold mt-1" id="econBatchCost">KSh 0</div>
+                        <div class="text-[11px] text-sage-300 mt-0.5">All active inputs, current mix</div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-forest-900/30 p-4 rounded-xl border border-gray-200 dark:border-darkborder">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">Batch Volume</div>
+                        <div class="text-2xl font-mono font-bold text-forest dark:text-sage-200 mt-1" id="econBatchVolume">20 L</div>
+                        <div class="text-[11px] text-gray-400 mt-0.5">Total mixed water</div>
+                    </div>
+                    <div class="bg-gray-50 dark:bg-forest-900/30 p-4 rounded-xl border border-gray-200 dark:border-darkborder">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 font-medium">Active Inputs</div>
+                        <div class="text-2xl font-mono font-bold text-forest dark:text-sage-200 mt-1" id="econActiveCount">0</div>
+                        <div class="text-[11px] text-gray-400 mt-0.5">Included in the batch</div>
+                    </div>
+                </div>
+
+                <!-- Unit Price Editor Table -->
+                <div class="overflow-x-auto">
+                    <h3 class="text-sm font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-3">Unit Price Settings (per L or per kg):</h3>
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100 dark:bg-forest-900/60 text-gray-600 dark:text-gray-300 uppercase tracking-wider border-b border-gray-200 dark:border-darkborder">
+                                <th class="p-3">Bio Input Name</th>
+                                <th class="p-3">Category</th>
+                                <th class="p-3">Unit Cost</th>
+                                <th class="p-3">Dosage for Batch</th>
+                                <th class="p-3">Cost for Batch</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unitPriceTableBody" class="divide-y divide-gray-100 dark:divide-darkborder font-mono">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ==================== TAB 5: PRINT FIELD JOB SHEET ==================== -->
+        <div id="tab-print" class="tab-content space-y-6 hidden">
+            
+            <div class="no-print bg-white dark:bg-darkcard border border-gray-200 dark:border-darkborder rounded-2xl p-4 shadow-sm flex items-center justify-between">
+                <div>
+                    <h3 class="text-sm font-bold text-forest dark:text-sage-200">Field Application Work Ticket Preview</h3>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">Fill in supervisor metadata below then print or save as PDF for field workers.</p>
+                </div>
+                <button onclick="BC.printTicket()" class="px-4 py-2 rounded-xl bg-forest hover:bg-forest-600 text-white text-xs font-bold shadow flex items-center space-x-2 transition">
+                    <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/></svg>
+                    <span>Print Field Ticket</span>
+                </button>
+            </div>
+
+            <!-- Printable Sheet Container -->
+            <div class="bg-white text-gray-900 border border-gray-300 p-8 rounded-2xl shadow-md max-w-4xl mx-auto space-y-6 bc-ticket">
+                
+                <!-- Ticket Header -->
+                <div class="flex justify-between items-start border-b-2 border-forest pb-4">
+                    <div>
+                        <div class="text-xs font-mono uppercase tracking-widest text-forest font-bold">Symbio Biotech Agribusiness</div>
+                        <h1 class="text-2xl font-serif font-bold text-forest">Bio-Input Field Application Ticket</h1>
+                        <p class="text-xs text-gray-600">Standard Operating Procedure & Knapsack Tank Recipe Sheet</p>
+                    </div>
+                    <div class="text-right font-mono text-xs text-gray-600">
+                        <div><strong>Ticket Ref:</strong> <span id="printTicketRef">SYM-2026-0814</span></div>
+                        <div><strong>Generated:</strong> <span id="printTicketDate">2026-10-07</span></div>
+                    </div>
+                </div>
+
+                <!-- Field Metadata Form Inputs (Editable in preview, printable) -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs bg-gray-50 p-3 rounded-lg border border-gray-200">
+                    <div>
+                        <label class="block text-[10px] text-gray-500 font-bold uppercase">Field / Plot ID:</label>
+                        <input type="text" id="printMetaPlot" value="Plot A - Block 2" oninput="BC.updatePrintSheetView()" class="w-full bg-transparent font-semibold text-gray-800 border-b border-gray-300 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-500 font-bold uppercase">Target Crop / Stage:</label>
+                        <input type="text" id="printMetaCrop" value="Tomatoes (Fruiting)" oninput="BC.updatePrintSheetView()" class="w-full bg-transparent font-semibold text-gray-800 border-b border-gray-300 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-500 font-bold uppercase">Operator / Applicator:</label>
+                        <input type="text" id="printMetaOperator" value="John Doe" oninput="BC.updatePrintSheetView()" class="w-full bg-transparent font-semibold text-gray-800 border-b border-gray-300 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] text-gray-500 font-bold uppercase">Target Water Volume:</label>
+                        <div class="font-bold text-forest font-mono text-sm" id="printMetaWaterVol">20.0 Liters</div>
+                    </div>
+                </div>
+
+                <!-- Exact Dosage Recipe Table for Single Knapsack & Full Batch -->
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-forest mb-2 border-b border-forest/20 pb-1">1. Precise Input Measurement Sheet</h3>
+                    <table class="w-full text-left text-xs border border-gray-300">
+                        <thead class="bg-forest text-white">
+                            <tr>
+                                <th class="p-2 border border-gray-300">Bio Input Name</th>
+                                <th class="p-2 border border-gray-300">Dilution Ratio</th>
+                                <th class="p-2 border border-gray-300">Dose per 20L Knapsack</th>
+                                <th class="p-2 border border-gray-300">Total Dose for Full Mix (<span id="printFullMixVolLabel">20L</span>)</th>
+                                <th class="p-2 border border-gray-300 text-center">Verified [✓]</th>
+                            </tr>
+                        </thead>
+                        <tbody id="printRecipeTableBody" class="font-mono divide-y divide-gray-200">
+                            <!-- Populated via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Filling Sequence Checklist -->
+                <div>
+                    <h3 class="text-xs font-bold uppercase tracking-wider text-forest mb-2 border-b border-forest/20 pb-1">2. Mandatory Tank Filling Sequence</h3>
+                    <div id="printFillingSequenceList" class="space-y-2 text-xs">
+                        <!-- Populated via JS -->
+                    </div>
+                </div>
+
+                <!-- Field Worker Safety & Quality Checklist -->
+                <div class="grid grid-cols-2 gap-4 text-xs border-t border-gray-200 pt-4">
+                    <div>
+                        <h4 class="font-bold text-forest uppercase text-[10px] mb-1">Safety & PPE Requirement:</h4>
+                        <ul class="list-disc list-inside space-y-0.5 text-gray-600">
+                            <li>Eye protection & rubber gloves during JS handling</li>
+                            <li>Do NOT mix JADAM Sulfur with oils or copper</li>
+                            <li>Apply strictly in early morning or dusk</li>
+                        </ul>
+                    </div>
+                    <div class="border-l border-gray-200 pl-4">
+                        <h4 class="font-bold text-forest uppercase text-[10px] mb-1">Sign-off & Verification:</h4>
+                        <div class="mt-4 border-b border-gray-400 w-full"></div>
+                        <div class="flex justify-between text-[10px] text-gray-500 mt-1">
+                            <span>Field Worker Signature</span>
+                            <span>Supervisor Signature</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    
+</div>
+</template>
+<script id="bioCalcScript">
+(function(){
+
+        // ==================== GLOBAL APP STATE ====================
+        const appState = {
+            theme: 'light',
+            calcMode: 'container', // 'container' | 'area'
+            waterVolume: 20, // Total target water in Liters
+            containerPreset: 'knapsack20',
+            areaSize: 1,
+            biocharAreaM2: 10,
+            biocharCompostKg: 100,
+            areaUnit: 'acre', // 'acre', 'ha', 'm2', 'beds'
+            appMethod: 'foliar', // 'foliar', 'drench', 'fertigation', 'mist', 'nursery'
+            
+            // Selected active bio inputs in tank mix
+            activeInputs: {
+                jwa: { active: true, preset: 'standard', customRatio: 100 },
+                js: { active: true, preset: 'standard', customRatio: 400 },
+                jms: { active: false, preset: 'foliar', customRatio: 20 },
+                jlf: { active: false, preset: 'standard', customRatio: 100 },
+                jlfb: { active: false, preset: 'standard', customRatio: 500 },
+                jlfp: { active: false, preset: 'standard', customRatio: 200 },
+                jhs: { active: false, preset: 'standard', customRatio: 100 },
+                bioverde: { active: false, preset: 'standard', customRatio: 500 },
+                faa: { active: false, preset: 'growth', customRatio: 500 },
+                lab: { active: false, preset: 'standard', customRatio: 1000 },
+                fpj: { active: false, preset: 'standard', customRatio: 500 },
+                ffj: { active: false, preset: 'standard', customRatio: 500 },
+                biochar: { active: false, preset: 'minimum', customRatio: 1 }
+            },
+
+            // Unit Prices ($ per L or $ per kg)
+            unitPrices: {
+                jwa: 460,
+                js: 520,
+                jms: 30,
+                jlf: 60,
+                jlfb: 130,
+                jlfp: 200,
+                jhs: 130,
+                bioverde: 1040,
+                faa: 390,
+                lab: 320,
+                fpj: 260,
+                ffj: 260,
+                biochar: 130
+            },
+
+            activeRecipeKey: 'jms',
+            recipeBatchVolume: 20,
+            activeStageKey: 'stage_veg'
+        };
+
+        // Bio Inputs Master Database (dilution ratios = 1:N)
+        const mk=(id,name,category,desc,presets,defaultPreset,unit='mL')=>({id,name,category,unit,isSolid:unit==='g',
+            presets:Object.fromEntries(presets.map(([k,l,r])=>[k,{label:`${l} (1:${r})`,ratio:r}])),defaultPreset,desc});
+        const bioInputsRaw = {
+            jwa: mk('jwa','JADAM Wetting Agent (JWA)','Surfactant & Emulsifier','Natural soap spreader. 1:60-1:100 makes JS and JHS coat and stick to leaves; dilute 300-1000 times when adding it to molasses-based products or chemicals.',
+                [['pest','With JS / JHS, heavy pest','60'],['standard','With JS / JHS, standard','100'],['adjuvant','With molasses products / chemicals','300'],['light','Light adjuvant, sensitive crops','1000']].map(([k,l,r])=>[k,l,+r]),'standard'),
+            js: mk('js','JADAM Sulfur (JS)','Fungicide / Miticide','Natural fungicide and germicide. Use the weaker end in high heat to avoid leaf burn; the right strength depends on the state of the field.',
+                [['light','Prevention / hot weather',500],['standard','Standard',400],['outbreak','Outbreak response',300]],'standard'),
+            jhs: mk('jhs','JADAM Herb Solution (JHS)','Natural Insecticide','Boiled insect-repelling herbs. Adjust strength to the resilience of the target pest.',
+                [['standard','Standard',100],['strong','Resilient pests',50]],'standard'),
+            jms: mk('jms','JADAM Microbial Solution (JMS)','Living Bio-Inoculant','Restores soil microbiome. Dilute x20 when feeding animals or mixing into feed or water. Drench 1:10 before planting or transplanting (3-4 times); foliar from 1:20 on established plants to 1:100 on young transplants.',
+                [['soil','Soil drench pre-planting',10],['foliar','Foliar, established plants',20],['animal','Animal feed / drinking water',20],['seedling','Young transplants / seedlings',100]],'foliar'),
+            jlf: mk('jlf','JLF: Wild Grass / Crop-Specific','Balanced Organic Fertilizer','Wild-grass or same-crop JLF made with leaf mold and sea salt. Supplies a range of microbes and naturally balanced nutrients; use throughout the growth season.',
+                [['concentrated','Concentrated',20],['standard','Standard',100],['light','Light',300]],'standard'),
+            jlfp: mk('jlfp','JLF: Bone Meal / Rock Phosphate','Phosphorus & Calcium','Bone meal for mid-late growth (flowering, fruiting); rock phosphate as a basal dressing or early-mid vegetative. Made with leaf mold; fish meal sits in the same 50-500 range.',
+                [['strong','Strong',50],['standard','Standard',200],['light','Light',500]],'standard'),
+            jlfb: mk('jlfb','JLF: Fresh Small Fish / Anchovy','Nitrogen & Amino Acids','Whole small fish fermented with leaf mold. Early to mid growth; use 1:1000 early in the crop.',
+                [['strong','Strong',100],['standard','Standard',500],['light','Light / early growth',1000]],'standard'),
+            bioverde: mk('bioverde','Bio Verde Foliar / Booster','Bio-Stimulant','Symbio organic foliar formulation (FAA + Bio Verde + LAB 1:1:1, then diluted 1:500 per the Symbio manual).',
+                [['standard','Standard Foliar',500],['intensive','Intensive Growth',200]],'standard'),
+            faa: mk('faa','Fish Amino Acid (FAA)','Nitrogen & Amino Boost','Fish waste fermented 1:1 by weight with raw molasses (21 days). Same 1:500 as the Symbio manual for peak growth and soil drench.',
+                [['growth','Growth spray / soil drench',500],['light','Light / young plants',1000]],'growth'),
+            lab: mk('lab','Lactic Acid Bacteria (LAB) Serum','Pathogen Suppressor','Serum mixed 1:1 with raw molasses. 1:20 is the compost activator in the Symbio manuals.',
+                [['standard','Foliar & Soil',1000],['soilprep','Soil Prep',500],['compost','Compost activator',20]],'standard'),
+            fpj: mk('fpj','Fermented Plant Juice (FPJ)','Vegetative Growth Auxins','Fermented shoot tips rich in growth hormones.',
+                [['standard','Vegetative Spray',500],['nursery','Nursery Spray',1000]],'standard'),
+            ffj: mk('ffj','Fermented Fruit Juice (FFJ)','Flowering & Potassium','Fermented ripe fruit rich in potassium, phosphorus and sugars.',
+                [['standard','Bloom & Fruit',500],['drench','Soil Drench',300]],'standard'),
+            biochar: { id:'biochar', name:'Inoculated Biochar / Charcoal Dust', category:'Soil Foundation', unit:'kg', isSolid:true, perArea:true,
+                presets: { minimum:{label:'Minimum, 1 kg per m\u00b2', rate:1}, standard:{label:'Standard, 2 kg per m\u00b2', rate:2}, heavy:{label:'Heavy / beds, 4 kg per m\u00b2', rate:4},
+                    compost10:{label:'Mixed into compost, 1:10', mix:10}, compost5:{label:'Mixed into compost, 1:5', mix:5} },
+                defaultPreset:'minimum',
+                desc:'Charcoal dust charged with JMS, JLF or FAA. Never use before inoculation. Spread on soil and work it in, or mix into compost at 1 part biochar to 5-10 parts compost. Not a spray.' }
+        };
+        ['jlf','jlfp','jlfb'].forEach(k => { bioInputsRaw[k].desc += ' Use only after at least 3 months of fermentation; older JLF is more stable.'; });
+        const INPUT_ORDER = ['jms','jlf','jlfp','jlfb','faa','biochar','lab','fpj','ffj','bioverde','jwa','jhs','js'];
+        const bioInputsData = Object.fromEntries(INPUT_ORDER.map(k => [k, bioInputsRaw[k]]));
+
+        // DIY Batch Recipes Data
+        const diyRecipesRaw = {
+            jwa: {
+                name: 'JADAM Wetting Agent (JWA)', subtitle: 'Natural Soap & Spreader (no-heat method)', credit: 'JADAM methods by Youngsang Cho, JADAM Organic Farming (jadam.kr).',
+                desc: 'Canola-oil potash soap. Use 1:60-1:100 so JS and JHS coat and stick to leaves; dilute 300-1000 times with molasses-based products or chemicals. Hard water breaks JWA down, so always use soft water.',
+                baseVolume: 40,
+                ingredients: [
+                    { name: 'Canola Oil', amount: 18, unit: 'Liters', desc: 'Soft vegetable oil' },
+                    { name: 'Potassium Hydroxide (KOH)', amount: 3.2, unit: 'kg', desc: 'Caustic potash. Do not substitute NaOH' },
+                    { name: 'Soft Water (total batch)', amount: 40, unit: 'Liters', desc: 'Approx. total, rain or de-gassed water' }
+                ],
+                steps: [
+                    'Step 1: Wear gloves and eye protection. Dissolve the KOH in part of the soft water (it heats itself).',
+                    'Step 2: Combine with the canola oil and stir until it forms a uniform soap paste (no external heat needed).',
+                    'Step 3: Top up with soft water to about 40 L total and stir until dissolved.',
+                    'Step 4: Use at 1:60-1:100 with JS / JHS, or 1:300-1:1000 as a spreader with molasses products.'
+                ]
+            },
+            js: {
+                name: 'JADAM Sulfur (JS)', subtitle: 'Natural Fungicide & Germicide', credit: 'JADAM methods by Youngsang Cho, JADAM Organic Farming (jadam.kr).',
+                desc: 'Sulfur-based fungicide. Use at 1:300-1:500; reduce dosage in high heat to avoid leaf burn. Spray only in early morning or evening.',
+                baseVolume: 50,
+                ingredients: [
+                    { name: 'Sulfur', amount: 25, unit: 'kg', desc: 'Powdered sulfur' },
+                    { name: 'Sodium Hydroxide (NaOH)', amount: 20, unit: 'kg', desc: 'Caustic. Full PPE required' },
+                    { name: 'Water', amount: 50, unit: 'Liters', desc: 'Base water' },
+                    { name: 'Rock Powder', amount: 0.5, unit: 'kg', desc: 'Mineral addition' },
+                    { name: 'Clay', amount: 0.5, unit: 'kg', desc: 'Mineral addition' }
+                ],
+                steps: [
+                    'Caution: JS uses caustic soda and heated sulfur. Wear full PPE and work outdoors.',
+                    'Prepare it following Youngsang Cho\'s published JADAM Sulfur procedure; this guide lists the quantities only.',
+                    'Use at 1:300-1:500 (1.0-1.6 L per 500 L). Mix in after JWA is dissolved.'
+                ]
+            },
+            jhs: {
+                name: 'JADAM Herb Solution (JHS)', subtitle: 'Natural Organic Insecticide', credit: 'JADAM methods by Youngsang Cho, JADAM Organic Farming (jadam.kr).',
+                desc: 'Boiled insect-repelling herbs (for example Jerusalem artichoke or ginkgo). Use at 1:50-1:100 and adjust to pest resilience.',
+                baseVolume: 20,
+                ingredients: [
+                    { name: 'Insect-Repelling Herbs', amount: 1, unit: 'kg', desc: 'e.g. Jerusalem artichoke, ginkgo' },
+                    { name: 'Water', amount: 20, unit: 'Liters', desc: 'For boiling' }
+                ],
+                steps: [
+                    'Step 1: Boil the herbs in the water.',
+                    'Step 2: Cool and strain.',
+                    'Step 3: Use at 1:50-1:100, added after JWA and JS in the tank.'
+                ]
+            },
+            jms: {
+                name: 'JADAM Microbial Solution (JMS)', subtitle: 'Wild Microbe Culture Brew', credit: 'JADAM methods by Youngsang Cho, JADAM Organic Farming (jadam.kr).',
+                desc: 'Multiplies local microbes on boiled potato and sea salt. Drench 1:10 before planting or transplanting (3-4 times); foliar 1:20 on established plants to 1:100 on young transplants.',
+                baseVolume: 500,
+                ingredients: [
+                    { name: 'Non-Chlorinated Water', amount: 500, unit: 'Liters', desc: 'Rain or well water' },
+                    { name: 'Leaf Mold', amount: 0.5, unit: 'kg', desc: 'Forest topsoil under the leaf layer' },
+                    { name: 'Boiled Potato', amount: 1, unit: 'kg', desc: 'Boiled soft, mashed' },
+                    { name: 'Sea Salt', amount: 0.5, unit: 'kg', desc: 'Unrefined' }
+                ],
+                steps: [
+                    'Step 1: Knead the boiled, mashed potato and the leaf mold in a cotton bag underwater until they dissolve into the water.',
+                    'Step 2: Dissolve the sea salt in the water.',
+                    'Step 3: Culture for 48-72 hours, in warm conditions where possible. Foam on the surface shows it is working.',
+                    'Step 4: Use up the diluted mix in one go; it does not store once diluted.'
+                ]
+            },
+            lab: {
+                name: 'Lactic Acid Bacteria (LAB) Serum', subtitle: 'Soil Conditioning & Pathogen Control',
+                desc: 'Same method as the Symbio manual: rice-wash culture added to fresh milk, serum drained and stored with molasses. 1:20 is the compost activator.',
+                baseVolume: 10,
+                ingredients: [
+                    { name: 'Rice-Wash Water (second wash)', amount: 1, unit: 'Liters', desc: 'From 1 kg rice washed in 1 L water' },
+                    { name: 'Fresh Whole Milk (not UHT)', amount: 10, unit: 'Liters', desc: '10:1 milk to rice-wash liquid' },
+                    { name: 'Raw Molasses', amount: 4, unit: 'Liters', desc: 'Equal to serum collected (3-5 L expected)' }
+                ],
+                steps: [
+                    'Step 1: Keep the second rice wash in a cloth-covered jar for 3 days until it smells mildly sour.',
+                    'Step 2: Add it to 10 parts fresh whole milk, stir and cover loosely.',
+                    'Step 3: Leave undisturbed 5 days. Curds rise, serum settles below.',
+                    'Step 4: Strain the golden-yellow serum from the curds.',
+                    'Step 5: Mix serum 1:1 by volume with raw molasses and bottle. Keeps 12 months sealed.'
+                ]
+            },
+            faa: {
+                name: 'Fish Amino Acid (FAA)', subtitle: 'High Nitrogen Liquid Plant Food',
+                desc: 'Same method as the Symbio manual: fresh fish waste and raw molasses 1:1 by weight, fermented 21 days. Use 1:500.',
+                baseVolume: 10,
+                ingredients: [
+                    { name: 'Fresh Fish Waste (not salted)', amount: 5, unit: 'kg', desc: 'Heads, guts, bones' },
+                    { name: 'Raw Molasses', amount: 5, unit: 'kg', desc: '1:1 by weight' }
+                ],
+                steps: [
+                    'Step 1: Chop fish waste to pieces under 5 cm.',
+                    'Step 2: Layer fish and molasses alternately in a non-metallic container, finishing with molasses.',
+                    'Step 3: Seal with cloth or a loose lid, warm place (25-30 C).',
+                    'Step 4: Stir every 3 days; bubbling in week one is normal. Ferment 21 days.',
+                    'Step 5: Strain through muslin; solids go to compost. Bottle in HDPE. Keeps 12 months sealed.'
+                ]
+            },
+            fpj: {
+                name: 'Fermented Plant Juice (FPJ / FFJ)',
+                subtitle: 'Plant Auxins & Fruiting Boost',
+                desc: 'FPJ uses osmotic pressure from brown sugar to extract growth hormones, chlorophyll, and nutrients from active shoot tips or sweet fruits.',
+                baseVolume: 10,
+                ingredients: [
+                    { name: 'Fast-Growing Shoots or Ripe Fruit', amount: 5, unit: 'kg', desc: 'Bamboo shoots, banana tips, or fruits' },
+                    { name: 'Brown Sugar / Molasses', amount: 5, unit: 'kg', desc: '1:1 weight ratio' }
+                ],
+                steps: [
+                    'Step 1: Harvest plant tips before sunrise while full of moisture and active auxins.',
+                    'Step 2: Chop plant material into 2-3 cm pieces. Mix with brown sugar.',
+                    'Step 3: Press into bucket, weight down with stone overnight, then remove weight.',
+                    'Step 4: Ferment for 7 to 14 days in dark cool place.',
+                    'Step 5: Filter liquid syrup into glass/plastic container. Do not cap tightly (gas expands).'
+                ]
+            },
+            jlf: {
+                name: 'JLF: Wild Grass / Crop-Specific', subtitle: 'Balanced Organic Fertilizer', credit: 'JADAM methods by Youngsang Cho, JADAM Organic Farming (jadam.kr).',
+                desc: 'Wild grass or residue of the target crop, fermented with leaf mold and sea salt. Dilute 20-300 times; use throughout the growth season.',
+                baseVolume: 100,
+                ingredients: [
+                    { name: 'Wild Grass / Weeds / Crop Residue', amount: 50, unit: 'Liters (half container)', desc: 'Loosely packed' },
+                    { name: 'Water', amount: 50, unit: 'Liters', desc: 'To fill the container' },
+                    { name: 'Leaf Mold', amount: 1, unit: 'handful', desc: 'Microbe inoculum' },
+                    { name: 'Sea Salt', amount: 1, unit: 'handful', desc: 'Minerals' }
+                ],
+                steps: [
+                    'Step 1: Fill the container halfway with grass, weeds or crop residue.',
+                    'Step 2: Add leaf mold and sea salt, then fill with water.',
+                    'Step 3: Ferment at least 3 months; older is better.',
+                    'Step 4: Dilute 20-300 times and apply through the growth season.'
+                ]
+            },
+            jlfp_rock: {
+                name: 'JLF: Rock Phosphate', subtitle: 'Basal Phosphorus & Calcium', credit: 'Method by Youngsang Cho, JADAM Organic Farming: The Way to Ultra-Low-Cost Agriculture (pp. 193-197).',
+                desc: 'Finely ground rock phosphate. Microbial acids make it plant-available over time. Dilute 50-500 times; apply as a basal soil drench before planting or in early-mid vegetative growth.',
+                baseVolume: 11,
+                ingredients: [
+                    { name: 'Rock Phosphate Powder', amount: 1, unit: 'kg', desc: 'Finely ground' },
+                    { name: 'Unchlorinated Water', amount: 10, unit: 'Liters', desc: '1:10 by weight' },
+                    { name: 'Leaf Mold', amount: 1, unit: 'handful', desc: 'Rich forest topsoil or leaf mold' }
+                ],
+                steps: [
+                    'Step 1: Mix 1 part rock phosphate with 10 parts water in a plastic container.',
+                    'Step 2: Add a handful of leaf mold.',
+                    'Step 3: Stir every 7-10 days while it ferments.',
+                    'Step 4: Dilute 50-500 times and drench around the root zone.'
+                ]
+            },
+            jlfb_fish: {
+                name: 'JLF: Fresh Small Fish', subtitle: 'Nitrogen & Amino Acids', credit: 'Method by Youngsang Cho, JADAM Organic Farming: The Way to Ultra-Low-Cost Agriculture (pp. 193-197).',
+                desc: 'Whole small fish fermented with leaf mold. Dilute 100-1000 times (1000 early in the crop); apply early to mid growth as a drench or foliar spray.',
+                baseVolume: 100,
+                ingredients: [
+                    { name: 'Fresh Whole Small Fish', amount: 50, unit: 'Liters (half barrel)', desc: 'Do not overfill' },
+                    { name: 'Unchlorinated Water', amount: 50, unit: 'Liters', desc: 'Remaining half' },
+                    { name: 'Leaf Mold', amount: 1, unit: 'handful', desc: 'Microbe inoculum' }
+                ],
+                steps: [
+                    'Step 1: Fill half the barrel with fish and the other half with water.',
+                    'Step 2: Add a handful of leaf mold. Do not stir.',
+                    'Step 3: If an oil layer forms, add more water and leaf mold.',
+                    'Step 4: Dilute 100-1000 times and apply as a soil drench or foliar spray.'
+                ]
+            },
+            jlfp_bone: {
+                name: 'JLF: Bone Meal', subtitle: 'Late-Season Phosphorus & Calcium', credit: 'Method by Youngsang Cho, JADAM Organic Farming: The Way to Ultra-Low-Cost Agriculture (pp. 193-197).',
+                desc: 'Animal bone meal. Dilute 50-500 times; apply mid to late growth (flowering and fruiting) by soil irrigation, drench or foliar spray.',
+                baseVolume: 11,
+                ingredients: [
+                    { name: 'Bone Meal', amount: 1, unit: 'kg', desc: '1:10 by weight' },
+                    { name: 'Unchlorinated Water', amount: 10, unit: 'Liters', desc: 'In a plastic container' },
+                    { name: 'Leaf Mold', amount: 1, unit: 'handful', desc: 'Rich forest topsoil or leaf mold' }
+                ],
+                steps: [
+                    'Step 1: Mix 1 part bone meal with 10 parts water.',
+                    'Step 2: Add a handful of leaf mold.',
+                    'Step 3: Stir regularly so the powder does not compact at the bottom.',
+                    'Step 4: Dilute 50-500 times and apply during flowering and fruiting.'
+                ]
+            }
+        };
+
+        diyRecipesRaw.biochar = {
+            name: 'Inoculated Biochar / Charcoal Dust', subtitle: 'Charged Soil & Compost Amendment',
+            desc: 'Raw charcoal pulls nutrients out of soil and compost. Charge it with microbes and nutrients first, then use it. Never use it before inoculation.',
+            baseVolume: 10,
+            ingredients: [
+                { name: 'Charcoal Dust or Fines', amount: 10, unit: 'kg', desc: 'Crushed market charcoal' },
+                { name: 'Diluted JMS, JLF or FAA', amount: 10, unit: 'Liters (approx.)', desc: 'Enough to fully submerge the dust' }
+            ],
+            steps: [
+                'Step 1: Crush the charcoal into dust or small fines.',
+                'Step 2: Soak it fully submerged in diluted JMS, JLF or FAA.',
+                'Step 3: Leave it soaking 24-48 hours.',
+                'Step 4: Drain the excess liquid.',
+                'Step 5: Spread on soil at 1-4 kg per m\u00b2 and work it in, or mix into compost at 1 part biochar to 5-10 parts compost (once the pile has cooled below 43 C).'
+            ]
+        };
+        diyRecipesRaw.jwa.steps = [
+            'Step 1: Wear gloves and eye protection. Dissolve the KOH in part of the soft water (it heats itself).',
+            'Step 2: Combine with the canola oil and stir until it forms a uniform soap paste (no external heat needed).',
+            'Step 3: Let it sit 3 days to saponify.',
+            'Step 4: Top up with soft water to about 40 L total and stir until dissolved.',
+            'Step 5: Use at 1:60-1:100 with JS / JHS, or 1:300-1:1000 as a spreader with molasses products.'
+        ];
+        const RECIPE_WAIT = {
+            jms: '48-72 hours of culturing, until foam forms on the surface. Use promptly, and use up the diluted mix in one go.',
+            jlf: 'At least 3 months. The longer it ages, the better and more stable it becomes.',
+            jlfp_rock: 'At least 3 months. The longer it ages, the better and more stable it becomes. Stir every 7-10 days while the powder breaks down.',
+            jlfb_fish: 'At least 3 months. The longer it ages, the better and more stable it becomes. Wait until the fish is fully liquefied; overfilling with fish makes it slower.',
+            jlfp_bone: 'At least 3 months. The longer it ages, the better and more stable it becomes. The bone meal must fully dissolve.',
+            faa: '21 days of fermentation, then strain. Ready after straining.',
+            biochar: '24-48 hours of soaking in the inoculant, then drain. Never use before this.',
+            lab: 'About 8 days: 3 days rice-wash culture, then 5 days with the milk. Strain and mix 1:1 with molasses, then use.',
+            fpj: '7-14 days of fermentation, then filter.',
+            jwa: '3 days to saponify, then top up with water.',
+            jhs: 'Ready as soon as it is boiled, cooled and strained.',
+            js: 'Timing to be confirmed. The source gives no cooking or resting time.'
+        };
+        Object.keys(RECIPE_WAIT).forEach(k => { diyRecipesRaw[k].wait = RECIPE_WAIT[k]; diyRecipesRaw[k].steps.push('Wait before use: ' + RECIPE_WAIT[k]); });
+        const RECIPE_ORDER = ['jms','jlf','jlfp_rock','jlfb_fish','jlfp_bone','faa','biochar','lab','fpj','jwa','jhs','js'];
+        const diyRecipesData = Object.fromEntries(RECIPE_ORDER.map(k => [k, diyRecipesRaw[k]]));
+
+        // Crop Stage Program Data
+        const cropStagesData = {
+            stage_prep: {
+                id: 'stage_prep',
+                title: '1. Soil Prep & Pre-Planting',
+                subtitle: 'Soil Biology & Mineral Base',
+                inputs: ['jms', 'jlf', 'jlfp', 'biochar', 'lab'],
+                inputPresets: { jms: 'soil', jlf: 'concentrated', jlfp: 'standard', biochar: 'minimum', lab: 'soilprep' },
+                timing: 'Apply 3 to 7 days before transplanting or seeding',
+                frequency: '3 to 4 JMS soil drenches (1:10) before planting or transplanting',
+                purpose: 'Inoculate dead soil with wild forest microbes, unlock bound phosphorus, and stimulate earthworm activity.',
+                tips: 'Apply during rainy season or moisten soil before drenching. Ensure heavy soil coverage.'
+            },
+            stage_nursery: {
+                id: 'stage_nursery',
+                title: '2. Seedling & Nursery',
+                subtitle: 'Rooting & Delicate Foliage',
+                inputs: ['jwa', 'jms', 'fpj', 'lab'],
+                inputPresets: { jwa: 'light', jms: 'seedling', fpj: 'nursery', lab: 'standard' },
+                timing: 'From 2-leaf stage until transplanting',
+                frequency: 'Every 5 to 7 days',
+                purpose: 'Build vigorous root architecture and protect tender seedling leaves from damping off.',
+                tips: 'Use light dilution rates (1:1000 JWA) to avoid burning delicate young seedling cuticles.'
+            },
+            stage_veg: {
+                id: 'stage_veg',
+                title: '3. Vegetative Growth',
+                subtitle: 'Canopy & Stem Expansion',
+                inputs: ['jwa', 'js', 'jms', 'jlf', 'jlfp', 'jlfb', 'faa', 'fpj', 'bioverde'],
+                inputPresets: { jwa: 'standard', js: 'standard', jms: 'foliar', jlf: 'standard', jlfp: 'standard', faa: 'growth', fpj: 'standard', bioverde: 'standard' },
+                timing: 'Rapid vegetative expansion stage',
+                frequency: 'Every 7 to 10 days (Morning spray)',
+                purpose: 'Maximize photosynthetic leaf area, stem thickness, and foliage disease resistance.',
+                tips: 'Always mix JWA first before adding JS to prevent sulfur speckling.'
+            },
+            stage_bloom: {
+                id: 'stage_bloom',
+                title: '4. Flowering & Fruit Set',
+                subtitle: 'P & K Mineral Shift',
+                inputs: ['jwa', 'js', 'ffj', 'jlf', 'jlfp', 'bioverde'],
+                inputPresets: { jwa: 'standard', js: 'standard', ffj: 'standard', jlf: 'standard', jlfp: 'standard', bioverde: 'standard' },
+                timing: 'From bud emergence to fruit setting',
+                frequency: 'Every 7 days',
+                purpose: 'Supply bio-available potassium, phosphorus, and calcium to prevent flower drop and blossom end rot.',
+                tips: 'Spray late afternoon or dusk when pollinators are not actively visiting flowers.'
+            },
+            stage_harvest: {
+                id: 'stage_harvest',
+                title: '5. Pre-Harvest & Maintenance',
+                subtitle: 'Brix & Crop Shelf-Life',
+                inputs: ['jwa', 'lab', 'ffj'],
+                inputPresets: { jwa: 'adjuvant', lab: 'standard', ffj: 'standard' },
+                timing: 'During ongoing picking and harvest cycles',
+                frequency: 'Every 10 days',
+                purpose: 'Enhance fruit sugar content (Brix), post-harvest storage shelf life, and color development.',
+                tips: 'Zero PHI (Pre-Harvest Interval) on organic JADAM inputs. Wash crop with soft water.'
+            },
+            stage_outbreak: {
+                id: 'stage_outbreak',
+                title: '6. Emergency Pest / Blight Response',
+                subtitle: 'Knockdown & Pathogen Control',
+                inputs: ['jwa', 'js', 'jhs'],
+                inputPresets: { jwa: 'pest', js: 'outbreak', jhs: 'strong' },
+                timing: 'At first detection of aphids, mites, blight, or powdery mildew',
+                frequency: 'Repeat every 3 days for 2-3 applications',
+                purpose: 'High emulsification JWA suffocates soft-bodied insects while high concentration JS halts fungal spore germination.',
+                tips: 'Ensure 100% spray coverage under leaf surfaces. Do NOT apply in mid-day sun (>30°C).'
+            },
+            prob_prevent: {
+                id: 'prob_prevent', title: '7. Prevention & Maintenance', subtitle: 'Routine Protection',
+                inputs: ['jwa','jms','js'], inputPresets: { jwa: 'standard', jms: 'foliar', js: 'light' },
+                timing: 'Regular schedule on healthy crops', frequency: 'Repeat every 3 days for 2-3 applications as in the emergency response',
+                purpose: 'Keep leaves coated and the microbial balance strong so pests and disease do not take hold.',
+                tips: 'Mix water + JWA first, dissolve completely, then add JS, and finally JHS / JMS. Spray early morning or evening, never in peak sun.'
+            },
+            prob_soft: {
+                id: 'prob_soft', title: '8. Soft Insects & Mites', subtitle: 'Aphids, Thrips, Mites',
+                inputs: ['jwa','jhs','js','jms'], inputPresets: { jwa: 'pest', jhs: 'standard', js: 'light', jms: 'foliar' },
+                timing: 'At first sign of soft-bodied pests or mites', frequency: 'Repeat every 3 days for 2-3 applications as in the emergency response',
+                purpose: 'JWA coats and smothers; JHS repels and controls soft-bodied insects.',
+                tips: 'Mix water + JWA first, dissolve completely, then add JS, and finally JHS / JMS. Spray early morning or evening, never in peak sun.'
+            },
+            prob_blight: {
+                id: 'prob_blight', title: '9. Blights & Powdery Mildew', subtitle: 'Fungal Disease Control',
+                inputs: ['jwa','js','jhs','jms'], inputPresets: { jwa: 'standard', js: 'outbreak', jhs: 'standard', jms: 'foliar' },
+                timing: 'At first sign of blight or mildew', frequency: 'Repeat every 3 days for 2-3 applications as in the emergency response',
+                purpose: 'Higher-strength JS halts fungal spores; the JMS foliar competes with pathogens.',
+                tips: 'Mix water + JWA first, dissolve completely, then add JS, and finally JHS / JMS. Spray early morning or evening, never in peak sun.'
+            },
+            prob_hard: {
+                id: 'prob_hard', title: '10. Hard Insects & Caterpillars', subtitle: 'Chewing Pests',
+                inputs: ['jwa','jhs','js','jms'], inputPresets: { jwa: 'pest', jhs: 'strong', js: 'light', jms: 'foliar' },
+                timing: 'When caterpillars or beetles are feeding', frequency: 'Repeat every 3 days for 2-3 applications as in the emergency response',
+                purpose: 'Strong JHS with JWA to make the herb solution stick to leaves.',
+                tips: 'Mix water + JWA first, dissolve completely, then add JS, and finally JHS / JMS. Spray early morning or evening, never in peak sun.'
+            }
+        };
+
+        // ==================== CORE CALCULATOR ENGINE ====================
+        function calculateCurrentMix() {
+            let totalWater = appState.waterVolume;
+
+            if (appState.calcMode === 'area') {
+                // Calculate required water volume based on field area & method
+                let size = appState.areaSize || 0;
+                let acreEquivalent = size;
+
+                if (appState.areaUnit === 'ha') acreEquivalent = size * 2.47105;
+                else if (appState.areaUnit === 'm2') acreEquivalent = size / 4046.86;
+                else if (appState.areaUnit === 'beds') acreEquivalent = (size * 100) / 4000; // 100m bed ~ 0.025 acre
+
+                // L per acre rates
+                let ratePerAcre = 200; // default foliar
+                if (appState.appMethod === 'drench') ratePerAcre = 800;
+                else if (appState.appMethod === 'fertigation') ratePerAcre = 1000;
+                else if (appState.appMethod === 'mist') ratePerAcre = 100;
+                else if (appState.appMethod === 'nursery') ratePerAcre = 400;
+
+                totalWater = Math.max(1, Math.round(acreEquivalent * ratePerAcre * 10) / 10);
+            }
+
+            const knapsackLoads = Math.round((totalWater / 20) * 10) / 10;
+
+            // Calculate exact dosages for active inputs
+            const dosageResults = {};
+            let totalEstCost = 0;
+
+            Object.keys(bioInputsData).forEach(key => {
+                const inputConf = appState.activeInputs[key];
+                const inputMeta = bioInputsData[key];
+
+                if (inputConf && inputConf.active && inputMeta.perArea) {
+                    const pre = inputMeta.presets[inputConf.preset];
+                    const viaCompost = !!(pre && pre.mix);
+                    const rate = viaCompost ? 0 : (inputConf.preset === 'custom' ? Math.max(0.1, inputConf.customRatio || 1) : pre.rate);
+                    const basisQty = viaCompost ? appState.biocharCompostKg : appState.biocharAreaM2;
+                    const basisUnit = viaCompost ? 'kg compost' : 'm\u00b2';
+                    const rateText = viaCompost ? `1:${pre.mix} with compost` : `${rate} kg/m\u00b2`;
+                    const totalKg = viaCompost ? basisQty / pre.mix : rate * basisQty;
+                    const cost = totalKg * (appState.unitPrices[key] || 0);
+                    totalEstCost += cost;
+                    dosageResults[key] = { name: inputMeta.name, unit: 'kg', isSolid: true, perArea: true, rate, rateText, basisQty, basisUnit, totalKg, ratio: null, dosePerKnapsack: 0, totalDoseFullMix: totalKg * 1000, costForBatch: cost };
+                    return;
+                }
+                if (inputConf && inputConf.active) {
+                    let ratio = 200;
+                    if (inputConf.preset === 'custom') {
+                        ratio = Math.max(1, inputConf.customRatio || 200);
+                    } else if (inputMeta.presets[inputConf.preset]) {
+                        ratio = inputMeta.presets[inputConf.preset].ratio;
+                    }
+
+                    // Calculation
+                    let dosePerL = 1000 / ratio; // mL or g per Liter
+
+                    const dosePerKnapsack = dosePerL * 20; // for 20L
+                    const totalDoseFullMix = dosePerL * totalWater; // for total mix water
+
+                    // Cost estimation
+                    const unitPrice = appState.unitPrices[key] || 0;
+                    let costPerL = unitPrice / 1000; // price per mL or g
+                    const inputCostForBatch = totalDoseFullMix * costPerL;
+                    totalEstCost += inputCostForBatch;
+
+                    dosageResults[key] = {
+                        name: inputMeta.name,
+                        unit: inputMeta.unit,
+                        isSolid: inputMeta.isSolid,
+                        ratio: ratio,
+                        dosePerKnapsack: dosePerKnapsack,
+                        totalDoseFullMix: totalDoseFullMix,
+                        costForBatch: inputCostForBatch
+                    };
+                }
+            });
+
+            return {
+                totalWater,
+                knapsackLoads,
+                dosageResults,
+                totalEstCost
+            };
+        }
+
+        // ==================== RENDER & UI UPDATERS ====================
+        function renderAll() {
+            const calc = calculateCurrentMix();
+
+            // Update Header & Summary Readouts
+            document.getElementById('summaryTotalWater').innerText = `${calc.totalWater.toFixed(1)} L`;
+            document.getElementById('summaryKnapsackLoads').innerText = `${calc.knapsackLoads} Loads`;
+            document.getElementById('summaryEstCost').innerText = `${bcCur()} ${bcMoney(calc.totalEstCost)}`;
+
+            // Knapsack badge
+            document.getElementById('knapsackCountVal').innerText = (calc.totalWater / 20).toFixed(1);
+
+            // Area mode calculated text
+            document.getElementById('areaCalculatedVolText').innerText = `${calc.totalWater.toFixed(1)} Liters`;
+            document.getElementById('areaKnapsackCountText').innerText = `${(calc.totalWater / 20).toFixed(1)} Knapsacks (20L)`;
+
+            // Render summary active list
+            const summaryList = document.getElementById('summaryDosageList');
+            const activeKeys = Object.keys(calc.dosageResults);
+            document.getElementById('activeInputsCountBadge').innerText = `${activeKeys.length} Active Inputs`;
+
+            if (activeKeys.length === 0) {
+                summaryList.innerHTML = `<span class="text-sage-300 italic">No inputs selected. Click checkboxes below to add.</span>`;
+            } else {
+                summaryList.innerHTML = activeKeys.map(k => {
+                    const item = calc.dosageResults[k];
+                    const doseStr = item.perArea ? `${item.totalKg.toFixed(1)}kg` : item.isSolid ? `${item.dosePerKnapsack.toFixed(1)}g` : `${Math.round(item.dosePerKnapsack)}mL`;
+                    return `<div class="flex justify-between text-sage-100">
+                        <span class="truncate pr-2">• ${item.name}:</span>
+                        <span class="text-gold font-bold">${doseStr}${item.perArea ? ` / ${item.basisQty} ${item.basisUnit}` : ' / 20L'}</span>
+                    </div>`;
+                }).join('');
+            }
+
+            // Render Modules
+            renderBioInputsGrid(calc);
+            renderMixingSequence(calc);
+            renderEconomicEstimator(calc);
+            updatePrintSheetView(calc);
+        }
+
+        function renderBioInputsGrid(calc) {
+            const grid = document.getElementById('bioInputsGrid');
+            grid.innerHTML = Object.keys(bioInputsData).map(key => {
+                const item = bioInputsData[key];
+                const conf = appState.activeInputs[key];
+                const active = conf.active;
+                const dosage = calc.dosageResults[key];
+
+                const activeBorder = active ? 'border-forest dark:border-sage shadow-md bg-white dark:bg-darkcard' : 'border-gray-200 dark:border-darkborder opacity-70 bg-gray-50 dark:bg-forest-900/20';
+
+                return `
+                <div class="rounded-2xl border ${activeBorder} p-4 transition-all duration-200 flex flex-col justify-between">
+                    <div>
+                        <!-- Card Header & Checkbox -->
+                        <div class="flex items-start justify-between">
+                            <div class="flex items-center space-x-3">
+                                <input type="checkbox" id="chk-${key}" ${active ? 'checked' : ''} onchange="BC.toggleInputActive('${key}', this.checked)" class="w-5 h-5 text-forest border-gray-300 rounded focus:ring-forest cursor-pointer">
+                                <div>
+                                    <label for="chk-${key}" class="text-sm font-bold font-serif text-forest dark:text-sage-100 cursor-pointer hover:underline">
+                                        ${item.name}
+                                    </label>
+                                    <div class="text-[10px] uppercase font-mono tracking-wider text-sage-600 dark:text-sage-400 font-semibold">${item.category}</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">${item.desc}</p>
+
+                        <!-- Preset Selector -->
+                        <div class="mt-3">
+                            <label class="block text-[10px] font-bold uppercase text-gray-500 mb-1">${item.perArea ? 'Application Rate Preset:' : 'Dosage Purpose Preset:'}</label>
+                            <select onchange="BC.onPresetChange('${key}', this.value)" ${!active ? 'disabled' : ''} class="w-full text-xs p-2 bg-gray-100 dark:bg-darkbg border border-gray-200 dark:border-darkborder rounded-lg text-forest dark:text-sage-100 font-medium focus:ring-1 focus:ring-forest">
+                                ${Object.keys(item.presets).map(pk => `
+                                    <option value="${pk}" ${conf.preset === pk ? 'selected' : ''}>
+                                        ${item.presets[pk].label}
+                                    </option>
+                                `).join('')}
+                                <option value="custom" ${conf.preset === customRatioOption ? 'selected' : ''}>${item.perArea ? 'Custom kg per m\u00b2...' : 'Custom Dilution Ratio...'}</option>
+                            </select>
+                        </div>
+
+                        <!-- Custom Ratio Field -->
+                        ${conf.preset === 'custom' ? `
+                            <div class="mt-2 flex items-center space-x-2">
+                                <span class="text-xs text-gray-500 font-mono">${item.perArea ? '' : '1:'}</span>
+                                <input type="number" value="${conf.customRatio}" step="0.1" onchange="BC.onCustomRatioChange('${key}', this.value)" class="w-20 p-1.5 text-xs bg-white dark:bg-darkbg border rounded font-mono font-bold text-forest dark:text-white">
+                                <span class="text-[10px] text-gray-400">${item.perArea ? 'kg per m\u00b2' : 'Parts Water'}</span>
+                            </div>
+                        ` : ''}
+                        ${item.perArea ? `
+                             <div class="mt-2 flex items-center space-x-2">
+                                 <span class="text-[10px] font-bold uppercase text-gray-500">${item.presets[conf.preset] && item.presets[conf.preset].mix ? 'Compost to treat:' : 'Area to treat:'}</span>
+                                 <input type="number" min="0.1" step="0.5" value="${item.presets[conf.preset] && item.presets[conf.preset].mix ? appState.biocharCompostKg : appState.biocharAreaM2}" ${!active ? 'disabled' : ''} onchange="${item.presets[conf.preset] && item.presets[conf.preset].mix ? 'onBiocharCompostChange' : 'onBiocharAreaChange'}(this.value)" class="w-20 p-1.5 text-xs bg-white dark:bg-darkbg border border-gray-200 dark:border-darkborder rounded font-mono font-bold text-forest dark:text-white">
+                                 <span class="text-[10px] text-gray-400">${item.presets[conf.preset] && item.presets[conf.preset].mix ? 'kg' : 'm\u00b2'}</span>
+                             </div>
+                         ` : ''}
+                     </div>
+
+                    <!-- Computed Dose Footer Readout -->
+                    <div class="mt-4 pt-3 border-t border-gray-100 dark:border-darkborder flex items-center justify-between text-xs font-mono">
+                        <span class="text-gray-500 dark:text-gray-400">${item.perArea ? 'Total for area:' : '20L Tank Dose:'}</span>
+                        <span class="font-bold text-forest dark:text-gold text-sm">
+                            ${active && dosage ? (dosage.perArea ? `${dosage.totalKg.toFixed(1)} kg` : dosage.isSolid ? `${dosage.dosePerKnapsack.toFixed(1)} g` : `${Math.round(dosage.dosePerKnapsack)} mL`) : '--'}
+                        </span>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        const customRatioOption = 'custom';
+
+        function renderMixingSequence(calc) {
+            const stepsContainer = document.getElementById('mixingSequenceSteps');
+            const warningsContainer = document.getElementById('dynamicSafetyWarnings');
+
+            const active = appState.activeInputs;
+
+            // Build dynamic sequence steps
+            let steps = [
+                {
+                    num: '1',
+                    title: 'Fill Water Reservoir (80%)',
+                    desc: `Fill mixing tank or knapsack with ~${(calc.totalWater * 0.8).toFixed(1)} Liters clean, soft, non-chlorinated water first.`
+                }
+            ];
+
+            if (active.jwa.active) {
+                steps.push({
+                    num: '2',
+                    title: 'Add JADAM Wetting Agent (JWA) First',
+                    desc: `Add JWA soap adjuvant (${calc.dosageResults.jwa ? Math.round(calc.dosageResults.jwa.totalDoseFullMix) : 0} mL total). Stir thoroughly for 60 seconds until completely dissolved before adding any other liquid or powder!`
+                });
+            }
+
+            if (active.js.active) {
+                steps.push({
+                    num: steps.length + 1,
+                    title: 'Add JADAM Sulfur (JS) After JWA',
+                    desc: `Add JADAM Sulfur (${calc.dosageResults.js ? Math.round(calc.dosageResults.js.totalDoseFullMix) : 0} mL total) next, once JWA is fully dissolved. Adding JS to water containing dissolved JWA prevents sulfur precipitation or leaf scorching.`
+                });
+            }
+
+            const liquidExtracts = ['jms', 'jlf', 'jlfp', 'jlfb', 'faa', 'lab', 'fpj', 'ffj', 'bioverde', 'jhs'].filter(k => active[k] && active[k].active);
+            if (liquidExtracts.length > 0) {
+                const names = liquidExtracts.map(k => bioInputsData[k].name).join(', ');
+                steps.push({
+                    num: steps.length + 1,
+                    title: 'Mix Liquid Ferments & Bio Extracts',
+                    desc: `Add liquid inputs: ${names}. Stir well into the emulsified JWA water.`
+                });
+            }
+
+            steps.push({
+                num: steps.length + 1,
+                title: 'Top Up Water & Apply Instantly',
+                desc: `Top off water to final volume (${calc.totalWater.toFixed(1)} L) and spray immediately.`
+            });
+
+            stepsContainer.innerHTML = steps.map(s => `
+                <div class="flex items-start space-x-3 p-3.5 rounded-xl bg-gray-50 dark:bg-forest-900/30 border border-gray-200/80 dark:border-darkborder">
+                    <div class="w-7 h-7 rounded-lg bg-forest text-gold font-mono font-bold text-xs flex items-center justify-center shrink-0">
+                        ${s.num}
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold text-forest dark:text-sage-200">${s.title}</h4>
+                        <p class="text-[11px] text-gray-600 dark:text-gray-400 mt-0.5">${s.desc}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            // Dynamic Safety Warning Banners
+            let warnings = [];
+
+            if (active.js.active) {
+                warnings.push(`
+                    <div class="p-3 rounded-xl bg-rust-light/50 dark:bg-rust-dark/30 border border-rust/40 text-rust-dark dark:text-rust-light flex items-start space-x-2 text-xs">
+                        <svg class="w-5 h-5 text-rust shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <div>
+                            <strong>Sulfur Compatibility Alert:</strong> DO NOT mix JADAM Sulfur (JS) with chemical copper fungicides, horticultural oils, or acidic solutions. Do not spray JS in direct noon sun (>30°C / 86°F) to avoid leaf burn.
+                        </div>
+                    </div>
+                `);
+            }
+
+            if (active.jms.active || active.lab.active) {
+                warnings.push(`
+                    <div class="p-3 rounded-xl bg-sage-50 dark:bg-forest-900/50 border border-sage/40 text-forest dark:text-sage-200 flex items-start space-x-2 text-xs">
+                        <svg class="w-5 h-5 text-sage shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <div>
+                            <strong>Living Microbial Protection:</strong> Your mix contains live bio-inoculants (JMS/LAB). Apply strictly in early morning (6-8 AM) or dusk (5-7 PM) or overcast days to protect microbes from UV radiation.
+                        </div>
+                    </div>
+                `);
+            }
+
+            warnings.push(`<div class="p-3 rounded-xl bg-sage-50 dark:bg-forest-900/50 border border-sage/40 text-forest dark:text-sage-200 text-xs"><strong>Water Quality:</strong> Use soft water, or chlorinated water that has gassed out. Hard or high-mineral water breaks down JWA and makes sprays ineffective.</div>`);
+            warnings.push(`<div class="p-3 rounded-xl bg-gold/10 border border-gold/40 text-forest dark:text-sage-100 text-xs"><strong>Test first:</strong> Before spraying the whole field, test the mix on a few leaves and check them, to confirm the concentration suits your crop.</div>`);
+            if (active.biochar.active) {
+                warnings.push(`<div class="p-3 rounded-xl bg-rust-light/50 dark:bg-rust-dark/30 border border-rust/40 text-rust-dark dark:text-rust-light text-xs"><strong>Biochar:</strong> Never use charcoal dust before it is inoculated with JMS, JLF or FAA. It is a soil and compost amendment, so mix it into the soil or compost and keep it out of the spray tank.</div>`);
+            }
+            warningsContainer.innerHTML = warnings.join('');
+        }
+
+        function selectRecipe(key) {
+            appState.activeRecipeKey = key;
+            document.querySelectorAll('.recipe-tab-btn').forEach(btn => {
+                btn.className = 'recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50';
+            });
+            const activeBtn = document.getElementById(`recipe-btn-${key}`);
+            if (activeBtn) {
+                activeBtn.className = 'recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition bg-forest text-white shadow';
+            }
+            updateDIYRecipeView();
+        }
+
+        function updateDIYRecipeView() {
+            const volSelect = document.getElementById('recipeBatchVolumeSelect');
+            if (volSelect) appState.recipeBatchVolume = parseFloat(volSelect.value) || 20;
+
+            const recipe = diyRecipesData[appState.activeRecipeKey];
+            const targetVol = appState.recipeBatchVolume;
+            const factor = targetVol / recipe.baseVolume;
+
+            const card = document.getElementById('recipeDetailCard');
+            if (!card) return;
+
+            card.innerHTML = `
+                <!-- Recipe Overview & Ingredients -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div>
+                        <h3 class="text-xl font-bold font-serif text-forest dark:text-sage-100">${recipe.name}</h3>
+                        <div class="text-xs font-mono text-gold font-semibold uppercase tracking-wider">${recipe.subtitle}</div>
+                        <p class="text-xs text-gray-600 dark:text-gray-300 mt-2">${recipe.desc}</p>
+                        ${recipe.credit ? `<p class="text-[11px] italic text-gray-500 dark:text-gray-400 mt-1">${recipe.credit}</p>` : ''}
+                        <div class="mt-3 p-3 rounded-xl bg-gold/10 border border-gold/40 text-xs text-forest dark:text-sage-100"><strong>Wait before use:</strong> ${recipe.wait}</div>
+                    </div>
+
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-gray-700 dark:text-gray-300 mb-3">
+                            Raw Ingredient Scaling Table (For ${targetVol} Liters/Kg Batch):
+                        </h4>
+                        <div class="border border-gray-200 dark:border-darkborder rounded-xl overflow-hidden">
+                            <table class="w-full text-left text-xs border-collapse">
+                                <thead class="bg-gray-100 dark:bg-forest-900/60 text-gray-700 dark:text-gray-300 font-bold uppercase">
+                                    <tr>
+                                        <th class="p-3">Raw Material</th>
+                                        <th class="p-3">Scaled Amount</th>
+                                        <th class="p-3">Details / Notes</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-100 dark:divide-darkborder font-mono">
+                                    ${recipe.ingredients.map(ing => {
+                                        const scaled = (ing.amount * factor).toFixed(ing.amount * factor < 1 ? 2 : 1);
+                                        return `
+                                        <tr class="hover:bg-gray-50 dark:hover:bg-forest-900/20">
+                                            <td class="p-3 font-sans font-semibold text-forest dark:text-sage-200">${ing.name}</td>
+                                            <td class="p-3 font-bold text-gold text-sm">${scaled} ${ing.unit}</td>
+                                            <td class="p-3 text-[11px] font-sans text-gray-500 dark:text-gray-400">${ing.desc}</td>
+                                        </tr>`;
+                                    }).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Process Steps Card -->
+                <div class="bg-gray-50 dark:bg-forest-900/30 border border-gray-200 dark:border-darkborder rounded-xl p-5 space-y-4">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-forest dark:text-sage-200 border-b border-gray-200 dark:border-darkborder pb-2">
+                        Brewing & Curing Protocol:
+                    </h4>
+                    <div class="space-y-3 text-xs">
+                        ${recipe.steps.map(st => `
+                            <div class="flex items-start space-x-2">
+                                <span class="text-gold font-bold">•</span>
+                                <span class="text-gray-700 dark:text-gray-300">${st}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGrowthStageGrid() {
+            const grid = document.getElementById('growthStageSelectorGrid');
+            if (!grid) return;
+
+            grid.innerHTML = Object.keys(cropStagesData).map(key => {
+                const stage = cropStagesData[key];
+                const active = appState.activeStageKey === key;
+                const activeStyle = active ? 'bg-forest text-white border-forest shadow-md' : 'bg-white dark:bg-darkcard text-gray-700 dark:text-gray-300 border-gray-200 dark:border-darkborder hover:border-forest';
+
+                return `
+                <button onclick="BC.selectGrowthStage('${key}')" class="p-3 rounded-xl border ${activeStyle} text-left transition flex flex-col justify-between">
+                    <div>
+                        <div class="text-xs font-bold font-serif">${stage.title}</div>
+                        <div class="text-[10px] font-mono text-gold mt-1">${stage.subtitle}</div>
+                    </div>
+                </button>`;
+            }).join('');
+
+            renderActiveStageDetails();
+        }
+
+        function selectGrowthStage(key) {
+            appState.activeStageKey = key;
+            renderGrowthStageGrid();
+        }
+
+        function renderActiveStageDetails() {
+            const box = document.getElementById('activeStageDetailBox');
+            if (!box) return;
+
+            const stage = cropStagesData[appState.activeStageKey];
+
+            box.innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sage/20 pb-4">
+                    <div>
+                        <div class="text-xs font-mono uppercase tracking-widest text-gold font-bold">Selected Program Phase</div>
+                        <h3 class="text-2xl font-serif font-bold text-forest dark:text-sage-100">${stage.title}</h3>
+                        <p class="text-xs text-gray-600 dark:text-gray-300 mt-1">${stage.purpose}</p>
+                    </div>
+
+                    <button onclick="BC.loadStageToCalculator('${stage.id}')" class="px-4 py-2.5 rounded-xl bg-gold hover:bg-gold-dark text-forest-900 font-bold text-xs shadow-md transition flex items-center space-x-2 shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/></svg>
+                        <span>Load Inputs into Calculator</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-forest dark:text-sage-200 mb-2">Recommended Bio-Inputs Mix:</h4>
+                        <div class="space-y-2">
+                            ${stage.inputs.map(k => {
+                                const meta = bioInputsData[k];
+                                const presetKey = stage.inputPresets[k];
+                                const presetLabel = meta.presets[presetKey] ? meta.presets[presetKey].label : 'Standard';
+                                return `
+                                <div class="flex items-center justify-between p-2.5 rounded-lg bg-white dark:bg-darkcard border border-gray-200 dark:border-darkborder text-xs">
+                                    <span class="font-bold text-forest dark:text-sage-100">${meta.name}</span>
+                                    <span class="font-mono text-gold font-semibold">${presetLabel}</span>
+                                </div>`;
+                            }).join('')}
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 text-xs">
+                        <div>
+                            <h4 class="font-bold text-forest dark:text-sage-200 uppercase tracking-wider mb-1">Schedule & Frequency:</h4>
+                            <p class="text-gray-700 dark:text-gray-300 bg-white dark:bg-darkcard p-2.5 rounded-lg border border-gray-200 dark:border-darkborder font-mono">${stage.frequency} (${stage.timing})</p>
+                        </div>
+
+                        <div>
+                            <h4 class="font-bold text-forest dark:text-sage-200 uppercase tracking-wider mb-1">Agronomic Advice & Best Practice:</h4>
+                            <p class="text-gray-600 dark:text-gray-400 italic bg-white dark:bg-darkcard p-2.5 rounded-lg border border-gray-200 dark:border-darkborder">${stage.tips}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function loadStageToCalculator(stageId) {
+            const stage = cropStagesData[stageId];
+            if (!stage) return;
+
+            // Turn off all active inputs
+            Object.keys(appState.activeInputs).forEach(k => {
+                appState.activeInputs[k].active = false;
+            });
+
+            // Activate stage inputs with presets
+            stage.inputs.forEach(k => {
+                if (appState.activeInputs[k]) {
+                    appState.activeInputs[k].active = true;
+                    appState.activeInputs[k].preset = stage.inputPresets[k] || 'standard';
+                }
+            });
+
+            switchToTab('tab-tankmix');
+            renderAll();
+        }
+
+        function renderEconomicEstimator(calc) {
+            document.getElementById('econBatchCost').innerText = `${bcCur()} ${bcMoney(calc.totalEstCost)}`;
+            document.getElementById('econBatchVolume').innerText = `${calc.totalWater.toFixed(1)} L`;
+            document.getElementById('econActiveCount').innerText = Object.keys(calc.dosageResults).length;
+
+            // Unit Price Table Body
+            const tbody = document.getElementById('unitPriceTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = Object.keys(bioInputsData).map(key => {
+                const item = bioInputsData[key];
+                const price = appState.unitPrices[key] || 0;
+                const doseObj = calc.dosageResults[key];
+                const active = appState.activeInputs[key].active;
+
+                const knapsackDose = active && doseObj ? (doseObj.perArea ? `${doseObj.totalKg.toFixed(1)}kg` : doseObj.isSolid ? `${doseObj.totalDoseFullMix.toFixed(1)}g` : (doseObj.totalDoseFullMix >= 1000 ? `${(doseObj.totalDoseFullMix/1000).toFixed(2)}L` : `${Math.round(doseObj.totalDoseFullMix)}mL`)) : '--';
+                const knapsackCost = active && doseObj ? `${bcCur()} ${bcMoney(doseObj.costForBatch)}` : '--';
+
+                return `
+                <tr class="hover:bg-gray-50 dark:hover:bg-forest-900/20">
+                    <td class="p-3 font-sans font-semibold text-forest dark:text-sage-200">${item.name}</td>
+                    <td class="p-3 text-[11px] font-sans text-gray-500">${item.category}</td>
+                    <td class="p-3">
+                        <div class="flex items-center space-x-1">
+                            <span>${bcCur()}</span>
+                            <input type="number" step="1" value="${Math.round(price)}" onchange="BC.updateUnitPrice('${key}', this.value)" class="w-20 px-2 py-1 bg-white dark:bg-darkbg border border-gray-300 dark:border-darkborder rounded text-xs font-bold text-forest dark:text-sage-100">
+                        </div>
+                    </td>
+                    <td class="p-3 font-mono text-gray-600 dark:text-gray-400">${knapsackDose}</td>
+                    <td class="p-3 font-mono font-bold text-gold">${knapsackCost}</td>
+                </tr>`;
+            }).join('');
+        }
+
+        function updateUnitPrice(key, value) {
+            appState.unitPrices[key] = Math.max(0, parseFloat(value) || 0);
+            bcSave();
+            renderAll();
+        }
+
+        function resetUnitPrices() {
+            appState.unitPrices = {
+                jwa: 460, js: 520, jms: 30, jlf: 60,
+                jlfb: 130,
+                jlfp: 200,
+                jhs: 130, bioverde: 1040,
+                faa: 390, lab: 320, fpj: 260, ffj: 260, biochar: 130
+            };
+            bcSave();
+            renderAll();
+        }
+
+        function updatePrintSheetView(calcObj) {
+            const calc = calcObj || calculateCurrentMix();
+
+            const plot = document.getElementById('printMetaPlot').value;
+            const crop = document.getElementById('printMetaCrop').value;
+            const operator = document.getElementById('printMetaOperator').value;
+
+            document.getElementById('printMetaWaterVol').innerText = `${calc.totalWater.toFixed(1)} Liters`;
+            document.getElementById('printFullMixVolLabel').innerText = `${calc.totalWater.toFixed(1)}L Total`;
+
+            const tbody = document.getElementById('printRecipeTableBody');
+            const activeKeys = Object.keys(calc.dosageResults);
+
+            if (activeKeys.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-gray-500 italic">No active bio inputs selected. Go to Tab 1 to activate inputs.</td></tr>`;
+            } else {
+                tbody.innerHTML = activeKeys.map(k => {
+                    const item = calc.dosageResults[k];
+                    const doseKnapsack = item.perArea ? 'Soil, not tank' : item.isSolid ? `${item.dosePerKnapsack.toFixed(1)} g` : `${Math.round(item.dosePerKnapsack)} mL`;
+                    const doseTotal = item.perArea ? `${item.totalKg.toFixed(1)} kg / ${item.basisQty} ${item.basisUnit}` : item.isSolid ? `${item.totalDoseFullMix.toFixed(1)} g` : `${Math.round(item.totalDoseFullMix)} mL`;
+
+                    return `
+                    <tr>
+                        <td class="p-2 border border-gray-300 font-sans font-bold text-gray-900">${item.name}</td>
+                        <td class="p-2 border border-gray-300 text-gray-600 font-mono">${item.perArea ? item.rateText : `1:${item.ratio}`}</td>
+                        <td class="p-2 border border-gray-300 font-bold text-forest font-mono">${doseKnapsack}</td>
+                        <td class="p-2 border border-gray-300 font-bold text-forest font-mono">${doseTotal}</td>
+                        <td class="p-2 border border-gray-300 text-center font-bold">[ &nbsp; ]</td>
+                    </tr>`;
+                }).join('');
+            }
+
+            // Print sequence checklist
+            const seqList = document.getElementById('printFillingSequenceList');
+            seqList.innerHTML = `
+                <div class="flex items-center space-x-2"><input type="checkbox"> <span>1. Fill tank with ${ (calc.totalWater * 0.8).toFixed(1) }L clean water.</span></div>
+                ${appState.activeInputs.jwa.active ? `<div class="flex items-center space-x-2"><input type="checkbox"> <span>2. Dissolve JWA completely before adding any other product. Stir 1 min.</span></div>` : ''}
+                ${appState.activeInputs.js.active ? `<div class="flex items-center space-x-2"><input type="checkbox"> <span>3. Add JADAM Sulfur (JS) once JWA is dissolved. Stir thoroughly.</span></div>` : ''}
+                <div class="flex items-center space-x-2"><input type="checkbox"> <span>4. Add JHS / JLF, other liquid bio-extracts and slurry powders.</span></div>
+                <div class="flex items-center space-x-2"><input type="checkbox"> <span>5. Top up water line. Test-spray a few leaves and check them before spraying the whole field.</span></div>
+            `;
+        }
+
+        // ==================== EVENT HANDLERS & NAVIGATION ====================
+        function switchToTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.className = 'tab-btn px-3 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center space-x-2 text-sage-200 hover:bg-forest-700';
+            });
+
+            const content = document.getElementById(tabId);
+            if (content) content.classList.remove('hidden');
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = 'tab-btn px-3 py-2 rounded-lg font-medium whitespace-nowrap transition flex items-center space-x-2 bg-gold text-forest-900 font-bold shadow';
+            }
+
+            if (tabId === 'tab-recipes') updateDIYRecipeView();
+            if (tabId === 'tab-planner') renderGrowthStageGrid();
+            if (tabId === 'tab-economics') renderEconomicEstimator(calculateCurrentMix());
+            if (tabId === 'tab-print') updatePrintSheetView(calculateCurrentMix());
+        }
+
+        function setCalcMode(mode) {
+            appState.calcMode = mode;
+            const btnContainer = document.getElementById('modeBtnContainer');
+            const btnArea = document.getElementById('modeBtnArea');
+            const secContainer = document.getElementById('containerModeSection');
+            const secArea = document.getElementById('areaModeSection');
+
+            if (mode === 'container') {
+                btnContainer.className = 'px-3 py-1.5 rounded-lg transition font-semibold bg-white dark:bg-forest text-forest dark:text-white shadow-sm';
+                btnArea.className = 'px-3 py-1.5 rounded-lg transition text-gray-600 dark:text-gray-400 hover:text-forest dark:hover:text-white';
+                secContainer.classList.remove('hidden');
+                secArea.classList.add('hidden');
+            } else {
+                btnArea.className = 'px-3 py-1.5 rounded-lg transition font-semibold bg-white dark:bg-forest text-forest dark:text-white shadow-sm';
+                btnContainer.className = 'px-3 py-1.5 rounded-lg transition text-gray-600 dark:text-gray-400 hover:text-forest dark:hover:text-white';
+                secArea.classList.remove('hidden');
+                secContainer.classList.add('hidden');
+            }
+
+            renderAll();
+        }
+
+        function setContainerPreset(presetKey) {
+            appState.containerPreset = presetKey;
+            let vol = 20;
+            if (presetKey === 'knapsack20') vol = 20;
+            else if (presetKey === 'drum100') vol = 100;
+            else if (presetKey === 'drum200') vol = 200;
+            else if (presetKey === 'ibc1000') vol = 1000;
+
+            document.getElementById('waterVolumeInput').value = vol;
+            appState.waterVolume = vol;
+
+            document.querySelectorAll('.container-preset-btn').forEach(b => {
+                b.className = 'container-preset-btn p-3 rounded-xl border border-gray-200 dark:border-darkborder text-left hover:border-forest transition';
+            });
+            const activeB = document.getElementById(`preset-${presetKey}`);
+            if (activeB) {
+                activeB.className = 'container-preset-btn p-3 rounded-xl border border-sage/40 bg-sage-50 dark:bg-forest-900/40 text-left hover:border-forest transition';
+            }
+
+            renderAll();
+        }
+
+        function onWaterVolumeChange(val) {
+            appState.waterVolume = Math.max(1, parseFloat(val) || 20);
+            renderAll();
+        }
+
+        function onAreaParamsChange() {
+            appState.areaSize = parseFloat(document.getElementById('areaSizeInput').value) || 1;
+            appState.areaUnit = document.getElementById('areaUnitSelect').value;
+            appState.appMethod = document.getElementById('appMethodSelect').value;
+            renderAll();
+        }
+
+        function toggleInputActive(key, isChecked) {
+            appState.activeInputs[key].active = isChecked;
+            renderAll();
+        }
+
+        function onPresetChange(key, value) {
+            appState.activeInputs[key].preset = value;
+            renderAll();
+        }
+
+        function onBiocharCompostChange(value) {
+            appState.biocharCompostKg = Math.max(0.1, parseFloat(value) || 100);
+            renderAll();
+        }
+
+        function onBiocharAreaChange(value) {
+            appState.biocharAreaM2 = Math.max(0.1, parseFloat(value) || 10);
+            renderAll();
+        }
+
+        function onCustomRatioChange(key, value) {
+            appState.activeInputs[key].customRatio = key === 'biochar' ? Math.max(0.1, parseFloat(value) || 1) : Math.max(1, parseFloat(value) || 200);
+            renderAll();
+        }
+
+        function selectAllInputs(selectState) {
+            Object.keys(appState.activeInputs).forEach(k => {
+                appState.activeInputs[k].active = selectState;
+            });
+            renderAll();
+        }
+
+        // ==================== THEME CONTROLLER ====================
+
+
+
+        const BC_KEY = 'symbio_biocalc_state';
+        function bcCur(){ return (typeof CUR === 'function') ? CUR() : 'KSh'; }
+        function bcMoney(n){ return Math.round(n || 0).toLocaleString(); }
+        function bcSave(){ try { localStorage.setItem(BC_KEY, JSON.stringify({ unitPrices: appState.unitPrices })); } catch(e) {} }
+        function bcLoad(){ try { const s = JSON.parse(localStorage.getItem(BC_KEY) || 'null'); if (s && s.unitPrices) Object.keys(s.unitPrices).forEach(k => { if (k in appState.unitPrices) appState.unitPrices[k] = Number(s.unitPrices[k]) || 0; }); } catch(e) {} }
+        function syncTheme(){
+            const el = document.getElementById('bioCalc'); if (!el) return;
+            const a = document.documentElement.getAttribute('data-theme');
+            const dark = a === 'dark' || (a !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            el.classList.toggle('dark', dark);
+        }
+        new MutationObserver(syncTheme).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', syncTheme);
+        function printTicket(){
+            const t = document.querySelector('#bioCalc .bc-ticket'); if (!t) return;
+            let h = document.getElementById('bcPrintHost');
+            if (!h) { h = document.createElement('div'); h.id = 'bcPrintHost'; h.className = 'bc'; document.body.appendChild(h); }
+            h.innerHTML = t.outerHTML;
+            document.documentElement.classList.add('bc-printing');
+            const done = () => { document.documentElement.classList.remove('bc-printing'); h.innerHTML = ''; window.removeEventListener('afterprint', done); };
+            window.addEventListener('afterprint', done);
+            window.print();
+        }
+        function mount(){
+            syncTheme(); bcLoad(); renderAll(); switchToTab('tab-tankmix');
+            const d = document.getElementById('printTicketDate'); if (d) d.innerText = new Date().toISOString().split('T')[0];
+        }
+        window.BC = { mount, printTicket, calculateCurrentMix, renderAll, renderBioInputsGrid, renderMixingSequence, selectRecipe, updateDIYRecipeView, renderGrowthStageGrid, selectGrowthStage, renderActiveStageDetails, loadStageToCalculator, renderEconomicEstimator, updateUnitPrice, resetUnitPrices, updatePrintSheetView, switchToTab, setCalcMode, setContainerPreset, onWaterVolumeChange, onAreaParamsChange, toggleInputActive, onPresetChange, onBiocharCompostChange, onBiocharAreaChange, onCustomRatioChange, selectAllInputs };
+
+})();
+</script>
 <script>
 // ---- Currency (dynamic label, no exchange-rate conversion) ----
 const CURRENCY_OPTIONS = ['KES','USD','UGX','TZS','GHS','NGN','ZAR'];
@@ -2962,6 +4887,7 @@ async function attemptUnlock(target){
   }
 }
 
+const BIO_CALC_MANUALS = ['bio-inputs', 'jlf-manual', 'pest-control', 'onfarm-solutions'];
 function renderManualsView(){
   const results = document.getElementById('results');
   const cardsHtml = MANUALS.map(m => {
@@ -3015,6 +4941,7 @@ function renderManualsView(){
         <div class="manual-actions">
           <button type="button" class="manual-btn" data-toggle-id="${m.id}">Read Here</button>
           ${pdfBtnHtml}
+          ${BIO_CALC_MANUALS.includes(m.id) ? `<button type="button" class="manual-btn" data-calc-link="1">\ud83e\uddea Open Calculator</button>` : ''}
         </div>
         ${lockPanelHtml}
         <div class="manual-body" id="manual-body-${m.id}">${bodyHtml}</div>
@@ -3061,6 +4988,7 @@ function renderManualsView(){
   `;
 
   document.getElementById('backFromManuals').addEventListener('click', showHome);
+  results.querySelectorAll('[data-calc-link]').forEach(btn => btn.addEventListener('click', () => goToBioCalc(goToManuals)));
 
   results.querySelectorAll('[data-toggle-id]').forEach(btn => {
     btn.addEventListener('click', () => toggleManualBody(btn.dataset.toggleId));
@@ -11531,6 +13459,29 @@ function goToStock(){
   setActiveNav('more');
 }
 
+// ==================== BIO INPUTS CALCULATOR ====================
+let bioCalcReturn = null;
+function renderBioCalcView(){
+  const results = document.getElementById('results');
+  results.innerHTML = `
+    <span class="back-link" id="backFromBioCalc">\u2190 Back</span>
+    <div class="results-head">
+      <h2>Bio Inputs Calculator</h2>
+      <span>Dosing, mixing and cost per batch</span>
+    </div>
+    ${document.getElementById('bioCalcTemplate').innerHTML}
+  `;
+  BC.mount();
+  document.getElementById('backFromBioCalc').addEventListener('click', () => (bioCalcReturn || goToMoreMenu)());
+}
+function goToBioCalc(returnFn){
+  bioCalcReturn = typeof returnFn === 'function' ? returnFn : null;
+  window.scrollTo(0,0);
+  hideAllScreens();
+  renderBioCalcView();
+  setActiveNav('more');
+}
+
 // ==================== INVENTORY / TOOLS TRACKER ====================
 const LS_TOOLS = 'symbio_tools_log';
 function getToolEntries(){ try { return JSON.parse(localStorage.getItem(LS_TOOLS)) || []; } catch(e){ return []; } }
@@ -12046,11 +13997,13 @@ function renderHomeDashboard(){
   document.getElementById('quickActionsRow').innerHTML = `
     <button type="button" class="qa-btn" id="qaRecord"><span class="qa-icon qa-leaf">\ud83d\udcdd</span>Record</button>
     <button type="button" class="qa-btn" id="qaStore"><span class="qa-icon qa-maize">\ud83c\udf3e</span>Store</button>
+    <button type="button" class="qa-btn" id="qaBioCalc"><span class="qa-icon qa-leaf">\ud83e\uddea</span>Bio Calc</button>
     <button type="button" class="qa-btn" id="qaVault"><span class="qa-icon qa-rust">\ud83d\udcc1</span>Reports</button>
     <button type="button" class="qa-btn" id="qaSchedule"><span class="qa-icon qa-sage">\ud83d\uddd3\ufe0f</span>Schedule</button>
   `;
   document.getElementById('qaRecord').addEventListener('click', goToEnterprisesList);
   document.getElementById('qaStore').addEventListener('click', goToStock);
+  document.getElementById('qaBioCalc').addEventListener('click', () => goToBioCalc(showHome));
   document.getElementById('qaVault').addEventListener('click', goToVault);
   document.getElementById('qaSchedule').addEventListener('click', goToSchedule);
 }
@@ -12059,6 +14012,7 @@ function renderMoreView(){
   const results = document.getElementById('results');
   const items = [
     { icon:'\ud83c\udf3e', title:'Store', desc:'Track seeds, bio-inputs, and fertilizer \u2014 bought and used, with a running balance.', action: goToStock },
+    { icon:'\ud83e\uddea', title:'Bio Inputs Calculator', desc:'Doses, mixing order and cost per batch for JMS, JLF, FAA, biochar and sprays.', action: () => goToBioCalc() },
     { icon:'\ud83e\uddf0', title:'Inventory &amp; Tools', desc:'Jembes, spades, sprayers, drinkers \u2014 the durable equipment you own.', action: goToTools },
     { icon:'\ud83d\udcc1', title:'Reports &amp; Plans Vault', desc:'Every PDF report you\u2019ve exported, one tap back to its enterprise.', action: goToVault },
     { icon:'\ud83d\uddd3\ufe0f', title:'Schedule', desc:'Routine farm tasks \u2014 daily, weekly, monthly, with due dates.', action: goToSchedule },
