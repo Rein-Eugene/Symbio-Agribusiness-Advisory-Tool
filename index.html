@@ -2327,6 +2327,15 @@
                 </button>
             </div>
 
+            
+            <div class="no-print bg-white dark:bg-darkcard border border-gray-200 dark:border-darkborder rounded-2xl p-4 shadow-sm space-y-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button onclick="BC.logUsedInStore()" class="px-4 py-2 rounded-xl bg-gold hover:bg-gold-dark text-forest-900 text-xs font-bold shadow transition">Log batch as used in Store</button>
+                    <button onclick="BC.exportTicketPdf()" class="px-4 py-2 rounded-xl bg-forest hover:bg-forest-600 text-white text-xs font-bold shadow transition">Export PDF to Reports Vault</button>
+                </div>
+                <p id="bcActionStatus" class="text-xs text-gray-600 dark:text-gray-300"></p>
+            </div>
+
             <!-- Printable Sheet Container -->
             <div class="bg-white text-gray-900 border border-gray-300 p-8 rounded-2xl shadow-md max-w-4xl mx-auto space-y-6 bc-ticket">
                 
@@ -3535,7 +3544,51 @@
             syncTheme(); bcLoad(); renderAll(); switchToTab('tab-tankmix');
             const d = document.getElementById('printTicketDate'); if (d) d.innerText = new Date().toISOString().split('T')[0];
         }
-        window.BC = { mount, printTicket, calculateCurrentMix, renderAll, renderBioInputsGrid, renderMixingSequence, selectRecipe, updateDIYRecipeView, renderGrowthStageGrid, selectGrowthStage, renderActiveStageDetails, loadStageToCalculator, renderEconomicEstimator, updateUnitPrice, resetUnitPrices, updatePrintSheetView, switchToTab, setCalcMode, setContainerPreset, onWaterVolumeChange, onAreaParamsChange, toggleInputActive, onPresetChange, onBiocharCompostChange, onBiocharAreaChange, onCustomRatioChange, selectAllInputs };
+        const STORE_NAMES = { jms:'JMS', jlf:'JLF - Wild Grass / Crop', jlfp:'JLF - Bone Meal / Rock Phosphate', jlfb:'JLF - Fresh Small Fish / Anchovy', faa:'FAA', biochar:'Inoculated Biochar', lab:'LAB serum', fpj:'FPJ', ffj:'FFJ', bioverde:'Bio Verde Foliar', jwa:'JWA', jhs:'JHS', js:'JS' };
+        function bcStatus(html){ const e = document.getElementById('bcActionStatus'); if (e) e.innerHTML = html; }
+        function logUsedInStore(){
+            const calc = calculateCurrentMix(); const res = calc.dosageResults; const keys = Object.keys(res);
+            if (!keys.length) { bcStatus('No inputs are switched on. Switch on at least one input first.'); return; }
+            if (!confirm('Record ' + keys.length + ' input' + (keys.length > 1 ? 's' : '') + ' as used in the Store? This reduces your Store balances.')) return;
+            const entries = getStockEntries(); const date = new Date().toISOString().slice(0, 10); const base = Date.now();
+            keys.forEach((k, i) => {
+                const r = res[k];
+                const qty = r.perArea ? Math.round(r.totalKg * 100) / 100 : (r.isSolid ? Math.round(r.totalDoseFullMix * 10) / 10 : Math.round(r.totalDoseFullMix));
+                const unit = r.perArea ? 'kg' : (r.isSolid ? 'g' : 'ml');
+                const note = r.perArea ? ('Bio Inputs Calculator: ' + r.basisQty + ' ' + r.basisUnit) : ('Bio Inputs Calculator: ' + calc.totalWater.toFixed(1) + ' L batch');
+                entries.push({ id: base + i, date, item: STORE_NAMES[k] || r.name, category: 'Bio-inputs', action: 'Used', qty, unit, notes: note });
+            });
+            saveStockEntries(entries);
+            bcStatus('Logged ' + keys.length + ' item' + (keys.length > 1 ? 's' : '') + ' as used in the Store. <button type="button" class="underline font-bold" onclick="goToStock()">View Store</button>');
+        }
+        function exportTicketPdf(){
+            if (!window.jspdf || !window.jspdf.jsPDF) { bcStatus('The PDF library did not load. Check your internet connection and try again.'); return; }
+            updatePrintSheetView();
+            const doc = new window.jspdf.jsPDF();
+            const g = id => { const e = document.getElementById(id); return e ? (e.tagName === 'INPUT' ? e.value : e.textContent.trim()) : ''; };
+            doc.setFontSize(16); doc.text('Symbio Biotech Solutions', 14, 18);
+            doc.setFontSize(11); doc.setTextColor(90); doc.text('Bio-Input Field Application Ticket', 14, 25); doc.setTextColor(0);
+            doc.setFontSize(10);
+            doc.text('Ref: ' + g('printTicketRef') + '    Date: ' + g('printTicketDate'), 14, 32);
+            doc.text('Plot: ' + g('printMetaPlot') + '    Crop: ' + g('printMetaCrop'), 14, 38);
+            doc.text('Operator: ' + g('printMetaOperator') + '    Water volume: ' + g('printMetaWaterVol'), 14, 44);
+            const rows = [...document.querySelectorAll('#printRecipeTableBody tr')].map(tr => [...tr.querySelectorAll('td')].slice(0, 4).map(td => td.textContent.trim().replace(/\s+/g, ' ')));
+            doc.autoTable({ startY: 50, head: [['Bio input', 'Dilution', 'Dose per 20 L knapsack', 'Total dose for full mix']], body: rows, styles: { fontSize: 9 }, headStyles: { fillColor: [47, 74, 53] } });
+            let y = doc.lastAutoTable.finalY + 10;
+            doc.setFontSize(12); doc.text('Tank filling sequence', 14, y); y += 7; doc.setFontSize(10);
+            const steps = [...document.querySelectorAll('#printFillingSequenceList > div')].map(d => d.textContent.trim().replace(/\s+/g, ' '));
+            steps.concat(['Safety: wear eye protection and gloves when handling JS. Do not mix JS with oils or copper. Spray in early morning or at dusk.']).forEach(t => {
+                const lines = doc.splitTextToSize(t, 180);
+                if (y + lines.length * 5 > 280) { doc.addPage(); y = 20; }
+                doc.text(lines, 14, y); y += lines.length * 5 + 2;
+            });
+            doc.save('symbio_bio_input_ticket.pdf');
+            const list = getVaultEntries();
+            list.unshift({ id: Date.now(), date: new Date().toISOString().slice(0, 10), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), tab: 'bio-calc', enterprise: 'Bio Inputs Calculator', icon: '\ud83e\uddea' });
+            saveVaultEntries(list.slice(0, 200));
+            bcStatus('PDF saved and logged in the Reports Vault.');
+        }
+        window.BC = { mount, printTicket, logUsedInStore, exportTicketPdf, calculateCurrentMix, renderAll, renderBioInputsGrid, renderMixingSequence, selectRecipe, updateDIYRecipeView, renderGrowthStageGrid, selectGrowthStage, renderActiveStageDetails, loadStageToCalculator, renderEconomicEstimator, updateUnitPrice, resetUnitPrices, updatePrintSheetView, switchToTab, setCalcMode, setContainerPreset, onWaterVolumeChange, onAreaParamsChange, toggleInputActive, onPresetChange, onBiocharCompostChange, onBiocharAreaChange, onCustomRatioChange, selectAllInputs };
 
 })();
 </script>
@@ -13655,7 +13708,7 @@ function renderVaultView(){
   document.querySelectorAll('#results [data-vtab]').forEach(row => {
     row.addEventListener('click', () => {
       const tab = row.getAttribute('data-vtab');
-      if (tab) goToOpsEnterprise(tab); else goToPlanner();
+      if (tab === 'bio-calc') goToBioCalc(goToVault); else if (tab) goToOpsEnterprise(tab); else goToPlanner();
     });
   });
   const clearBtn = document.getElementById('vault-clear');
