@@ -1484,6 +1484,7 @@
 .bc .bg-gray-100{background-color:#F3F4F6}
 .bc .bg-gray-200{background-color:#E5E7EB}
 .bc .bg-gray-50{background-color:#F9FAFB}
+.bc .bg-rust{background-color:#9E5A31}
 .bc .bg-rust-light\/50{background-color:rgba(244,229,220,0.5)}
 .bc .bg-sage-50{background-color:#F4F6F2}
 .bc .bg-sage\/10{background-color:rgba(143,160,121,0.1)}
@@ -1688,6 +1689,7 @@
 .bc .hover\:bg-gray-200:hover{background-color:#E5E7EB}
 .bc .hover\:bg-gray-300:hover{background-color:#D1D5DB}
 .bc .hover\:bg-gray-50:hover{background-color:#F9FAFB}
+.bc .hover\:bg-rust-dark:hover{background-color:#7A4322}
 .bc .hover\:border-forest:hover{border-color:#2F4A35}
 .bc .hover\:text-forest:hover{color:#2F4A35}
 .bc .hover\:text-white:hover{color:#FFFFFF}
@@ -2205,10 +2207,12 @@
                     <button onclick="BC.selectRecipe('jlfp_rock')" id="recipe-btn-jlfp_rock" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JLF Rock Phosphate</button>
                     <button onclick="BC.selectRecipe('jlfb_fish')" id="recipe-btn-jlfb_fish" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JLF Fish</button>
                     <button onclick="BC.selectRecipe('jlfp_bone')" id="recipe-btn-jlfp_bone" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JLF Bone Meal</button>
+                    <button onclick="BC.selectRecipe('seasalt')" id="recipe-btn-seasalt" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">Sea Salt</button>
                     <button onclick="BC.selectRecipe('faa')" id="recipe-btn-faa" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">FAA</button>
                     <button onclick="BC.selectRecipe('biochar')" id="recipe-btn-biochar" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">Biochar</button>
                     <button onclick="BC.selectRecipe('lab')" id="recipe-btn-lab" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">LAB</button>
-                    <button onclick="BC.selectRecipe('fpj')" id="recipe-btn-fpj" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">FPJ / FFJ</button>
+                    <button onclick="BC.selectRecipe('fpj')" id="recipe-btn-fpj" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">FPJ</button>
+                    <button onclick="BC.selectRecipe('ffj')" id="recipe-btn-ffj" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">FFJ</button>
                     <button onclick="BC.selectRecipe('jwa')" id="recipe-btn-jwa" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JWA</button>
                     <button onclick="BC.selectRecipe('jhs')" id="recipe-btn-jhs" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JHS</button>
                     <button onclick="BC.selectRecipe('js')" id="recipe-btn-js" class="recipe-tab-btn px-4 py-2 rounded-xl text-xs font-bold transition text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-forest-900/50">JS</button>
@@ -2333,6 +2337,23 @@
                     <button onclick="BC.logUsedInStore()" class="px-4 py-2 rounded-xl bg-gold hover:bg-gold-dark text-forest-900 text-xs font-bold shadow transition">Log batch as used in Store</button>
                     <button onclick="BC.exportTicketPdf()" class="px-4 py-2 rounded-xl bg-forest hover:bg-forest-600 text-white text-xs font-bold shadow transition">Export PDF to Reports Vault</button>
                 </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <select id="bcExpenseTarget" onchange="BC.onExpenseTargetChange()" class="w-full p-2 text-xs bg-white dark:bg-darkbg border border-gray-200 dark:border-darkborder rounded font-bold text-forest dark:text-white">
+                        <option value="cereals">Cereals</option>
+                        <option value="hort">Horticulture</option>
+                        <option value="poultry">Kienyeji Poultry</option>
+                        <option value="pigs">Pigs</option>
+                        <option value="compost">Compost</option>
+                        <option value="trees">Tree Nursery</option>
+                    </select>
+                    <select id="bcExpensePhase" class="hidden w-full p-2 text-xs bg-white dark:bg-darkbg border border-gray-200 dark:border-darkborder rounded font-bold text-forest dark:text-white">
+                        <option value="Day 0 Build">Day 0 Build &amp; JMS</option>
+                        <option value="Hot Phase (Days 1-14)">Hot Phase (Days 1-14)</option>
+                        <option value="Nutrient Boost (Wk 2-3)">Nutrient Boost (Wk 2-3)</option>
+                        <option value="Curing & Sales (Wk 3-6)">Curing &amp; Sales (Wk 3-6)</option>
+                    </select>
+                </div>
+                <button onclick="BC.recordBatchExpense()" class="w-full px-4 py-2 rounded-xl bg-rust hover:bg-rust-dark text-white text-xs font-bold shadow transition">Record batch cost as an expense</button>
                 <p id="bcActionStatus" class="text-xs text-gray-600 dark:text-gray-300"></p>
             </div>
 
@@ -2717,6 +2738,20 @@
                 'Step 5: Spread on soil at 1-4 kg per m\u00b2 and work it in, or mix into compost at 1 part biochar to 5-10 parts compost (once the pile has cooled below 43 C).'
             ]
         };
+        diyRecipesRaw.seasalt = {
+            name: 'Sea Salt Mineral Drench', subtitle: 'Mineral Replacement for Harvested Soil', credit: 'JADAM methods by Youngsang Cho, JADAM Organic Farming (jadam.kr).',
+            desc: 'Sea salt is the cheapest way to replace minerals removed with harvested plants. Used at the JADAM rate to avoid sodium build-up in the soil: 500 g in 20 L of dechlorinated rain water. Soil drench only, every 2 weeks.',
+            baseVolume: 20,
+            ingredients: [
+                { name: 'Sea Salt', amount: 500, unit: 'g', desc: 'Unrefined sea salt' },
+                { name: 'Dechlorinated Rain Water', amount: 20, unit: 'Liters', desc: 'Rain water, dechlorinated' }
+            ],
+            steps: [
+                'Step 1: Dissolve the sea salt in the rain water and stir until it is fully dissolved.',
+                'Step 2: Apply as a soil drench only. Never spray it on the leaves.',
+                'Step 3: Repeat every 2 weeks, no more often, so sodium does not build up in the soil.'
+            ]
+        };
         diyRecipesRaw.jwa.steps = [
             'Step 1: Wear gloves and eye protection. Dissolve the KOH in part of the soft water (it heats itself).',
             'Step 2: Combine with the canola oil and stir until it forms a uniform soap paste (no external heat needed).',
@@ -2724,6 +2759,39 @@
             'Step 4: Top up with soft water to about 40 L total and stir until dissolved.',
             'Step 5: Use at 1:60-1:100 with JS / JHS, or 1:300-1:1000 as a spreader with molasses products.'
         ];
+        diyRecipesRaw.fpj.name = 'Fermented Plant Juice (FPJ)';
+        diyRecipesRaw.fpj.subtitle = 'Plant Auxins for Vegetative Growth';
+        diyRecipesRaw.fpj.ingredients[0] = { name: 'Fast-Growing Shoot Tips', amount: 5, unit: 'kg', desc: 'Bamboo shoots, banana tips or other fast-growing tips' };
+        diyRecipesRaw.ffj = {
+            name: 'Fermented Fruit Juice (FFJ)', subtitle: 'Potassium & Phosphorus for Flowering and Fruiting',
+            desc: 'FFJ uses osmotic pressure from raw molasses to draw potassium, phosphorus and sugars out of ripe fruit. Use at 1:500 as a bloom and fruit-set spray, or 1:300 as a soil drench.',
+            baseVolume: 10,
+            ingredients: [
+                { name: 'Ripe Sweet Fruit', amount: 5, unit: 'kg', desc: 'Ripe banana, papaya, mango or other sweet fruit' },
+                { name: 'Raw Molasses', amount: 5, unit: 'kg', desc: '1:1 by weight with the fruit' }
+            ],
+            steps: [
+                'Step 1: Chop the ripe fruit into 2-3 cm pieces.',
+                'Step 2: Mix by hand with the raw molasses until every piece is coated.',
+                'Step 3: Press into a bucket, weight down with a stone overnight, then remove the weight.',
+                'Step 4: Ferment for 7 to 14 days in a dark, cool place.',
+                'Step 5: Filter the liquid syrup into a glass or plastic container. Do not cap tightly (gas expands).',
+                'Step 6: Use at 1:500 on flowers and fruit set, or 1:300 as a soil drench.'
+            ]
+        };
+        diyRecipesRaw.fpj.desc = 'FPJ uses osmotic pressure from raw molasses to extract growth hormones, chlorophyll, and nutrients from active shoot tips.';
+        diyRecipesRaw.fpj.ingredients[1] = { name: 'Raw Molasses', amount: 5, unit: 'kg', desc: '1:1 by weight with the plant material' };
+        diyRecipesRaw.fpj.steps = [
+            'Step 1: Harvest plant tips before sunrise while full of moisture and active auxins.',
+            'Step 2: Chop plant material into 2-3 cm pieces. Mix by hand with the raw molasses until every piece is coated.',
+            'Step 3: Press into bucket, weight down with stone overnight, then remove weight.',
+            'Step 4: Ferment for 7 to 14 days in dark cool place.',
+            'Step 5: Filter liquid syrup into glass/plastic container. Do not cap tightly (gas expands).'
+        ];
+        diyRecipesRaw.faa.molasses = 'Raw molasses at 1:1 by weight with the fish waste. Layer fish and molasses alternately, finish with a layer of molasses on top, and stir every 3 days.';
+        diyRecipesRaw.lab.molasses = 'Raw molasses mixed 1:1 by volume with the strained LAB serum, then bottled.';
+        diyRecipesRaw.ffj.molasses = 'Raw molasses at 1:1 by weight with the ripe fruit. Mix by hand until every piece is coated, then press down.';
+        diyRecipesRaw.fpj.molasses = 'Raw molasses at 1:1 by weight with the shoot tips. Mix by hand until every piece is coated, then press down.';
         const RECIPE_WAIT = {
             jms: '48-72 hours of culturing, until foam forms on the surface. Use promptly, and use up the diluted mix in one go.',
             jlf: 'At least 3 months. The longer it ages, the better and more stable it becomes.',
@@ -2734,12 +2802,14 @@
             biochar: '24-48 hours of soaking in the inoculant, then drain. Never use before this.',
             lab: 'About 8 days: 3 days rice-wash culture, then 5 days with the milk. Strain and mix 1:1 with molasses, then use.',
             fpj: '7-14 days of fermentation, then filter.',
+            ffj: '7-14 days of fermentation, then filter.',
             jwa: '3 days to saponify, then top up with water.',
             jhs: 'Ready as soon as it is boiled, cooled and strained.',
+            seasalt: 'No fermentation. Use once the salt is fully dissolved.',
             js: 'Timing to be confirmed. The source gives no cooking or resting time.'
         };
         Object.keys(RECIPE_WAIT).forEach(k => { diyRecipesRaw[k].wait = RECIPE_WAIT[k]; diyRecipesRaw[k].steps.push('Wait before use: ' + RECIPE_WAIT[k]); });
-        const RECIPE_ORDER = ['jms','jlf','jlfp_rock','jlfb_fish','jlfp_bone','faa','biochar','lab','fpj','jwa','jhs','js'];
+        const RECIPE_ORDER = ['jms','jlf','jlfp_rock','jlfb_fish','jlfp_bone','seasalt','faa','biochar','lab','fpj','ffj','jwa','jhs','js'];
         const diyRecipesData = Object.fromEntries(RECIPE_ORDER.map(k => [k, diyRecipesRaw[k]]));
 
         // Crop Stage Program Data
@@ -3162,6 +3232,7 @@
                         <p class="text-xs text-gray-600 dark:text-gray-300 mt-2">${recipe.desc}</p>
                         ${recipe.credit ? `<p class="text-[11px] italic text-gray-500 dark:text-gray-400 mt-1">${recipe.credit}</p>` : ''}
                         <div class="mt-3 p-3 rounded-xl bg-gold/10 border border-gold/40 text-xs text-forest dark:text-sage-100"><strong>Wait before use:</strong> ${recipe.wait}</div>
+                        ${recipe.molasses ? `<div class=\"mt-2 p-3 rounded-xl bg-rust-light/50 dark:bg-rust-dark/30 border border-rust/40 text-xs text-rust-dark dark:text-rust-light\"><strong>How molasses is used:</strong> ${recipe.molasses}</div>` : ''}
                     </div>
 
                     <div>
@@ -3561,6 +3632,32 @@
             saveStockEntries(entries);
             bcStatus('Logged ' + keys.length + ' item' + (keys.length > 1 ? 's' : '') + ' as used in the Store. <button type="button" class="underline font-bold" onclick="goToStock()">View Store</button>');
         }
+        const EXPENSE_TARGETS = {
+            cereals: { label: 'Cereals', tab: 'o-cereals', key: 'symbio_border_ledger', fields: () => ({ category: 'Farm Expense', expenseCat: 'Biological Inputs/Foliar Spray', hours: 0, stream: 'General Field Ops' }) },
+            hort: { label: 'Horticulture', tab: 'o-horticulture', key: 'symbio_ledger_data', fields: () => ({ category: 'Expense', expenseCat: 'Biological Inputs/Foliar Spray', hours: 0, system: 'General / Farm-wide', crop: 'General / Mixed' }) },
+            poultry: { label: 'Kienyeji Poultry', tab: 'o-kienyeji', key: 'symbio_poultry_ledger', fields: () => ({ category: 'Poultry Expense', expenseCat: 'Other', hours: 0, stream: 'General Ops' }) },
+            pigs: { label: 'Pigs', tab: 'o-pigs', key: 'symbio_pig_ledger', fields: () => ({ category: 'Refinery Expense', expenseCat: 'Other', hours: 0, stream: 'General Ops' }) },
+            trees: { label: 'Tree Nursery', tab: 'o-trees', key: 'symbio_tree_ledger', fields: () => ({ category: 'OpEx Expense', expenseCat: 'Bio-Inputs/Fertility', hours: 0, plantType: 'General / Nursery-Wide' }) },
+            compost: { label: 'Compost', tab: 'o-compost', key: 'symbio_compost_ledger', fields: () => ({ category: 'Compost Expense', expenseCat: 'Inoculants (JMS/LAB/FAA)', hours: 0, phase: document.getElementById('bcExpensePhase').value }) }
+        };
+        function onExpenseTargetChange(){
+            const t = document.getElementById('bcExpenseTarget').value;
+            document.getElementById('bcExpensePhase').classList.toggle('hidden', t !== 'compost');
+        }
+        function recordBatchExpense(){
+            const calc = calculateCurrentMix(); const keys = Object.keys(calc.dosageResults);
+            const amount = Math.round(calc.totalEstCost * 100) / 100;
+            if (!keys.length) { bcStatus('No inputs are switched on. Switch on at least one input first.'); return; }
+            if (amount <= 0) { bcStatus('The batch cost is zero. Set your unit prices on the Cost tab first.'); return; }
+            const tg = EXPENSE_TARGETS[document.getElementById('bcExpenseTarget').value];
+            if (!confirm('Record ' + bcCur() + ' ' + bcMoney(amount) + ' as an expense in ' + tg.label + '? It will count in your monthly expenses.')) return;
+            let list = []; try { list = JSON.parse(localStorage.getItem(tg.key)) || []; } catch (e) { list = []; }
+            const names = keys.map(k => STORE_NAMES[k] || k);
+            const desc = 'Bio inputs batch: ' + (names.length > 4 ? names.slice(0, 4).join(', ') + ' +' + (names.length - 4) + ' more' : names.join(', '));
+            list.push(Object.assign({ id: Date.now(), date: new Date().toISOString().slice(0, 10) }, tg.fields(), { desc, qty: 0, rate: amount }));
+            localStorage.setItem(tg.key, JSON.stringify(list));
+            bcStatus('Recorded ' + bcCur() + ' ' + bcMoney(amount) + ' in ' + tg.label + ' expenses. <button type="button" class="underline font-bold" onclick="goToOpsEnterprise(&quot;' + tg.tab + '&quot;)">View ledger</button>');
+        }
         function exportTicketPdf(){
             if (!window.jspdf || !window.jspdf.jsPDF) { bcStatus('The PDF library did not load. Check your internet connection and try again.'); return; }
             updatePrintSheetView();
@@ -3588,7 +3685,7 @@
             saveVaultEntries(list.slice(0, 200));
             bcStatus('PDF saved and logged in the Reports Vault.');
         }
-        window.BC = { mount, printTicket, logUsedInStore, exportTicketPdf, calculateCurrentMix, renderAll, renderBioInputsGrid, renderMixingSequence, selectRecipe, updateDIYRecipeView, renderGrowthStageGrid, selectGrowthStage, renderActiveStageDetails, loadStageToCalculator, renderEconomicEstimator, updateUnitPrice, resetUnitPrices, updatePrintSheetView, switchToTab, setCalcMode, setContainerPreset, onWaterVolumeChange, onAreaParamsChange, toggleInputActive, onPresetChange, onBiocharCompostChange, onBiocharAreaChange, onCustomRatioChange, selectAllInputs };
+        window.BC = { mount, printTicket, logUsedInStore, exportTicketPdf, recordBatchExpense, onExpenseTargetChange, calculateCurrentMix, renderAll, renderBioInputsGrid, renderMixingSequence, selectRecipe, updateDIYRecipeView, renderGrowthStageGrid, selectGrowthStage, renderActiveStageDetails, loadStageToCalculator, renderEconomicEstimator, updateUnitPrice, resetUnitPrices, updatePrintSheetView, switchToTab, setCalcMode, setContainerPreset, onWaterVolumeChange, onAreaParamsChange, toggleInputActive, onPresetChange, onBiocharCompostChange, onBiocharAreaChange, onCustomRatioChange, selectAllInputs };
 
 })();
 </script>
@@ -6188,7 +6285,8 @@ function renderOpsView(initialTab){
     ['o-hatchery','Hatchery','Hatchery &amp; day-old chicks projection + actuals ledger','\ud83d\udc23'],
     ['o-compost','Compost','Compost production &amp; sales enterprise','\u267b\ufe0f'],
     ['o-pigs','Pigs','Pig enterprise (Refinery vs Regular Commercial)','\ud83d\udc16'],
-    ['o-seedlings','Seedling Propagation','Vegetable &amp; herb seedling nursery projection + actuals ledger','\ud83c\udf31']
+    ['o-seedlings','Seedling Propagation','Vegetable &amp; herb seedling nursery projection + actuals ledger','\ud83c\udf31'],
+    ['o-trees','Tree Nursery','Flowers, fruit &amp; tree seedlings started in seedling bags','\ud83c\udf33']
   ];
   // Accent colors cycle through the app's existing chart-series palette so the
   // 8 picker cards read distinctly without introducing any new colors.
@@ -12488,6 +12586,608 @@ window.OPS_MODULES['o-seedlings'] = (function(){
   return { build, init, destroy };
 })();
 
+/* ===== tree nursery ===== */
+window.OPS_MODULES = window.OPS_MODULES || {};
+window.OPS_MODULES['o-trees'] = (function(){
+  'use strict';
+  const LS_LEDGER = 'symbio_tree_ledger';
+  const LS_SCENARIOS = 'symbio_tree_scenarios';
+  const LS_BATCHES = 'symbio_tree_batches';
+  const LS_PARAMS = 'symbio_tree_params';
+  const CATS = ['Flowers', 'Fruit Trees', 'Tree Seedlings'];
+  const PARAM_IDS = ['sentiment', 'opex', 'seedcost', 'bagcost', 'mediacost', 'capex', 'survival'];
+  const PARAM_DEFAULTS = { sentiment: 100, opex: 6000, seedcost: 3000, bagcost: 5, mediacost: 8, capex: 25000, survival: 85 };
+  const DEFAULT_BATCHES = [
+    { id: 1, name: 'Ornamental flowers', cat: 'Flowers', bags: 300, price: 50 },
+    { id: 2, name: 'Fruit tree seedlings', cat: 'Fruit Trees', bags: 200, price: 150 },
+    { id: 3, name: 'Shade / timber tree seedlings', cat: 'Tree Seedlings', bags: 400, price: 30 }
+  ];
+  let charts = [];
+  let entries = [];
+  let batches = [];
+
+  function build(){
+    return `
+      <div class="ops-guide" id="o-trees-guide">
+        <button type="button" class="ops-guide-toggle planner-btn" id="o-trees-guide-toggle">\ud83d\udcd6 Nursery Guide</button>
+        <div class="ops-guide-body">
+          <h3 class="ops-section-title">Tree Nursery \u2014 Seedling Bag Production</h3>
+          <div class="ops-field-row">
+            <div class="ops-field">
+              <label>Three Plant Lines</label>
+              <ul>
+                <li><b>Flowers:</b> ornamental and landscaping plants started in bags.</li>
+                <li><b>Fruit Trees:</b> grafted or seed-raised fruit seedlings.</li>
+                <li><b>Tree Seedlings:</b> shade, timber, fodder and agroforestry trees.</li>
+              </ul>
+            </div>
+            <div class="ops-field">
+              <label>Production Logic</label>
+              <ul>
+                <li><b>Bags:</b> every plant is started in a seedling bag. Count your bags per batch.</li>
+                <li><b>Survival:</b> not every bag gives a sellable plant. Apply a realistic survival rate.</li>
+                <li><b>Costs:</b> bag cost and potting media cost are charged per bag. All prices here are placeholders; set your own.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="ops-vault">
+        <h3 class="ops-section-title">\ud83d\udcc2 Scenario &amp; Plan Vault</h3>
+        <div class="ops-ledger-bar">
+          <input type="text" id="o-trees-vault-name" placeholder="Enter scenario name (e.g., Long Rains Batch)">
+          <button type="button" class="planner-btn" id="o-trees-vault-save">Save Current Scenario</button>
+        </div>
+        <div class="ops-vault-list" id="o-trees-vault-list"></div>
+      </div>
+
+      <h3 class="ops-section-title">Enterprise Parameters</h3>
+      <div class="ops-field-row">
+        <div class="ops-field">
+          <label>Market Sentiment: <span id="o-trees-val-sentiment">100%</span></label>
+          <input type="range" id="o-trees-sentiment" min="0" max="150" step="5" value="100">
+          <span class="ops-hint">Adjusts expected sales demand \u2014 below 100% for a glut, above for a rush.</span>
+        </div>
+        <div class="ops-field">
+          <label>Survival Rate (%)</label>
+          <input type="number" id="o-trees-survival" value="85" min="1" max="100">
+        </div>
+        <div class="ops-field">
+          <label>Base Monthly OpEx (${CUR()})</label>
+          <input type="number" id="o-trees-opex" value="6000">
+        </div>
+        <div class="ops-field">
+          <label>Total Seeds / Cuttings / Scions (${CUR()})</label>
+          <input type="number" id="o-trees-seedcost" value="3000">
+        </div>
+      </div>
+
+      <h3 class="ops-section-title">Cost Assumptions</h3>
+      <div class="ops-field-row">
+        <div class="ops-field">
+          <label>Seedling Bag Cost (${CUR()}/Bag)</label>
+          <input type="number" id="o-trees-bagcost" value="5" step="0.5">
+        </div>
+        <div class="ops-field">
+          <label>Potting Media Cost (${CUR()}/Bag)</label>
+          <input type="number" id="o-trees-mediacost" value="8" step="0.5">
+        </div>
+        <div class="ops-field">
+          <label>Shade Net, Benches &amp; Tools (${CUR()}, one-off)</label>
+          <input type="number" id="o-trees-capex" value="25000">
+        </div>
+      </div>
+
+      <h3 class="ops-section-title">Bag Batches</h3>
+      <p class="ops-note">Add each batch you start in seedling bags: the plant, its line, how many bags, and your selling price per plant.</p>
+      <div class="ops-field-row">
+        <div class="ops-field">
+          <label>Plant / Batch Name</label>
+          <input type="text" id="o-trees-new-name" placeholder="e.g. Mango grafts">
+        </div>
+        <div class="ops-field">
+          <label>Plant Line</label>
+          <select id="o-trees-new-cat">
+            <option value="Flowers">Flowers</option>
+            <option value="Fruit Trees">Fruit Trees</option>
+            <option value="Tree Seedlings">Tree Seedlings</option>
+          </select>
+        </div>
+        <div class="ops-field">
+          <label>Bags</label>
+          <input type="number" id="o-trees-new-bags" min="1" placeholder="e.g. 200">
+        </div>
+        <div class="ops-field">
+          <label>Price per Plant (${CUR()})</label>
+          <input type="number" id="o-trees-new-price" min="0" step="0.5" placeholder="e.g. 100">
+        </div>
+        <button type="button" class="planner-btn" id="o-trees-add-batch">+ Add Batch</button>
+      </div>
+      <div class="ops-vault-list" id="o-trees-batch-list"></div>
+      <div class="ops-summary-grid">
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Total Bags</span>
+          <span class="ops-sum-value" id="o-trees-total-bags">0</span>
+        </div>
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Expected Sellable Plants</span>
+          <span class="ops-sum-value" id="o-trees-total-sellable">0</span>
+        </div>
+      </div>
+
+      <h3 class="ops-section-title">Batch Projections (Estimated)</h3>
+      <div class="ops-summary-grid">
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Est. CapEx</span>
+          <span class="ops-sum-value" id="o-trees-proj-capex">${CUR()} 0</span>
+        </div>
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Est. OpEx (Total)</span>
+          <span class="ops-sum-value ops-sum-loss" id="o-trees-proj-opex">${CUR()} 0</span>
+        </div>
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Break-Even Sales</span>
+          <span class="ops-sum-value" id="o-trees-proj-breakeven">0 Plants</span>
+        </div>
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Est. Revenue</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-trees-proj-rev">${CUR()} 0</span>
+        </div>
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Est. Net Profit</span>
+          <span class="ops-sum-value" id="o-trees-proj-net">${CUR()} 0</span>
+        </div>
+      </div>
+
+      <h3 class="ops-section-title">Projection by Plant Line</h3>
+      <div class="planner-table-wrap">
+        <table class="planner-table">
+          <thead><tr><th>Plant Line</th><th>Bags</th><th>Sellable</th><th>Est. Revenue</th></tr></thead>
+          <tbody id="o-trees-proj-lines"></tbody>
+        </table>
+      </div>
+
+      <h3 class="ops-section-title">Record Actual Activity</h3>
+      <form id="o-trees-ledger-form">
+        <div class="ops-ledger-bar">
+          <input type="date" id="o-trees-entry-date" required>
+          <select id="o-trees-entry-category">
+            <option value="Plant Sale">Plant Sale</option>
+            <option value="CapEx Purchase">CapEx Purchase</option>
+            <option value="OpEx Expense">OpEx Expense</option>
+          </select>
+          <select id="o-trees-entry-expense-cat" style="display:none;">
+            <option value="Seeds/Cuttings/Scions">Seeds/Cuttings/Scions</option>
+            <option value="Seedling Bags">Seedling Bags</option>
+            <option value="Potting Media/Compost">Potting Media/Compost</option>
+            <option value="Bio-Inputs/Fertility">Bio-Inputs/Fertility</option>
+            <option value="Labour">Labour</option>
+            <option value="Water/Irrigation">Water/Irrigation</option>
+            <option value="Shade/Structures">Shade/Structures</option>
+            <option value="Equipment/Tools">Equipment/Tools</option>
+            <option value="Transport">Transport</option>
+            <option value="Other">Other</option>
+          </select>
+          <input type="number" id="o-trees-entry-hours" step="0.25" min="0" placeholder="Hours" style="display:none; width:80px;" title="Time spent on this task">
+          <input type="number" id="o-trees-entry-labour-rate" step="1" min="0" placeholder="Rate/hr (${CUR()})" style="display:none; width:110px;" title="Your labour rate per hour">
+          <select id="o-trees-entry-plant-type">
+            <option value="General / Nursery-Wide">General / Nursery-Wide</option>
+            <option value="Flowers">Flowers</option>
+            <option value="Fruit Trees">Fruit Trees</option>
+            <option value="Tree Seedlings">Tree Seedlings</option>
+          </select>
+          <input type="text" id="o-trees-entry-desc" placeholder="Details (e.g. Sold 20 mango seedlings)" required>
+          <input type="number" id="o-trees-entry-qty" step="1" placeholder="Qty (Plants)">
+          <input type="number" id="o-trees-entry-rate" step="0.5" placeholder="Rate/Total (${CUR()})">
+          <button type="submit" class="planner-btn">Save Entry</button>
+        </div>
+      </form>
+
+      <div class="planner-table-wrap ops-ledger-wrap">
+        <div class="ops-ledger-bar">
+          <h3 class="ops-section-title">Enterprise Log</h3>
+          <button type="button" class="planner-btn" id="o-trees-export">\ud83d\udce5 Export CSV</button>
+          <button type="button" class="planner-btn" id="o-trees-export-pdf">\ud83d\udcc4 Export PDF Report</button>
+          <button type="button" class="planner-btn" id="o-trees-clear">Clear Data</button>
+        </div>
+        <table class="planner-table ops-ledger-table">
+          <thead>
+            <tr><th>Date</th><th>Type</th><th>Plant Line</th><th>Details</th><th>Qty</th><th>Rate/Amt</th><th>Total Value</th><th></th></tr>
+          </thead>
+          <tbody id="o-trees-ledger-body"></tbody>
+        </table>
+      </div>
+
+      <h3 class="ops-section-title">Sales Performance by Plant Line</h3>
+      <div class="planner-table-wrap">
+        <table class="planner-table">
+          <thead><tr><th>Plant Line</th><th>Sold</th><th>Revenue</th></tr></thead>
+          <tbody id="o-trees-perf-body"></tbody>
+        </table>
+      </div>
+
+      <h3 class="ops-section-title">Expense Breakdown \u2014 Where Your Money Goes</h3>
+      <p class="ops-note">Ranked highest to lowest, so your biggest cost driver sits at the top.</p>
+      <div class="planner-table-wrap">
+        <table class="planner-table">
+          <thead><tr><th>Expense Category</th><th>Total Spent</th><th>Share of Expenses</th></tr></thead>
+          <tbody id="o-trees-expense-summary-body"></tbody>
+        </table>
+      </div>
+
+      <div class="ops-summary-grid">
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Actual Expenses</span>
+          <span class="ops-sum-value ops-sum-loss" id="o-trees-actual-exp">${CUR()} 0</span>
+        </div>
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Actual Revenue</span>
+          <span class="ops-sum-value ops-sum-profit" id="o-trees-actual-rev">${CUR()} 0</span>
+        </div>
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Actual Avg Price</span>
+          <span class="ops-sum-value" id="o-trees-actual-avg-price">${CUR()} 0.0</span>
+        </div>
+        <div class="ops-summary-card">
+          <span class="ops-sum-label">Actual Net Cashflow</span>
+          <span class="ops-sum-value" id="o-trees-actual-net">${CUR()} 0</span>
+        </div>
+      </div>
+
+      <h3 class="ops-section-title">Financial Cashflow Overview</h3>
+      <div class="ops-chart-frame">
+        <canvas id="o-trees-financial-chart"></canvas>
+      </div>
+    `;
+  }
+
+  function init(root){
+    entries = JSON.parse(localStorage.getItem(LS_LEDGER)) || [];
+    batches = JSON.parse(localStorage.getItem(LS_BATCHES)) || DEFAULT_BATCHES.map(b => Object.assign({}, b));
+    const $ = (sel) => root.querySelector(sel);
+    const num = (id) => numOrDefault($('#o-trees-' + id).value, PARAM_DEFAULTS[id]);
+
+    $('#o-trees-guide-toggle').addEventListener('click', () => { $('#o-trees-guide').classList.toggle('o-open'); });
+
+    const vaultNameInput = $('#o-trees-vault-name');
+    const vaultList = $('#o-trees-vault-list');
+    const batchListEl = $('#o-trees-batch-list');
+    const ledgerBody = $('#o-trees-ledger-body');
+    const perfBody = $('#o-trees-perf-body');
+    const entryDate = $('#o-trees-entry-date');
+    const entryCategory = $('#o-trees-entry-category');
+    const entryExpenseCat = $('#o-trees-entry-expense-cat');
+    const entryHours = $('#o-trees-entry-hours');
+    const entryLabourRate = $('#o-trees-entry-labour-rate');
+    const entryPlantType = $('#o-trees-entry-plant-type');
+    const entryDesc = $('#o-trees-entry-desc');
+    const entryQty = $('#o-trees-entry-qty');
+    const entryRate = $('#o-trees-entry-rate');
+    entryDate.valueAsDate = new Date();
+
+    function readParams(){ const p = {}; PARAM_IDS.forEach(id => { p[id] = $('#o-trees-' + id).value; }); return p; }
+    function applyParams(p){ PARAM_IDS.forEach(id => { if(p && p[id] !== undefined && p[id] !== '') $('#o-trees-' + id).value = p[id]; }); }
+    function saveBatches(){ localStorage.setItem(LS_BATCHES, JSON.stringify(batches)); }
+
+    function adjustFields(){
+      const isExpense = (entryCategory.value !== 'Plant Sale');
+      entryQty.disabled = isExpense;
+      entryRate.placeholder = isExpense ? `Total Amount (${CUR()})` : `Rate / Plant (${CUR()})`;
+      entryExpenseCat.style.display = isExpense ? '' : 'none';
+      const isLabour = (isExpense && entryExpenseCat.value === 'Labour');
+      entryHours.style.display = isLabour ? '' : 'none';
+      entryLabourRate.style.display = isLabour ? '' : 'none';
+      if(isLabour && !entryLabourRate.value){
+        entryLabourRate.value = localStorage.getItem('symbio_default_labour_rate') || 100;
+      }
+    }
+    function recalcLabourAmount(){
+      const hrs = parseFloat(entryHours.value) || 0;
+      const rate = parseFloat(entryLabourRate.value) || 0;
+      if(hrs > 0 && rate > 0){ entryRate.value = (hrs * rate).toFixed(2); }
+    }
+
+    function renderBatches(){
+      batchListEl.innerHTML = batches.map(b => `
+        <div class="ops-vault-item">
+          <div>
+            <span>${escapeHtml(b.name)}</span>
+            <span class="ops-note">(${escapeHtml(b.cat)} \u00b7 ${CUR()} ${Number(b.price).toLocaleString()} per plant)</span>
+          </div>
+          <div class="ops-ledger-bar">
+            <input type="number" min="0" value="${b.bags}" data-batch-bags="${b.id}" style="width:80px;">
+            <button type="button" class="planner-btn" data-batch-delete="${b.id}">Remove</button>
+          </div>
+        </div>`).join('') || '<p class="ops-note">No bag batches yet. Add your first batch above.</p>';
+      batchListEl.querySelectorAll('[data-batch-bags]').forEach(inp => inp.addEventListener('input', () => {
+        const b = batches.find(x => x.id === parseInt(inp.getAttribute('data-batch-bags'), 10));
+        if(b){ b.bags = Math.max(0, parseInt(inp.value) || 0); saveBatches(); calculate(); }
+      }));
+      batchListEl.querySelectorAll('[data-batch-delete]').forEach(btn => btn.addEventListener('click', () => {
+        batches = batches.filter(x => x.id !== parseInt(btn.getAttribute('data-batch-delete'), 10));
+        saveBatches(); renderBatches(); calculate();
+      }));
+    }
+    function addBatch(){
+      const name = $('#o-trees-new-name').value.trim();
+      const bags = parseInt($('#o-trees-new-bags').value, 10);
+      const price = parseFloat($('#o-trees-new-price').value);
+      if(!name || isNaN(bags) || bags <= 0 || isNaN(price) || price < 0){
+        alert('Please enter a plant name, the number of bags and a price per plant.');
+        return;
+      }
+      batches.push({ id: Date.now(), name, cat: $('#o-trees-new-cat').value, bags, price });
+      ['name', 'bags', 'price'].forEach(k => { $('#o-trees-new-' + k).value = ''; });
+      saveBatches(); renderBatches(); calculate();
+    }
+
+    function calculate(){
+      const p = {}; PARAM_IDS.forEach(id => { p[id] = num(id); });
+      localStorage.setItem(LS_PARAMS, JSON.stringify(readParams()));
+      $('#o-trees-val-sentiment').innerText = p.sentiment + '%';
+      let totalBags = 0, totalSellable = 0, baseRev = 0;
+      const lines = {}; CATS.forEach(c => { lines[c] = { bags: 0, sellable: 0, rev: 0 }; });
+      batches.forEach(b => {
+        const sellable = Math.round(b.bags * (p.survival / 100));
+        const rev = sellable * b.price * (p.sentiment / 100);
+        totalBags += b.bags; totalSellable += sellable; baseRev += rev;
+        const l = lines[b.cat] || (lines[b.cat] = { bags: 0, sellable: 0, rev: 0 });
+        l.bags += b.bags; l.sellable += sellable; l.rev += rev;
+      });
+      const opexTotal = p.opex + p.seedcost + totalBags * (p.bagcost + p.mediacost);
+      const avgPrice = totalSellable > 0 ? (baseRev / (p.sentiment / 100 || 1)) / totalSellable : 0;
+      const breakEven = avgPrice > 0 ? Math.ceil(opexTotal / avgPrice) : 0;
+      const net = baseRev - opexTotal;
+      $('#o-trees-total-bags').innerText = totalBags.toLocaleString();
+      $('#o-trees-total-sellable').innerText = totalSellable.toLocaleString();
+      $('#o-trees-proj-capex').innerText = `${CUR()} ` + Math.round(p.capex).toLocaleString();
+      $('#o-trees-proj-opex').innerText = `${CUR()} ` + Math.round(opexTotal).toLocaleString();
+      $('#o-trees-proj-breakeven').innerText = breakEven.toLocaleString() + ' Plants';
+      $('#o-trees-proj-rev').innerText = `${CUR()} ` + Math.round(baseRev).toLocaleString();
+      const netEl = $('#o-trees-proj-net');
+      netEl.innerText = `${CUR()} ` + Math.round(net).toLocaleString();
+      netEl.className = 'ops-sum-value ' + (net >= 0 ? 'ops-sum-profit' : 'ops-sum-loss');
+      $('#o-trees-proj-lines').innerHTML = Object.keys(lines).map(c => `
+        <tr><td>${escapeHtml(c)}</td><td>${lines[c].bags.toLocaleString()}</td><td>${lines[c].sellable.toLocaleString()}</td><td>${CUR()} ${Math.round(lines[c].rev).toLocaleString()}</td></tr>`).join('');
+      renderLedger();
+    }
+
+    function addEntry(e){
+      e.preventDefault();
+      const category = entryCategory.value;
+      const expenseCat = (category !== 'Plant Sale') ? entryExpenseCat.value : '';
+      entries.push({
+        id: Date.now(), date: entryDate.value, category, expenseCat,
+        hours: (expenseCat === 'Labour') ? (parseFloat(entryHours.value) || 0) : 0,
+        plantType: entryPlantType.value, desc: entryDesc.value,
+        qty: parseFloat(entryQty.value) || 0, rate: parseFloat(entryRate.value) || 0
+      });
+      localStorage.setItem(LS_LEDGER, JSON.stringify(entries));
+      entryDesc.value = ''; entryQty.value = ''; entryRate.value = ''; entryHours.value = '';
+      renderLedger();
+    }
+    function deleteEntry(id){
+      entries = entries.filter(i => i.id !== id);
+      localStorage.setItem(LS_LEDGER, JSON.stringify(entries));
+      renderLedger();
+    }
+    function clearLedger(){
+      if(confirm('Clear all recorded tree nursery activity?')){
+        entries = []; localStorage.removeItem(LS_LEDGER); renderLedger();
+      }
+    }
+
+    function getScenarios(){ return JSON.parse(localStorage.getItem(LS_SCENARIOS)) || {}; }
+    function saveScenario(){
+      const name = vaultNameInput.value.trim();
+      if(!name){ alert('Please enter a scenario name.'); return; }
+      const all = getScenarios();
+      all[name] = { timestamp: Date.now(), params: readParams(), batches, entries };
+      localStorage.setItem(LS_SCENARIOS, JSON.stringify(all));
+      vaultNameInput.value = '';
+      renderScenarios();
+      alert(`Scenario "${name}" saved to the vault.`);
+    }
+    function loadScenario(name){
+      const s = getScenarios()[name];
+      if(!s) return;
+      applyParams(s.params);
+      batches = s.batches || []; entries = s.entries || [];
+      localStorage.setItem(LS_LEDGER, JSON.stringify(entries)); saveBatches();
+      vaultNameInput.value = name;
+      renderBatches(); calculate();
+      alert(`Scenario "${name}" loaded successfully!`);
+    }
+    function deleteScenario(name){
+      if(confirm(`Delete scenario "${name}"?`)){
+        const all = getScenarios(); delete all[name];
+        localStorage.setItem(LS_SCENARIOS, JSON.stringify(all)); renderScenarios();
+      }
+    }
+    function renderScenarios(){
+      const all = getScenarios(); const keys = Object.keys(all);
+      vaultList.innerHTML = '';
+      if(!keys.length){
+        const p = document.createElement('p'); p.className = 'ops-note'; p.textContent = 'No saved scenarios in vault.';
+        vaultList.appendChild(p); return;
+      }
+      keys.forEach(key => {
+        const item = document.createElement('div');
+        item.className = 'ops-vault-item';
+        item.innerHTML = `
+          <div><span>${escapeHtml(key)}</span><span class="ops-note">(${new Date(all[key].timestamp).toLocaleDateString()})</span></div>
+          <div class="ops-ledger-bar">
+            <button type="button" class="planner-btn" data-action="load">Load</button>
+            <button type="button" class="planner-btn" data-action="delete">Delete</button>
+          </div>`;
+        item.querySelector('[data-action="load"]').addEventListener('click', () => loadScenario(key));
+        item.querySelector('[data-action="delete"]').addEventListener('click', () => deleteScenario(key));
+        vaultList.appendChild(item);
+      });
+    }
+
+    function exportToCSV(){
+      if(entries.length === 0){ alert('No ledger entries to export.'); return; }
+      let csv = `Date,Category,Expense_Category,Hours,Plant_Line,Details,Quantity,Rate_or_Amount_${CUR()},Total_Value_${CUR()}\n`;
+      entries.forEach(e => {
+        const total = e.category === 'Plant Sale' ? e.qty * e.rate : -e.rate;
+        csv += `"${e.date}","${e.category}","${e.expenseCat || ''}",${e.hours || 0},"${e.plantType}","${(e.desc || '').replace(/"/g, '""')}",${e.qty || 0},${e.rate || 0},${total}\n`;
+      });
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const a = document.createElement('a');
+      a.href = window.URL.createObjectURL(blob);
+      a.download = `symbio_tree_nursery_ledger_${new Date().toISOString().slice(0,10)}.csv`;
+      a.click();
+    }
+
+    function exportPDF(){
+      if(!window.jspdf || !window.jspdf.jsPDF){ alert('PDF library did not load \u2014 check your internet connection and try again.'); return; }
+      const doc = new window.jspdf.jsPDF();
+      const today = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+      const head = { fillColor: [46, 74, 42] };
+      doc.setFontSize(16); doc.text('Symbio Biotech Solutions', 14, 18);
+      doc.setFontSize(11); doc.setTextColor(90); doc.text('Tree Nursery Enterprise Report \u2014 ' + today, 14, 25); doc.setTextColor(0);
+      let y = 34; doc.setFontSize(13); doc.text('Batch Projections', 14, y); y += 4;
+      doc.autoTable({ startY: y, head: [['Metric', 'Value']], body: [
+        ['Total Bags / Sellable Plants', $('#o-trees-total-bags').innerText + ' bags / ' + $('#o-trees-total-sellable').innerText + ' plants'],
+        ['Est. CapEx', $('#o-trees-proj-capex').innerText], ['Est. OpEx (Total)', $('#o-trees-proj-opex').innerText],
+        ['Break-Even Sales', $('#o-trees-proj-breakeven').innerText], ['Est. Revenue', $('#o-trees-proj-rev').innerText],
+        ['Est. Net Profit', $('#o-trees-proj-net').innerText]
+      ], styles: { fontSize: 9 }, headStyles: head, margin: { left: 14, right: 14 } });
+      y = doc.lastAutoTable.finalY + 10;
+      doc.autoTable({ startY: y, head: [['Batch', 'Plant line', 'Bags', 'Price per plant']],
+        body: batches.map(b => [b.name, b.cat, String(b.bags), String(b.price)]),
+        styles: { fontSize: 9 }, headStyles: head, margin: { left: 14, right: 14 } });
+      y = doc.lastAutoTable.finalY + 10;
+      if(entries.length){
+        if(y > 220){ doc.addPage(); y = 20; }
+        doc.setFontSize(13); doc.text('Enterprise Log (Actuals)', 14, y); y += 4;
+        const sorted = [...entries].sort((a, b) => new Date(b.date) - new Date(a.date));
+        doc.autoTable({ startY: y, head: [['Date', 'Category', 'Plant line', 'Details', 'Qty', 'Rate/Amt']],
+          body: sorted.map(e => [e.date, e.category + (e.category !== 'Plant Sale' && e.expenseCat ? ' \u2014 ' + e.expenseCat : '') + (e.hours ? ' (' + e.hours + ' hrs)' : ''), e.plantType, e.desc, e.qty || '-', e.rate || '-']),
+          styles: { fontSize: 8 }, headStyles: head, margin: { left: 14, right: 14 } });
+        y = doc.lastAutoTable.finalY + 10;
+        if(y > 240){ doc.addPage(); y = 20; }
+        doc.setFontSize(13); doc.text('Actual Financial Summary', 14, y); y += 4;
+        doc.autoTable({ startY: y, head: [['Metric', 'Value']], body: [
+          ['Actual Revenue', $('#o-trees-actual-rev').innerText], ['Actual Expenses', $('#o-trees-actual-exp').innerText],
+          ['Actual Avg Price', $('#o-trees-actual-avg-price').innerText], ['Net Cashflow', $('#o-trees-actual-net').innerText]
+        ], styles: { fontSize: 9 }, headStyles: head, margin: { left: 14, right: 14 } });
+      } else {
+        doc.setFontSize(10); doc.text('No operations log entries yet.', 14, y);
+      }
+      doc.addPage(); doc.setFontSize(13); doc.text('Charts', 14, 20);
+      addChartImageToPDF(doc, 'o-trees-financial-chart', 14, 28, 180, 100);
+      doc.setFontSize(8); doc.setTextColor(120);
+      doc.text('Generated via Symbio Biotech Agribusiness Enterprise Planner', 14, 290);
+      doc.save('symbio_tree_nursery_report.pdf');
+    }
+
+    function cssVar(name){ return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+    function updateCharts(income, expense){
+      if(typeof Chart === 'undefined') return;
+      charts.forEach(c => { try{ c.destroy(); }catch(e){} }); charts = [];
+      const bone = cssVar('--chart-text'), line = cssVar('--chart-grid');
+      charts.push(new Chart($('#o-trees-financial-chart').getContext('2d'), {
+        type: 'bar',
+        data: { labels: ['Actual Tree Nursery Financials'], datasets: [
+          { label: `Revenue (${CUR()})`, data: [income], backgroundColor: cssVar('--chart-series-2'), borderRadius: 6 },
+          { label: `Expenses (${CUR()})`, data: [expense], backgroundColor: cssVar('--chart-series-3'), borderRadius: 6 },
+          { label: `Net Cashflow (${CUR()})`, data: [income - expense], backgroundColor: cssVar('--chart-series-1'), borderRadius: 6 }
+        ] },
+        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: bone, font: { size: 11 } } } },
+          scales: { y: { ticks: { color: bone }, grid: { color: line } }, x: { display: false } } }
+      }));
+    }
+
+    function renderLedger(){
+      let actExp = 0, actRev = 0, actSold = 0;
+      const perf = {}, expStats = {};
+      ledgerBody.innerHTML = '';
+      const sorted = entries.slice().sort((a, b) => new Date(b.date) - new Date(a.date));
+      if(!sorted.length){
+        ledgerBody.innerHTML = '<tr><td colspan="8">No tree nursery activity logged yet.</td></tr>';
+      } else {
+        sorted.forEach(item => {
+          let totalVal = 0;
+          if(item.category === 'Plant Sale'){
+            totalVal = item.qty * item.rate; actRev += totalVal; actSold += item.qty;
+            const k = item.plantType || 'General / Nursery-Wide';
+            if(!perf[k]) perf[k] = { sold: 0, rev: 0 };
+            perf[k].sold += item.qty; perf[k].rev += totalVal;
+          } else {
+            totalVal = -item.rate; actExp += item.rate;
+            const ecat = item.expenseCat || 'Other';
+            if(!expStats[ecat]) expStats[ecat] = { amount: 0, hours: 0 };
+            expStats[ecat].amount += item.rate; expStats[ecat].hours += (item.hours || 0);
+          }
+          const tr = document.createElement('tr');
+          const valClass = totalVal > 0 ? 'ops-sum-profit' : (totalVal < 0 ? 'ops-sum-loss' : '');
+          const valText = totalVal !== 0 ? (totalVal > 0 ? '+' : '-') + `${CUR()} ` + Math.abs(totalVal).toLocaleString() : '-';
+          tr.innerHTML = `
+            <td>${escapeHtml(item.date)}</td>
+            <td>${escapeHtml(item.category)}${item.category !== 'Plant Sale' && item.expenseCat ? ' \u2014 ' + escapeHtml(item.expenseCat) : ''}${item.hours ? ' (' + item.hours + ' hrs)' : ''}</td>
+            <td>${escapeHtml(item.plantType || '-')}</td>
+            <td>${escapeHtml(item.desc || '')}</td>
+            <td>${item.qty ? item.qty.toLocaleString() : '-'}</td>
+            <td>${item.rate ? `${CUR()} ` + item.rate.toLocaleString() : '-'}</td>
+            <td class="${valClass}">${valText}</td>
+            <td class="row-remove-cell"></td>`;
+          const del = document.createElement('button');
+          del.className = 'row-remove-btn'; del.type = 'button'; del.textContent = '\u2715';
+          del.addEventListener('click', () => deleteEntry(item.id));
+          tr.querySelector('.row-remove-cell').appendChild(del);
+          ledgerBody.appendChild(tr);
+        });
+      }
+      const expBody = $('#o-trees-expense-summary-body');
+      expBody.innerHTML = Object.keys(expStats).map(n => ({ n, a: expStats[n].amount, h: expStats[n].hours }))
+        .sort((x, y) => y.a - x.a).map(e => `
+          <tr><td>${escapeHtml(e.n)}${e.h > 0 ? ' (' + e.h.toFixed(2).replace(/\.00$/, '') + ' hrs)' : ''}</td><td>${CUR()} ${Math.round(e.a).toLocaleString()}</td><td>${actExp > 0 ? ((e.a / actExp) * 100).toFixed(1) : '0.0'}%</td></tr>`).join('')
+        || '<tr><td colspan="3">No expenses logged yet.</td></tr>';
+      perfBody.innerHTML = Object.keys(perf).map(k => `
+        <tr><td>${escapeHtml(k)}</td><td>${perf[k].sold.toLocaleString()}</td><td>${CUR()} ${perf[k].rev.toLocaleString()}</td></tr>`).join('')
+        || '<tr><td colspan="3">No sales data yet.</td></tr>';
+      $('#o-trees-actual-exp').innerText = `${CUR()} ` + Math.round(actExp).toLocaleString();
+      $('#o-trees-actual-rev').innerText = `${CUR()} ` + Math.round(actRev).toLocaleString();
+      $('#o-trees-actual-avg-price').innerText = `${CUR()} ` + (actSold > 0 ? (actRev / actSold).toFixed(1) : '0.0');
+      const net = actRev - actExp;
+      const netEl = $('#o-trees-actual-net');
+      netEl.innerText = `${CUR()} ` + Math.round(net).toLocaleString();
+      netEl.className = 'ops-sum-value ' + (net >= 0 ? 'ops-sum-profit' : 'ops-sum-loss');
+      updateCharts(actRev, actExp);
+    }
+
+    PARAM_IDS.forEach(id => $('#o-trees-' + id).addEventListener('input', calculate));
+    $('#o-trees-add-batch').addEventListener('click', addBatch);
+    entryCategory.addEventListener('change', adjustFields);
+    entryExpenseCat.addEventListener('change', adjustFields);
+    entryHours.addEventListener('input', recalcLabourAmount);
+    entryLabourRate.addEventListener('input', () => { localStorage.setItem('symbio_default_labour_rate', entryLabourRate.value); recalcLabourAmount(); });
+    $('#o-trees-ledger-form').addEventListener('submit', addEntry);
+    $('#o-trees-export').addEventListener('click', exportToCSV);
+    $('#o-trees-export-pdf').addEventListener('click', exportPDF);
+    $('#o-trees-clear').addEventListener('click', clearLedger);
+    $('#o-trees-vault-save').addEventListener('click', saveScenario);
+
+    try { applyParams(JSON.parse(localStorage.getItem(LS_PARAMS)) || {}); } catch(e){}
+    renderBatches();
+    calculate();
+    adjustFields();
+    renderScenarios();
+    window.activeOpsRepaint = calculate;
+  }
+
+  function destroy(){
+    charts.forEach(c => { try{ c.destroy(); }catch(e){} });
+    charts = [];
+    window.activeOpsRepaint = null;
+  }
+
+  return { build, init, destroy };
+})();
+
 /* ===== dailylog ===== */
 window.OPS_MODULES = window.OPS_MODULES || {};
 window.OPS_MODULES['o-dailylog'] = (function(){
@@ -13153,7 +13853,9 @@ function computeOpsFinance(){
     { key:'symbio_compost_ledger', isExpense:(it)=> it.category==='Compost Expense',
       isRevenue:(it)=> it.category==='Batch Harvest & Sale', qty:(it)=> it.qty || 0 },
     { key:'symbio_seedling_ledger', isExpense:(it)=> it.category!=='Seedling Sale',
-      isRevenue:(it)=> it.category==='Seedling Sale', qty:(it)=> it.qty || 0 }
+      isRevenue:(it)=> it.category==='Seedling Sale', qty:(it)=> it.qty || 0 },
+    { key:'symbio_tree_ledger', isExpense:(it)=> it.category!=='Plant Sale',
+      isRevenue:(it)=> it.category==='Plant Sale', qty:(it)=> it.qty || 0 }
   ];
   let totalRevenue = 0, totalExpense = 0, activeCount = 0;
   modules.forEach(m => {
@@ -13174,7 +13876,7 @@ function computeOpsFinance(){
       totalExpense += parseFloat(it.exp) || 0;
     });
   } catch(e){}
-  return { totalRevenue, totalExpense, activeCount, totalTracked: 8 };
+  return { totalRevenue, totalExpense, activeCount, totalTracked: 9 };
 }
 
 // ==================== CROSS-ENTERPRISE ENTRY LIST (tap Revenue/Expenses) ====================
@@ -13201,7 +13903,10 @@ const OPS_ENTRY_SOURCES = [
     isRevenue:(it)=> it.category==='Batch Harvest & Sale', qty:(it)=> it.qty || 0 },
   { tab:'o-seedlings', label:'Seedling Propagation', icon:'\ud83c\udf31', key:'symbio_seedling_ledger',
     isExpense:(it)=> it.category!=='Seedling Sale',
-    isRevenue:(it)=> it.category==='Seedling Sale', qty:(it)=> it.qty || 0 }
+    isRevenue:(it)=> it.category==='Seedling Sale', qty:(it)=> it.qty || 0 },
+  { tab:'o-trees', label:'Tree Nursery', icon:'\ud83c\udf33', key:'symbio_tree_ledger',
+    isExpense:(it)=> it.category!=='Plant Sale',
+    isRevenue:(it)=> it.category==='Plant Sale', qty:(it)=> it.qty || 0 }
 ];
 
 function getAllOpsEntries(){
@@ -13287,7 +13992,8 @@ const OPS_TAB_META = [
   ['o-hatchery','Hatchery','\ud83d\udc23','symbio_standalone_hatchery_ledger'],
   ['o-compost','Compost','\u267b\ufe0f','symbio_compost_ledger'],
   ['o-pigs','Pigs','\ud83d\udc16','symbio_pig_ledger'],
-  ['o-seedlings','Seedling Propagation','\ud83c\udf31','symbio_seedling_ledger']
+  ['o-seedlings','Seedling Propagation','\ud83c\udf31','symbio_seedling_ledger'],
+  ['o-trees','Tree Nursery','\ud83c\udf33','symbio_tree_ledger']
 ];
 
 function renderEnterprisesListView(){
@@ -13652,6 +14358,7 @@ const VAULT_EXPORT_MAP = {
   'o-pigs-export-pdf': { tab: 'o-pigs', enterprise: 'Pigs', icon: '\ud83d\udc16' },
   'o-compost-export-pdf': { tab: 'o-compost', enterprise: 'Compost', icon: '\u267b\ufe0f' },
   'o-seedlings-export-pdf': { tab: 'o-seedlings', enterprise: 'Seedling Propagation', icon: '\ud83c\udf31' },
+  'o-trees-export-pdf': { tab: 'o-trees', enterprise: 'Tree Nursery', icon: '\ud83c\udf33' },
   'o-dailylog-exportPdfBtn': { tab: 'o-dailylog', enterprise: 'Homestead Animals', icon: '\ud83d\udc10' }
 };
 function getVaultEntries(){ try { return JSON.parse(localStorage.getItem(LS_VAULT)) || []; } catch(e){ return []; } }
@@ -13708,7 +14415,7 @@ function renderVaultView(){
   document.querySelectorAll('#results [data-vtab]').forEach(row => {
     row.addEventListener('click', () => {
       const tab = row.getAttribute('data-vtab');
-      if (tab === 'bio-calc') goToBioCalc(goToVault); else if (tab) goToOpsEnterprise(tab); else goToPlanner();
+      if (tab === 'bio-calc') goToBioCalc(goToVault); else if (tab === 'bio-calc') goToBioCalc(goToVault); else if (tab === 'bio-calc') goToBioCalc(goToVault); else if (tab === 'bio-calc') goToBioCalc(goToVault); else if (tab === 'bio-calc') goToBioCalc(goToVault); else if (tab === 'bio-calc') goToBioCalc(goToVault); else if (tab === 'bio-calc') goToBioCalc(goToVault); else if (tab) goToOpsEnterprise(tab); else goToPlanner();
     });
   });
   const clearBtn = document.getElementById('vault-clear');
@@ -13984,7 +14691,8 @@ const OPS_ENTRY_FORM_ID = {
   'o-hatchery': 'o-hatchery-ledger-form',
   'o-compost': 'o-compost-ledger-form',
   'o-pigs': 'o-pigs-ledger-form',
-  'o-seedlings': 'o-seedlings-ledger-form'
+  'o-seedlings': 'o-seedlings-ledger-form',
+  'o-trees': 'o-trees-ledger-form'
 };
 
 function setActiveNav(key){
